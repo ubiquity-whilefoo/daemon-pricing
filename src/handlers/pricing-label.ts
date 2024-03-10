@@ -6,19 +6,19 @@ import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { setPrice } from "../shared/pricing";
 import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
 import { AssistivePricingSettings } from "../types/plugin-input";
+import { isIssueLabelEvent } from "../types/typeguards";
 
 export async function onLabelChangeSetPricing(context: Context): Promise<void> {
-  const config = context.config;
-  const logger = context.logger;
-  const payload = context.payload;
-  if (!("issue" in payload) || !payload.issue) {
+  if (!isIssueLabelEvent(context)) {
     context.logger.debug("Not an issue event");
     return;
   }
+  const config = context.config;
+  const logger = context.logger;
+  const payload = context.payload;
 
   const labels = payload.issue.labels;
   if (!labels) throw logger.error(`No labels to calculate price`);
-  const labelNames = labels.map((i) => i.name);
 
   if (payload.issue.body && isParentIssue(payload.issue.body)) {
     await handleParentIssue(context, labels);
@@ -58,7 +58,14 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
     return;
   }
 
-  const recognizedLabels = getRecognizedLabels(labels, config);
+  await setPriceLabel(context, labels, config);
+}
+
+async function setPriceLabel(context: Context, issueLabels: Label[], config: AssistivePricingSettings) {
+  const logger = context.logger;
+  const labelNames = issueLabels.map((i) => i.name);
+
+  const recognizedLabels = getRecognizedLabels(issueLabels, config);
 
   if (!recognizedLabels.time.length || !recognizedLabels.priority.length) {
     logger.error("No recognized labels to calculate price");

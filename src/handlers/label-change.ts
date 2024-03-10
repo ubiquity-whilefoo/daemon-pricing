@@ -1,14 +1,15 @@
 import { isUserAdminOrBillingManager } from "../shared/issue";
 import { Context } from "../types/context";
+import { isLabelEditedEvent } from "../types/typeguards";
 
 export async function watchLabelChange(context: Context) {
   const logger = context.logger;
-
-  const payload = context.payload;
-  if (!("changes" in payload) || !payload.changes) {
-    context.logger.debug("Not an issue event");
+  if (!isLabelEditedEvent(context)) {
+    logger.debug("Not a label event");
     return;
   }
+
+  const payload = context.payload;
   const { label, changes, sender } = payload;
 
   const previousLabel = changes?.name?.from;
@@ -25,9 +26,7 @@ export async function watchLabelChange(context: Context) {
   // check if user is authorized to make the change
   const hasAccess = await hasLabelEditPermission(context, currentLabel, triggerUser);
 
-  const { supabase } = Runtime.getState().adapters;
-
-  await supabase.label.saveLabelChange({
+  await context.adapters.supabase.label.saveLabelChange({
     previousLabel,
     currentLabel,
     authorized: hasAccess,
@@ -46,8 +45,8 @@ async function hasLabelEditPermission(context: Context, label: string, caller: s
 
   if (sufficientPrivileges) {
     // check permission
-    const { access, user } = Runtime.getState().adapters.supabase;
-    const userId = await user.getUserId(context.event, caller);
+    const { access, user } = context.adapters.supabase;
+    const userId = await user.getUserId(context, caller);
     const accessible = await access.getAccess(userId);
     if (accessible) return true;
     logger.info("No access to edit label", { caller, label });

@@ -1,5 +1,6 @@
 import { Context } from "../types/context";
 import { Label, UserType } from "../types/github";
+import { isIssueLabelEvent } from "../types/typeguards";
 import { addCommentToIssue, isUserAdminOrBillingManager } from "./issue";
 
 // cspell:disable
@@ -37,7 +38,6 @@ export async function createLabel(context: Context, name: string, labelType = "d
 export async function removeLabel(context: Context, name: string) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
-    context.logger.debug("Not an issue event");
     return;
   }
 
@@ -56,7 +56,6 @@ export async function removeLabel(context: Context, name: string) {
 export async function clearAllPriceLabelsOnIssue(context: Context) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
-    context.logger.debug("Not an issue event");
     return;
   }
 
@@ -81,7 +80,6 @@ export async function clearAllPriceLabelsOnIssue(context: Context) {
 export async function addLabelToIssue(context: Context, labelName: string) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
-    context.logger.debug("Not an issue event");
     return;
   }
 
@@ -98,14 +96,13 @@ export async function addLabelToIssue(context: Context, labelName: string) {
 }
 
 export async function labelAccessPermissionsCheck(context: Context) {
+  if (!isIssueLabelEvent(context)) {
+    return;
+  }
   const { logger, payload } = context;
   const { publicAccessControl } = context.config;
   if (!publicAccessControl.setLabel) return true;
 
-  if (!("issue" in payload) || !payload.issue) {
-    context.logger.debug("Not an issue event");
-    return;
-  }
   if (!payload.label?.name) return;
   if (payload.sender.type === UserType.Bot) return true;
 
@@ -131,8 +128,8 @@ export async function labelAccessPermissionsCheck(context: Context) {
   } else {
     logger.info("Checking access for labels", { repo: repo.full_name, user: sender, labelType });
     // check permission
-    const { access, user } = runtime.adapters.supabase;
-    const userId = await user.getUserId(context.event, sender);
+    const { access, user } = context.adapters.supabase;
+    const userId = await user.getUserId(context, sender);
     const accessible = await access.getAccess(userId);
     if (accessible) {
       return true;

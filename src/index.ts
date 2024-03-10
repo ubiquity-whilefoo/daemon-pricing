@@ -1,13 +1,18 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
+import { createClient } from "@supabase/supabase-js";
 import { Octokit } from "@octokit/rest";
 import { PluginInputs } from "./types/plugin-input";
 import { Context } from "./types/context";
 import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
 import { onLabelChangeSetPricing } from "./handlers/pricing-label";
 import { watchLabelChange } from "./handlers/label-change";
+import { Value } from "@sinclair/typebox/value";
+import { envSchema } from "./types/env";
+import { createAdapters } from "./adapters";
 
 async function run() {
+  const env = Value.Decode(envSchema, process.env);
   const webhookPayload = github.context.payload.inputs;
   const inputs: PluginInputs = {
     stateId: webhookPayload.stateId,
@@ -18,6 +23,7 @@ async function run() {
     ref: webhookPayload.ref,
   };
   const octokit = new Octokit({ auth: inputs.authToken });
+  const supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 
   const context: Context = {
     eventName: inputs.eventName,
@@ -41,7 +47,9 @@ async function run() {
         console.error(message, ...optionalParams);
       },
     },
+    adapters: {} as ReturnType<typeof createAdapters>,
   };
+  context.adapters = createAdapters(supabaseClient, context);
 
   const eventName = inputs.eventName;
   switch (eventName) {
