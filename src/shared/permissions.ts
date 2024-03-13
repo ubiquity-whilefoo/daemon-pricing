@@ -2,7 +2,7 @@ import { Context } from "../types/context";
 import { UserType } from "../types/github";
 import { isIssueLabelEvent } from "../types/typeguards";
 import { addCommentToIssue, isUserAdminOrBillingManager } from "./issue";
-import { addLabelToIssue, removeLabel } from "./label";
+import { addLabelToIssue, removeLabelFromIssue } from "./label";
 
 export async function labelAccessPermissionsCheck(context: Context) {
   if (!isIssueLabelEvent(context)) {
@@ -40,13 +40,13 @@ export async function labelAccessPermissionsCheck(context: Context) {
     // check permission
     const { access, user } = context.adapters.supabase;
     const userId = await user.getUserId(context, sender);
-    const accessible = await access.getAccess(userId);
-    if (accessible) {
+    const accessible = await access.getAccess(userId, repo.id);
+    if (accessible && accessible.labels?.includes(labelType)) {
       return true;
     }
 
     if (payload.action === "labeled") {
-      await removeLabel(context, labelName);
+      await removeLabelFromIssue(context, labelName);
     } else if (payload.action === "unlabeled") {
       await addLabelToIssue(context, labelName);
     }

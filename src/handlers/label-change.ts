@@ -30,13 +30,13 @@ export async function watchLabelChange(context: Context) {
     previousLabel,
     currentLabel,
     authorized: hasAccess,
-    repository: payload.repository,
+    repositoryId: payload.repository.id,
+    userId: sender.id,
   });
   return logger.debug("label name change saved to db");
 }
 
 async function hasLabelEditPermission(context: Context, label: string, caller: string) {
-  const logger = context.logger;
   const sufficientPrivileges = await isUserAdminOrBillingManager(context, caller);
 
   // get text before :
@@ -47,10 +47,8 @@ async function hasLabelEditPermission(context: Context, label: string, caller: s
     // check permission
     const { access, user } = context.adapters.supabase;
     const userId = await user.getUserId(context, caller);
-    const accessible = await access.getAccess(userId);
-    if (accessible) return true;
-    logger.info("No access to edit label", { caller, label });
-    return false;
+    const accessible = await access.getAccess(userId, context.payload.repository.id);
+    return accessible !== null && accessible.labels?.includes(match[0].toLowerCase()) === true;
   }
 
   return true;

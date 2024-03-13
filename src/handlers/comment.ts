@@ -14,22 +14,14 @@ export async function setLabels(context: Context, body: string) {
   const sufficientPrivileges = await isUserAdminOrBillingManager(context, sender);
   if (!sufficientPrivileges) return logger.info(`You are not an admin and do not have the required permissions to access this function.`); // if sender is not admin, return
 
-  if (!payload.issue) return context.logger.info(`Skipping '/labels' because of no issue instance`);
-
-  if (body.startsWith("/labels")) {
+  if (body.match(/\/.*/)) {
     const { username, labels } = parseComment(body);
     const { access, user } = context.adapters.supabase;
     const url = payload.comment?.html_url as string;
     if (!url) throw new Error("Comment url is undefined");
 
-    const nodeInfo = {
-      node_id: payload.comment?.node_id,
-      node_type: "IssueComment" as const,
-      node_url: url,
-    };
-
     const userId = await user.getUserId(context, username);
-    await access.setAccess(labels, nodeInfo, userId);
+    await access.setAccess(userId, payload.repository.id, labels);
     if (!labels.length) {
       return context.logger.info("Successfully cleared access", { username });
     }
@@ -46,10 +38,7 @@ function parseComment(comment: string): { username: string; labels: string[] } {
   const username = usernameMatch[1];
 
   // Split the comment into words and filter out the command and the username
-  const labels = comment.split(/\s+/).filter((word) => word !== "/labels" && !word.startsWith("@"));
-  // if (!labels.length) throw new Error("No labels found in comment");
-
-  // no labels means clear access
+  const labels = comment.split(/\s+/).filter((word) => !word.startsWith("/") && !word.startsWith("@"));
 
   return {
     username: username,
