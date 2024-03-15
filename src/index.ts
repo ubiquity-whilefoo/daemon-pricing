@@ -2,7 +2,7 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 import { createClient } from "@supabase/supabase-js";
 import { Octokit } from "@octokit/rest";
-import { PluginInputs } from "./types/plugin-input";
+import { PluginInputs, assistivePricingSettingsSchema } from "./types/plugin-input";
 import { Context } from "./types/context";
 import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
 import { onLabelChangeSetPricing } from "./handlers/pricing-label";
@@ -13,12 +13,15 @@ import { createAdapters } from "./adapters";
 
 async function run() {
   const env = Value.Decode(envSchema, process.env);
+
   const webhookPayload = github.context.payload.inputs;
+  const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
+
   const inputs: PluginInputs = {
     stateId: webhookPayload.stateId,
     eventName: webhookPayload.eventName,
     eventPayload: JSON.parse(webhookPayload.eventPayload),
-    settings: JSON.parse(webhookPayload.settings),
+    settings: settings,
     authToken: webhookPayload.authToken,
     ref: webhookPayload.ref,
   };
