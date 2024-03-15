@@ -1,5 +1,12 @@
 name: "Delegate Compute"
 description: "UbiquiBot Delegated Compute Action"
+inputs:
+  SUPABASE_URL:
+    description: "Supabase URL"
+    required: true
+  SUPABASE_KEY:
+    description: "Supabase Key"
+    required: true
 outputs:
   result: # id of output
     description: "The result of a event handler"
