@@ -1,4 +1,4 @@
-import { isUserAdminOrBillingManager } from "../shared/issue";
+import { addCommentToIssue, isUserAdminOrBillingManager } from "../shared/issue";
 import { Context } from "../types/context";
 import { isCommentEvent } from "../types/typeguards";
 
@@ -13,7 +13,9 @@ export async function handleComment(context: Context) {
   const body = payload.comment.body;
 
   const sufficientPrivileges = await isUserAdminOrBillingManager(context, sender);
-  if (!sufficientPrivileges) return logger.info(`You are not an admin and do not have the required permissions to access this function.`); // if sender is not admin, return
+  if (!sufficientPrivileges) {
+    await addCommentToIssue(context, `@${sender}, You are not allowed to set access`, payload.issue.number);
+  }
 
   if (body.match(/\/.*/)) {
     const { username, labels } = parseComment(body);
@@ -28,7 +30,11 @@ export async function handleComment(context: Context) {
     }
     return context.logger.info("Successfully set access", { username, labels });
   } else {
-    throw logger.fatal(`Invalid syntax for allow \n usage: '/labels set-(access type) @user true|false' \n  ex-1 /labels set-multiplier @user false`);
+    await addCommentToIssue(
+      context,
+      `Invalid syntax for allow \n usage: '/[command] @[user] [label-type]...' \n  ex-1 /labels @example-user time priority`,
+      payload.issue.number
+    );
   }
 }
 
