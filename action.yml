@@ -9,8 +9,8 @@ runs:
   steps:
     - run: cd ${{ github.action_path }}
       shell: bash
-    - run: pnpm install
+    - run: bun install
       shell: bash
-    - run: pnpm start
+    - run: bun start
       shell: bash
       id: mainHandler

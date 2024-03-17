@@ -29,15 +29,13 @@ jobs:
       - name: Echo inputs
         run: echo ${{ inputs.settings }}
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
+
+      - name: Install Bun
+        run: npm install -g bun
 
       - name: Calling action
         uses: ./
