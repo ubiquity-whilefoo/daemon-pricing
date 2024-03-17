@@ -26,9 +26,9 @@ export async function handleComment(context: Context) {
     const userId = await user.getUserId(context, username);
     await access.setAccess(userId, payload.repository.id, labels);
     if (!labels.length) {
-      return context.logger.info("Successfully cleared access", { username });
+      return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${username}`, payload.issue.number);
     }
-    return context.logger.info("Successfully set access", { username, labels });
+    return await addCommentToIssue(context, `@${sender}, successfully set access for @${username}`, payload.issue.number);
   } else {
     await addCommentToIssue(
       context,
