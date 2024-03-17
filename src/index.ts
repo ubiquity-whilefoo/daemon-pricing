@@ -10,6 +10,7 @@ import { watchLabelChange } from "./handlers/label-change";
 import { Value } from "@sinclair/typebox/value";
 import { envSchema } from "./types/env";
 import { createAdapters } from "./adapters";
+import { handleComment } from "./handlers/comment";
 
 async function run() {
   const env = Value.Decode(envSchema, process.env);
@@ -63,6 +64,9 @@ async function run() {
       break;
     case "label.edited":
       await watchLabelChange(context);
+      break;
+    case "issue_comment.created":
+      await handleComment(context);
       break;
     default:
       throw new Error(`Event ${eventName} is not supported`);

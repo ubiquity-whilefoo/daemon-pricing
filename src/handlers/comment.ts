@@ -2,7 +2,7 @@ import { isUserAdminOrBillingManager } from "../shared/issue";
 import { Context } from "../types/context";
 import { isCommentEvent } from "../types/typeguards";
 
-export async function setLabels(context: Context, body: string) {
+export async function handleComment(context: Context) {
   const logger = context.logger;
   if (!isCommentEvent(context)) {
     return logger.debug("Not an comment event");
@@ -10,6 +10,7 @@ export async function setLabels(context: Context, body: string) {
 
   const payload = context.payload;
   const sender = payload.sender.login;
+  const body = payload.comment.body;
 
   const sufficientPrivileges = await isUserAdminOrBillingManager(context, sender);
   if (!sufficientPrivileges) return logger.info(`You are not an admin and do not have the required permissions to access this function.`); // if sender is not admin, return
