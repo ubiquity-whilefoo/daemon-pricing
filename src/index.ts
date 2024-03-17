@@ -56,7 +56,8 @@ async function run() {
 
   const eventName = inputs.eventName;
   switch (eventName) {
-    case "issues.labeled" || "issues.unlabeled":
+    case "issues.labeled":
+    case "issues.unlabeled":
       await syncPriceLabelsToConfig(context);
       await onLabelChangeSetPricing(context);
       break;
