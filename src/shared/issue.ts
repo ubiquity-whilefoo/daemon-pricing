@@ -11,11 +11,20 @@ async function checkIfIsAdmin(context: Context, username: string) {
 
 async function checkIfIsBillingManager(context: Context, username: string) {
   if (!context.payload.organization) throw context.logger.fatal(`No organization found in payload!`);
+
+  try {
+    await context.octokit.rest.orgs.checkMembershipForUser({
+      org: context.payload.organization.login,
+      username,
+    });
+  } catch (e: unknown) {
+    return false;
+  }
+
   const { data: membership } = await context.octokit.rest.orgs.getMembershipForUser({
     org: context.payload.organization.login,
     username,
   });
-
   return membership.role === "billing_manager";
 }
 
