@@ -18,7 +18,10 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
   const payload = context.payload;
 
   const labels = payload.issue.labels;
-  if (!labels) throw logger.error(`No labels to calculate price`);
+  if (!labels) {
+    logger.info(`No labels to calculate price`);
+    return;
+  }
 
   if (payload.issue.body && isParentIssue(payload.issue.body)) {
     await handleParentIssue(context, labels);
@@ -27,10 +30,7 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
 
   const hasPermission = await labelAccessPermissionsCheck(context);
   if (!hasPermission) {
-    if (config.publicAccessControl.setLabel === false) {
-      throw logger.error("No public access control to set labels");
-    }
-    throw logger.error("No permission to set labels");
+    return;
   }
 
   // here we should make an exception if it was a price label that was just set to just skip this action
