@@ -3,7 +3,7 @@ description: "UbiquiBot Delegated Compute Action"
 outputs:
   result: # id of output
     description: "The result of a event handler"
-    value: ${{ steps.mainHandler.outputs.result}}
+    value: ${{ steps.mainHandler.outputs.result }}
 runs:
   using: "composite"
   steps:
