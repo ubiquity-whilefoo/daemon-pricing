@@ -36,7 +36,13 @@ export async function handleComment(context: Context) {
   } catch (e) {
     await addCommentToIssue(
       context,
-      `\`\`\`Invalid syntax for labels \n usage: '/labels @[user] [label-type]...' \n  ex-1 /labels @example-user time priority\`\`\``,
+      `\`\`\`
+Invalid syntax for labels
+
+usage: '/labels @[user] [label-type]...'
+
+ex-1 /labels @example-user time priority
+\`\`\``,
       payload.issue.number
     );
   }
