@@ -41,6 +41,9 @@ jobs:
         run: |
           yarn install
           yarn run "supabase:generate:remote"
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
 
       - name: Calling action
         uses: ./
