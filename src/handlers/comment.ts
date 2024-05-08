@@ -31,10 +31,14 @@ export async function handleComment(context: Context) {
       }
       return await addCommentToIssue(context, `@${sender}, successfully set access for @${username}`, payload.issue.number);
     } else {
-      throw new Error(`Invalid syntax for allow \n usage: '/labels @[user] [label-type]...' \n  ex-1 /labels @example-user time priority`);
+      throw new Error();
     }
   } catch (e) {
-    await addCommentToIssue(context, `${e}`, payload.issue.number);
+    await addCommentToIssue(
+      context,
+      `Invalid syntax for allow \n usage: '/labels @[user] [label-type]...' \n  ex-1 /labels @example-user time priority`,
+      payload.issue.number
+    );
   }
 }
 
