@@ -17,24 +17,24 @@ export async function handleComment(context: Context) {
     await addCommentToIssue(context, `@${sender}, You are not allowed to set access`, payload.issue.number);
   }
 
-  if (body.match(/\/.*/)) {
-    const { username, labels } = parseComment(body);
-    const { access, user } = context.adapters.supabase;
-    const url = payload.comment?.html_url as string;
-    if (!url) throw new Error("Comment url is undefined");
+  try {
+    if (body.match(/\/labels/)) {
+      const { username, labels } = parseComment(body);
+      const { access, user } = context.adapters.supabase;
+      const url = payload.comment?.html_url as string;
+      if (!url) throw new Error("Comment url is undefined");
 
-    const userId = await user.getUserId(context, username);
-    await access.setAccess(userId, payload.repository.id, labels);
-    if (!labels.length) {
-      return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${username}`, payload.issue.number);
+      const userId = await user.getUserId(context, username);
+      await access.setAccess(userId, payload.repository.id, labels);
+      if (!labels.length) {
+        return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${username}`, payload.issue.number);
+      }
+      return await addCommentToIssue(context, `@${sender}, successfully set access for @${username}`, payload.issue.number);
+    } else {
+      throw new Error(`Invalid syntax for allow \n usage: '/labels @[user] [label-type]...' \n  ex-1 /labels @example-user time priority`);
     }
-    return await addCommentToIssue(context, `@${sender}, successfully set access for @${username}`, payload.issue.number);
-  } else {
-    await addCommentToIssue(
-      context,
-      `Invalid syntax for allow \n usage: '/[command] @[user] [label-type]...' \n  ex-1 /labels @example-user time priority`,
-      payload.issue.number
-    );
+  } catch (e) {
+    await addCommentToIssue(context, `${e}`, payload.issue.number);
   }
 }
 
