@@ -37,6 +37,11 @@ jobs:
       - name: Install Bun
         run: npm install -g bun
 
+      - name: Generate Supabase Types
+        run: |
+          yarn install
+          yarn run "supabase:generate:remote"
+
       - name: Calling action
         uses: ./
         env:

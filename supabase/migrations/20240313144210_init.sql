@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS labels (
     user_id integer not null,
     label_from text not null,
     label_to text not null,
-    authorized boolean not null,
+    authorized boolean not null
 );
