@@ -19,7 +19,8 @@ export async function handleComment(context: Context) {
   }
 
   try {
-    if (body.match(/\/\S+/)) {
+    console.log(`testing with [${body}]: ${/\/\S+/.test(body)}`);
+    if (/\/\S+/.test(body)) {
       const { username, labels, command } = parseComment(body);
       if (command === "/allow") {
         const { access, user } = context.adapters.supabase;
