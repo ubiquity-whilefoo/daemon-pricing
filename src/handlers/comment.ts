@@ -19,7 +19,6 @@ export async function handleComment(context: Context) {
   }
 
   try {
-    console.log(`testing with [${body}]: ${/\/\S+/.test(body)}`);
     if (/\/\S+/.test(body)) {
       const { username, labels, command } = parseComment(body);
       if (command === "/allow") {
@@ -35,12 +34,13 @@ export async function handleComment(context: Context) {
         return await addCommentToIssue(context, `@${sender}, successfully set access for @${user}`, payload.issue.number);
       }
     } else {
-      throw new Error("Invalid command");
+      throw new Error("Failed to invoke command");
     }
   } catch (e) {
     await addCommentToIssue(
       context,
       `\`\`\`
+Error: ${e}\n\n
 ${commandParser.helpInformation()}
 \`\`\``,
       payload.issue.number
@@ -54,7 +54,6 @@ function parseComment(comment: string) {
     username: "",
     labels: [],
   };
-  console.log(`Will parse command [${comment.split(/\s+/)}]`);
   commandParser
     .action((command, user, labels) => {
       result.command = command;
@@ -63,6 +62,5 @@ function parseComment(comment: string) {
     })
     .parse(comment.split(/\s+/), { from: "user" });
 
-  console.log("result", result);
   return result;
 }
