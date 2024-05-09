@@ -53,7 +53,7 @@ function parseComment(comment: string) {
     username: "",
     labels: [],
   };
-  console.log("Will parse command", comment);
+  console.log(`Will parse command [${comment.split(/\s+/)}]`);
   commandParser
     .action((command, user, labels) => {
       result.command = command;
@@ -62,5 +62,6 @@ function parseComment(comment: string) {
     })
     .parse(comment.split(/\s+/), { from: "user" });
 
+  console.log("result", result);
   return result;
 }
