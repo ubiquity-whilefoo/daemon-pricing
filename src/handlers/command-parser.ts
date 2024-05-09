@@ -15,7 +15,8 @@ function parseUser(value: string) {
   if (value[0] !== "@") {
     throw new InvalidArgumentError("Username should start with @.");
   }
-  return value;
+  // Remove @ character
+  return value.slice(1);
 }
 
 function parseCommand(value: string) {

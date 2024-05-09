@@ -41,7 +41,7 @@ describe("User tests", () => {
     expect(result).toEqual({
       command: "/allow",
       labels: ["time", "priority"],
-      username: "@user",
+      username: "user",
     });
     expect(() => commandParser.exitOverride().parse(invalidCommand, { from: "user" })).toThrow();
     console.log(commandParser.helpInformation());

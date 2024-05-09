@@ -40,7 +40,8 @@ export async function handleComment(context: Context) {
     await addCommentToIssue(
       context,
       `\`\`\`
-Error: ${e}\n\n
+Error: ${e}
+
 ${commandParser.helpInformation()}
 \`\`\``,
       payload.issue.number
