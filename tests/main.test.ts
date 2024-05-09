@@ -26,6 +26,7 @@ describe("User tests", () => {
   it("Should parse the /allow command", () => {
     const command = "/allow @user time priority".split(/\s+/);
     const invalidCommand = "allow user time priority".split(/\s+/);
+    const commandForRemoval = "/allow @user".split(/\s+/);
     const result: CommandArguments = {
       command: "",
       labels: [],
@@ -44,6 +45,17 @@ describe("User tests", () => {
       username: "user",
     });
     expect(() => commandParser.exitOverride().parse(invalidCommand, { from: "user" })).toThrow();
-    console.log(commandParser.helpInformation());
+    commandParser
+      .action((command, username, labels) => {
+        result.command = command;
+        result.username = username;
+        result.labels = labels;
+      })
+      .parse(commandForRemoval, { from: "user" });
+    expect(result).toEqual({
+      command: "/allow",
+      labels: [],
+      username: "user",
+    });
   });
 });

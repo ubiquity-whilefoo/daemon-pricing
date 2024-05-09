@@ -29,9 +29,9 @@ export async function handleComment(context: Context) {
         const userId = await user.getUserId(context, username);
         await access.setAccess(userId, payload.repository.id, labels);
         if (!labels.length) {
-          return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${user}`, payload.issue.number);
+          return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${username}`, payload.issue.number);
         }
-        return await addCommentToIssue(context, `@${sender}, successfully set access for @${user}`, payload.issue.number);
+        return await addCommentToIssue(context, `@${sender}, successfully set access for @${username}`, payload.issue.number);
       }
     } else {
       throw new Error("Failed to invoke command");
