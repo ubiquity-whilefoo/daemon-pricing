@@ -9,7 +9,6 @@ export interface CommandArguments {
 }
 
 function parseUser(value: string) {
-  console.log("parsing user", value);
   if (!value.length || value.length < 2) {
     throw new InvalidArgumentError("Username should be at least 2 characters long.");
   }

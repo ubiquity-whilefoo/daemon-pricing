@@ -53,6 +53,7 @@ function parseComment(comment: string) {
     username: "",
     labels: [],
   };
+  console.log("Will parse command", comment);
   commandParser
     .action((command, user, labels) => {
       result.command = command;
