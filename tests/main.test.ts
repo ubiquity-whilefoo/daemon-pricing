@@ -1,3 +1,4 @@
+import commandParser, { CommandArguments } from "../src/handlers/command-parser";
 import { mainModule } from "../static/main";
 import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
@@ -20,5 +21,29 @@ describe("User tests", () => {
     const data = await res.json();
     expect(data).toMatchObject(usersGet);
     expect(async () => await mainModule()).not.toThrow();
+  });
+
+  it("Should parse the /allow command", () => {
+    const command = "/allow @user time priority".split(/\s+/);
+    const invalidCommand = "allow user time priority".split(/\s+/);
+    const result: CommandArguments = {
+      command: "",
+      labels: [],
+      username: "",
+    };
+    commandParser
+      .action((command, username, labels) => {
+        result.command = command;
+        result.username = username;
+        result.labels = labels;
+      })
+      .parse(command, { from: "user" });
+    expect(result).toEqual({
+      command: "/allow",
+      labels: ["time", "priority"],
+      username: "@user",
+    });
+    expect(() => commandParser.exitOverride().parse(invalidCommand, { from: "user" })).toThrow();
+    console.log(commandParser.helpInformation());
   });
 });

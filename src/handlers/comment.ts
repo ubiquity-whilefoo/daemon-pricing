@@ -1,6 +1,7 @@
 import { addCommentToIssue, isUserAdminOrBillingManager } from "../shared/issue";
 import { Context } from "../types/context";
 import { isCommentEvent } from "../types/typeguards";
+import commandParser, { CommandArguments } from "./command-parser";
 
 export async function handleComment(context: Context) {
   const logger = context.logger;
@@ -18,18 +19,20 @@ export async function handleComment(context: Context) {
   }
 
   try {
-    if (body.match(/\/labels/)) {
-      const { username, labels } = parseComment(body);
-      const { access, user } = context.adapters.supabase;
-      const url = payload.comment?.html_url as string;
-      if (!url) throw new Error("Comment url is undefined");
+    if (body.match(/\/\S+/)) {
+      const { username, labels, command } = parseComment(body);
+      if (command === "/allow") {
+        const { access, user } = context.adapters.supabase;
+        const url = payload.comment?.html_url as string;
+        if (!url) throw new Error("Comment url is undefined");
 
-      const userId = await user.getUserId(context, username);
-      await access.setAccess(userId, payload.repository.id, labels);
-      if (!labels.length) {
-        return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${username}`, payload.issue.number);
+        const userId = await user.getUserId(context, username);
+        await access.setAccess(userId, payload.repository.id, labels);
+        if (!labels.length) {
+          return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${user}`, payload.issue.number);
+        }
+        return await addCommentToIssue(context, `@${sender}, successfully set access for @${user}`, payload.issue.number);
       }
-      return await addCommentToIssue(context, `@${sender}, successfully set access for @${username}`, payload.issue.number);
     } else {
       throw new Error("Invalid command");
     }
@@ -37,28 +40,26 @@ export async function handleComment(context: Context) {
     await addCommentToIssue(
       context,
       `\`\`\`
-Invalid syntax for labels
-
-usage: '/labels @[user] [label-type]...'
-
-ex-1 /labels @example-user time priority
+${commandParser.helpInformation()}
 \`\`\``,
       payload.issue.number
     );
   }
 }
 
-function parseComment(comment: string): { username: string; labels: string[] } {
-  // Extract the @username using a regular expression
-  const usernameMatch = comment.match(/@(\w+)/);
-  if (!usernameMatch) throw new Error("Username not found in comment");
-  const username = usernameMatch[1];
-
-  // Split the comment into words and filter out the command and the username
-  const labels = comment.split(/\s+/).filter((word) => !word.startsWith("/") && !word.startsWith("@"));
-
-  return {
-    username: username,
-    labels: labels,
+function parseComment(comment: string) {
+  const result: CommandArguments = {
+    command: "",
+    username: "",
+    labels: [],
   };
+  commandParser
+    .action((command, user, labels) => {
+      result.command = command;
+      result.username = user;
+      result.labels = labels;
+    })
+    .parse(comment.split(/\s+/), { from: "user" });
+
+  return result;
 }
