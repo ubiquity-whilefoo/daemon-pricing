@@ -1,7 +1,7 @@
 {
   "name": "@ubiquibot/assistive-pricing",
   "version": "1.0.0",
-  "description": "Helps setting the pricing for Issues and rewards.",
+  "description": "Helps set pricing for GitHub Issues and their rewards.",
   "main": "build/index.ts",
   "author": "Ubiquity DAO",
   "license": "MIT",
