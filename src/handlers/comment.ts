@@ -1,7 +1,28 @@
 import { addCommentToIssue, isUserAdminOrBillingManager } from "../shared/issue";
 import { Context } from "../types/context";
 import { isCommentEvent } from "../types/typeguards";
-import commandParser, { CommandArguments } from "./command-parser";
+import commandParser, { AllowedCommand, CommandArguments } from "./command-parser";
+
+const commandHandlers: { [k in AllowedCommand]: (context: Context, commandArguments: CommandArguments) => Promise<void> } = {
+  async allow(context, { username, labels }: CommandArguments) {
+    const logger = context.logger;
+    if (!isCommentEvent(context)) {
+      return logger.debug("Not an comment event");
+    }
+    const payload = context.payload;
+    const sender = payload.sender.login;
+    const { access, user } = context.adapters.supabase;
+    const url = payload.comment?.html_url as string;
+    if (!url) throw new Error("Comment url is undefined");
+
+    const userId = await user.getUserId(context, username);
+    await access.setAccess(userId, payload.repository.id, labels);
+    if (!labels.length) {
+      return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${username}`, payload.issue.number);
+    }
+    return await addCommentToIssue(context, `@${sender}, successfully set access for @${username}`, payload.issue.number);
+  },
+};
 
 export async function handleComment(context: Context) {
   const logger = context.logger;
@@ -20,19 +41,8 @@ export async function handleComment(context: Context) {
 
   try {
     if (/\/\S+/.test(body)) {
-      const { username, labels, command } = parseComment(body);
-      if (command === "/allow") {
-        const { access, user } = context.adapters.supabase;
-        const url = payload.comment?.html_url as string;
-        if (!url) throw new Error("Comment url is undefined");
-
-        const userId = await user.getUserId(context, username);
-        await access.setAccess(userId, payload.repository.id, labels);
-        if (!labels.length) {
-          return await addCommentToIssue(context, `@${sender}, successfully cleared access for @${username}`, payload.issue.number);
-        }
-        return await addCommentToIssue(context, `@${sender}, successfully set access for @${username}`, payload.issue.number);
-      }
+      const command = parseComment(body);
+      await commandHandlers[command.command](context, command);
     } else {
       throw new Error("Failed to invoke command");
     }
@@ -49,19 +59,17 @@ ${commandParser.helpInformation()}
   }
 }
 
-function parseComment(comment: string) {
-  const result: CommandArguments = {
-    command: "",
-    username: "",
-    labels: [],
-  };
+function parseComment(comment: string): CommandArguments {
+  let result: CommandArguments | null = null;
+
   commandParser
     .action((command, user, labels) => {
-      result.command = command;
-      result.username = user;
-      result.labels = labels;
+      result = { command, username: user, labels };
     })
     .parse(comment.split(/\s+/), { from: "user" });
 
+  if (!result) {
+    throw new Error("The command could not be parsed.");
+  }
   return result;
 }

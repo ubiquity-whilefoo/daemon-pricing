@@ -1,3 +1,4 @@
+import { drop } from "@mswjs/data";
 import commandParser, { CommandArguments } from "../src/handlers/command-parser";
 import { mainModule } from "../static/main";
 import { db } from "./__mocks__/db";
@@ -11,6 +12,7 @@ afterAll(() => server.close());
 
 describe("User tests", () => {
   beforeEach(() => {
+    drop(db);
     for (const item of usersGet) {
       db.users.create(item);
     }
@@ -26,9 +28,10 @@ describe("User tests", () => {
   it("Should parse the /allow command", () => {
     const command = "/allow @user time priority".split(/\s+/);
     const invalidCommand = "allow user time priority".split(/\s+/);
+    const unknownCommand = "/foo user time priority".split(/\s+/);
     const commandForRemoval = "/allow @user".split(/\s+/);
     const result: CommandArguments = {
-      command: "",
+      command: "allow",
       labels: [],
       username: "",
     };
@@ -40,11 +43,12 @@ describe("User tests", () => {
       })
       .parse(command, { from: "user" });
     expect(result).toEqual({
-      command: "/allow",
+      command: "allow",
       labels: ["time", "priority"],
       username: "user",
     });
     expect(() => commandParser.exitOverride().parse(invalidCommand, { from: "user" })).toThrow();
+    expect(() => commandParser.exitOverride().parse(unknownCommand, { from: "user" })).toThrow();
     commandParser
       .action((command, username, labels) => {
         result.command = command;
@@ -53,7 +57,7 @@ describe("User tests", () => {
       })
       .parse(commandForRemoval, { from: "user" });
     expect(result).toEqual({
-      command: "/allow",
+      command: "allow",
       labels: [],
       username: "user",
     });

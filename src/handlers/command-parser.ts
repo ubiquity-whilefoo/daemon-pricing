@@ -2,10 +2,13 @@ import { Command } from "@commander-js/extra-typings";
 import { InvalidArgumentError } from "commander";
 import packageJson from "../../package.json";
 
+const allowedCommands = ["allow"] as const;
+export type AllowedCommand = (typeof allowedCommands)[number];
+
 export interface CommandArguments {
   username: string;
   labels: string[];
-  command: string;
+  command: AllowedCommand;
 }
 
 function parseUser(value: string) {
@@ -26,7 +29,12 @@ function parseCommand(value: string) {
   if (value[0] !== "/") {
     throw new InvalidArgumentError("Command should start with /.");
   }
-  return value;
+  const slicedValue = value.slice(1) as AllowedCommand;
+  if (!allowedCommands.includes(slicedValue)) {
+    throw new InvalidArgumentError(`${value} is not a valid command.`);
+  }
+  // Remove slash character
+  return slicedValue;
 }
 
 const commandParser = new Command()
