@@ -40,12 +40,8 @@ export async function handleComment(context: Context) {
   }
 
   try {
-    if (/\/\S+/.test(body)) {
-      const command = parseComment(body);
-      await commandHandlers[command.command](context, command);
-    } else {
-      throw new Error("Failed to invoke command");
-    }
+    const command = parseComment(body);
+    await commandHandlers[command.command](context, command);
   } catch (e) {
     await addCommentToIssue(
       context,
