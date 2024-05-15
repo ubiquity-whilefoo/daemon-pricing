@@ -69,7 +69,7 @@ async function run() {
       await handleComment(context);
       break;
     default:
-      throw new Error(`Event ${eventName} is not supported`);
+      context.logger.warn(`Event ${eventName} is not supported`);
   }
 }
 

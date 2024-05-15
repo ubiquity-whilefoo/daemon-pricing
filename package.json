@@ -1,7 +1,7 @@
 {
-  "name": "ts-template",
+  "name": "@ubiquibot/assistive-pricing",
   "version": "1.0.0",
-  "description": "Template repository with TypeScript support.",
+  "description": "Helps set pricing for GitHub Issues and their rewards.",
   "main": "build/index.ts",
   "author": "Ubiquity DAO",
   "license": "MIT",
@@ -33,11 +33,13 @@
   "dependencies": {
     "@actions/core": "^1.10.1",
     "@actions/github": "^6.0.0",
+    "@commander-js/extra-typings": "12.0.1",
     "@octokit/rest": "^20.0.2",
     "@octokit/webhooks": "^13.1.0",
     "@sinclair/typebox": "^0.32.15",
-    "@supabase/supabase-js": "^2.39.7",
+    "@supabase/supabase-js": "2.43.1",
     "@types/ms": "^0.7.34",
+    "commander": "12.0.0",
     "dotenv": "^16.4.5",
     "ms": "^2.1.3"
   },

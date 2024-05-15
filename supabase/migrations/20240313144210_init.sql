@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS "access" (
     PRIMARY KEY (user_id, repository_id)
 );
 
+alter table "access" enable row level security;
+
 CREATE TABLE IF NOT EXISTS labels (
     id BIGSERIAL PRIMARY KEY,
     created timestamptz not null default now(),
@@ -15,5 +17,7 @@ CREATE TABLE IF NOT EXISTS labels (
     user_id integer not null,
     label_from text not null,
     label_to text not null,
-    authorized boolean not null,
+    authorized boolean not null
 );
+
+alter table "labels" enable row level security;
