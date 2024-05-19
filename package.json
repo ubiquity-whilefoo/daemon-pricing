@@ -9,6 +9,7 @@
     "node": ">=20.10.0"
   },
   "scripts": {
+    "worker": "wrangler dev --env dev --port 4000",
     "start": "tsx src/index.ts",
     "format": "run-s format:lint format:prettier format:cspell",
     "format:lint": "eslint --fix .",
@@ -74,7 +75,8 @@
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "wrangler": "3.57.0"
   },
   "lint-staged": {
     "*.ts": [
