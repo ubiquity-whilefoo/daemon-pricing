@@ -1,4 +1,4 @@
-import * as core from "@actions/core";
+// import * as core from "@actions/core";
 import * as github from "@actions/github";
 import { createClient } from "@supabase/supabase-js";
 import { Octokit } from "@octokit/rest";
@@ -12,7 +12,7 @@ import { envSchema } from "./types/env";
 import { createAdapters } from "./adapters";
 import { handleComment } from "./handlers/comment";
 
-async function run() {
+export async function run() {
   const env = Value.Decode(envSchema, process.env);
 
   const webhookPayload = github.context.payload.inputs;
@@ -73,9 +73,9 @@ async function run() {
   }
 }
 
-run()
-  .then((result) => core.setOutput("result", result))
-  .catch((error) => {
-    console.error(error);
-    core.setFailed(error);
-  });
+// run()
+//   .then((result) => core.setOutput("result", result))
+//   .catch((error) => {
+//     console.error(error);
+//     core.setFailed(error);
+//   });
