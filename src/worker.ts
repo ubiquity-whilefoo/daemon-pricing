@@ -1,4 +1,5 @@
 import { run } from "./index";
+import * as core from "@actions/core";
 
 export default {
   async fetch(request: Request): Promise<Response> {
@@ -15,6 +16,7 @@ export default {
       body.settings = JSON.parse(body.settings);
       console.log("Request:", body);
       const result = await run(body);
+      core.setOutput("result", result);
       return new Response(JSON.stringify(result), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
       return handleUncaughtError(error);
