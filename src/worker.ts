@@ -1,4 +1,3 @@
-import * as github from "@actions/github";
 import { run } from "./index";
 
 export default {
@@ -13,8 +12,7 @@ export default {
       }
       const body = await request.json();
       console.log("Request:", body);
-      github.context.payload.inputs = body;
-      const result = await run();
+      const result = await run(body);
       return new Response(JSON.stringify(result), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
       return handleUncaughtError(error);

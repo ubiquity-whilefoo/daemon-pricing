@@ -1,31 +1,31 @@
 // import * as core from "@actions/core";
-import * as github from "@actions/github";
-import { createClient } from "@supabase/supabase-js";
 import { Octokit } from "@octokit/rest";
-import { PluginInputs, assistivePricingSettingsSchema } from "./types/plugin-input";
-import { Context } from "./types/context";
-import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
-import { onLabelChangeSetPricing } from "./handlers/pricing-label";
-import { watchLabelChange } from "./handlers/label-change";
 import { Value } from "@sinclair/typebox/value";
-import { envSchema } from "./types/env";
+// import * as github from "@actions/github";
+import { createClient } from "@supabase/supabase-js";
 import { createAdapters } from "./adapters";
 import { handleComment } from "./handlers/comment";
+import { watchLabelChange } from "./handlers/label-change";
+import { onLabelChangeSetPricing } from "./handlers/pricing-label";
+import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
+import { Context } from "./types/context";
+import { envSchema } from "./types/env";
+import { PluginInputs } from "./types/plugin-input";
 
-export async function run() {
+export async function run(inputs: PluginInputs) {
   const env = Value.Decode(envSchema, process.env);
 
-  const webhookPayload = github.context.payload.inputs;
-  const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
+  // const webhookPayload = github.context.payload.inputs;
+  // const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
 
-  const inputs: PluginInputs = {
-    stateId: webhookPayload.stateId,
-    eventName: webhookPayload.eventName,
-    eventPayload: JSON.parse(webhookPayload.eventPayload),
-    settings: settings,
-    authToken: webhookPayload.authToken,
-    ref: webhookPayload.ref,
-  };
+  // const inputs: PluginInputs = {
+  //   stateId: webhookPayload.stateId,
+  //   eventName: webhookPayload.eventName,
+  //   eventPayload: JSON.parse(webhookPayload.eventPayload),
+  //   settings: settings,
+  //   authToken: webhookPayload.authToken,
+  //   ref: webhookPayload.ref,
+  // };
   const octokit = new Octokit({ auth: inputs.authToken });
   const supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 
