@@ -5,6 +5,8 @@ import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
 import usersGet from "./__mocks__/users-get.json";
 import { expect, describe, beforeAll, beforeEach, afterAll, afterEach, it } from "@jest/globals";
+import issueCommented from "./__mocks__/requests/issue-comment-post.json";
+import workerFetch from "../src/worker";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -61,5 +63,18 @@ describe("User tests", () => {
       labels: [],
       username: "user",
     });
+  });
+
+  it("Should handle the comment", async () => {
+    const result = await workerFetch.fetch({
+      headers: {
+        get: () => "application/json",
+      },
+      json: () => ({
+        ...issueCommented,
+        authToken: process.env.GITHUB_TOKEN,
+      }),
+    } as unknown as Request);
+    expect(result).toBeTruthy();
   });
 });
