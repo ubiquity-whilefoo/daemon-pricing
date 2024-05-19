@@ -1,10 +1,15 @@
-import { Env } from "./types/env";
-
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request): Promise<Response> {
     try {
-      console.log(request, env);
-      return new Response("ok\n", { status: 200, headers: { "content-type": "text/plain" } });
+      const contentType = request.headers.get("content-type");
+      if (contentType !== "application/json") {
+        return new Response(JSON.stringify({ error: `Error: ${contentType} is not a valid content type` }), {
+          status: 400,
+          headers: { "content-type": "application/json" },
+        });
+      }
+      console.log("Request:", await request.json());
+      return new Response(JSON.stringify("ok"), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
       return handleUncaughtError(error);
     }
