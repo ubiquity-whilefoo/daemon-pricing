@@ -56,10 +56,3 @@ export async function run(inputs: PluginInputs, env: Env) {
       context.logger.warn(`Event ${eventName} is not supported`);
   }
 }
-
-// run()
-//   .then((result) => core.setOutput("result", result))
-//   .catch((error) => {
-//     console.error(error);
-//     core.setFailed(error);
-//   });

@@ -12,6 +12,12 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
+jest.mock("@supabase/supabase-js", () => {
+  return {
+    createClient: jest.fn(),
+  };
+});
+
 describe("User tests", () => {
   beforeEach(() => {
     drop(db);
@@ -81,6 +87,6 @@ describe("User tests", () => {
         SUPABASE_KEY: "key",
       }
     );
-    expect(result).toBeTruthy();
+    expect(result.ok).toEqual(true);
   });
 });
