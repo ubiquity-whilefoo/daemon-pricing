@@ -1,6 +1,5 @@
 // import * as core from "@actions/core";
 import { Octokit } from "@octokit/rest";
-import { Value } from "@sinclair/typebox/value";
 // import * as github from "@actions/github";
 import { createClient } from "@supabase/supabase-js";
 import { createAdapters } from "./adapters";
@@ -9,11 +8,11 @@ import { watchLabelChange } from "./handlers/label-change";
 import { onLabelChangeSetPricing } from "./handlers/pricing-label";
 import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
 import { Context } from "./types/context";
-import { envSchema } from "./types/env";
+import { Env } from "./types/env";
 import { PluginInputs } from "./types/plugin-input";
 
-export async function run(inputs: PluginInputs) {
-  const env = Value.Decode(envSchema, process.env);
+export async function run(inputs: PluginInputs, env: Env) {
+  // const env = Value.Decode(envSchema, process.env);
 
   // const webhookPayload = github.context.payload.inputs;
   // const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));

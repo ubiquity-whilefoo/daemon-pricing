@@ -66,15 +66,21 @@ describe("User tests", () => {
   });
 
   it("Should handle the comment", async () => {
-    const result = await workerFetch.fetch({
-      headers: {
-        get: () => "application/json",
-      },
-      json: () => ({
-        ...issueCommented,
-        authToken: process.env.GITHUB_TOKEN,
-      }),
-    } as unknown as Request);
+    const result = await workerFetch.fetch(
+      {
+        headers: {
+          get: () => "application/json",
+        },
+        json: () => ({
+          ...issueCommented,
+          authToken: process.env.GITHUB_TOKEN,
+        }),
+      } as unknown as Request,
+      {
+        SUPABASE_URL: "url",
+        SUPABASE_KEY: "key",
+      }
+    );
     expect(result).toBeTruthy();
   });
 });

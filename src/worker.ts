@@ -1,7 +1,10 @@
+import { Value } from "@sinclair/typebox/value";
 import { run } from "./index";
+import { Env } from "./types/env";
+import { assistivePricingSettingsSchema } from "./types/plugin-input";
 
 export default {
-  async fetch(request: Request): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     try {
       const contentType = request.headers.get("content-type");
       if (contentType !== "application/json") {
@@ -10,10 +13,11 @@ export default {
           headers: { "content-type": "application/json" },
         });
       }
-      const body = await request.json();
-      body.eventPayload = JSON.parse(body.eventPayload);
-      body.settings = JSON.parse(body.settings);
-      const result = await run(body);
+      const webhookPayload = await request.json();
+      const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
+      webhookPayload.eventPayload = JSON.parse(webhookPayload.eventPayload);
+      webhookPayload.settings = settings;
+      const result = await run(webhookPayload, env);
       return new Response(JSON.stringify(result), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
       return handleUncaughtError(error);
