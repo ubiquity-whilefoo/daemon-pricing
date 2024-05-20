@@ -1,5 +1,5 @@
 import { Value } from "@sinclair/typebox/value";
-import { run } from "./index";
+import { run } from "./run";
 import { Env } from "./types/env";
 import { assistivePricingSettingsSchema } from "./types/plugin-input";
 

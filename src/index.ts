@@ -1,80 +1,33 @@
-// import * as core from "@actions/core";
-import { Octokit } from "@octokit/rest";
-// import * as github from "@actions/github";
-import { createClient } from "@supabase/supabase-js";
-import { createAdapters } from "./adapters";
-import { handleComment } from "./handlers/comment";
-import { watchLabelChange } from "./handlers/label-change";
-import { onLabelChangeSetPricing } from "./handlers/pricing-label";
-import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
-import { Context } from "./types/context";
-import { Env } from "./types/env";
-import { PluginInputs } from "./types/plugin-input";
+import * as github from "@actions/github";
+import * as core from "@actions/core";
+import { Value } from "@sinclair/typebox/value";
+import { envSchema } from "./types/env";
+import { assistivePricingSettingsSchema, PluginInputs } from "./types/plugin-input";
+import { run } from "./run";
 
-export async function run(inputs: PluginInputs, env: Env) {
-  // const env = Value.Decode(envSchema, process.env);
+/**
+ * Run the plugin as a GitHub Action instance.
+ */
+async function actionRun() {
+  const env = Value.Decode(envSchema, process.env);
 
-  // const webhookPayload = github.context.payload.inputs;
-  // const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
+  const webhookPayload = github.context.payload.inputs;
+  const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
 
-  // const inputs: PluginInputs = {
-  //   stateId: webhookPayload.stateId,
-  //   eventName: webhookPayload.eventName,
-  //   eventPayload: JSON.parse(webhookPayload.eventPayload),
-  //   settings: settings,
-  //   authToken: webhookPayload.authToken,
-  //   ref: webhookPayload.ref,
-  // };
-  const octokit = new Octokit({ auth: inputs.authToken });
-  const supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
-
-  const context: Context = {
-    eventName: inputs.eventName,
-    payload: inputs.eventPayload,
-    config: inputs.settings,
-    octokit,
-    logger: {
-      debug(message: unknown, ...optionalParams: unknown[]) {
-        console.debug(message, ...optionalParams);
-      },
-      info(message: unknown, ...optionalParams: unknown[]) {
-        console.log(message, ...optionalParams);
-      },
-      warn(message: unknown, ...optionalParams: unknown[]) {
-        console.warn(message, ...optionalParams);
-      },
-      error(message: unknown, ...optionalParams: unknown[]) {
-        console.error(message, ...optionalParams);
-      },
-      fatal(message: unknown, ...optionalParams: unknown[]) {
-        console.error(message, ...optionalParams);
-      },
-    },
-    adapters: {} as ReturnType<typeof createAdapters>,
+  const inputs: PluginInputs = {
+    stateId: webhookPayload.stateId,
+    eventName: webhookPayload.eventName,
+    eventPayload: JSON.parse(webhookPayload.eventPayload),
+    settings: settings,
+    authToken: webhookPayload.authToken,
+    ref: webhookPayload.ref,
   };
-  context.adapters = createAdapters(supabaseClient, context);
-
-  const eventName = inputs.eventName;
-  switch (eventName) {
-    case "issues.labeled":
-    case "issues.unlabeled":
-      await syncPriceLabelsToConfig(context);
-      await onLabelChangeSetPricing(context);
-      break;
-    case "label.edited":
-      await watchLabelChange(context);
-      break;
-    case "issue_comment.created":
-      await handleComment(context);
-      break;
-    default:
-      context.logger.warn(`Event ${eventName} is not supported`);
-  }
+  await run(inputs, env);
 }
 
-// run()
-//   .then((result) => core.setOutput("result", result))
-//   .catch((error) => {
-//     console.error(error);
-//     core.setFailed(error);
-//   });
+actionRun()
+  .then((result) => core.setOutput("result", result))
+  .catch((error) => {
+    console.error(error);
+    core.setFailed(error);
+  });
