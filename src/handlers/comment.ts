@@ -32,7 +32,7 @@ export async function handleComment(context: Context) {
 
   const payload = context.payload;
   const sender = payload.sender.login;
-  const body = payload.comment.body;
+  const body = payload.comment.body.trim();
 
   if (!isValidCommand(body)) {
     return logger.debug("Not a valid command.");
