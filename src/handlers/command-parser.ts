@@ -11,6 +11,19 @@ export interface CommandArguments {
   command: AllowedCommand;
 }
 
+/**
+ * Checks if the given string is a potential valid command, by checking if it starts with a slash character and is
+ * contained within the list of allowed commands.
+ */
+export function isValidCommand(command: string) {
+  const match = command.match(/^\/\S+/);
+
+  if (!match) {
+    return false;
+  }
+  return allowedCommands.includes(match[0].slice(1) as AllowedCommand);
+}
+
 function parseUser(value: string) {
   if (!value.length || value.length < 2) {
     throw new InvalidArgumentError("Username should be at least 2 characters long.");
