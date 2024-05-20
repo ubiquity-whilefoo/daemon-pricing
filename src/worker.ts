@@ -17,8 +17,8 @@ export default {
       const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
       webhookPayload.eventPayload = JSON.parse(webhookPayload.eventPayload);
       webhookPayload.settings = settings;
-      const result = await run(webhookPayload, env);
-      return new Response(JSON.stringify(result), { status: 200, headers: { "content-type": "application/json" } });
+      await run(webhookPayload, env);
+      return new Response(JSON.stringify("OK"), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
       return handleUncaughtError(error);
     }
