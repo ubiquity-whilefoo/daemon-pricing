@@ -13,7 +13,6 @@ export default {
       const body = await request.json();
       body.eventPayload = JSON.parse(body.eventPayload);
       body.settings = JSON.parse(body.settings);
-      console.log("Request:", body);
       const result = await run(body);
       return new Response(JSON.stringify(result), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
