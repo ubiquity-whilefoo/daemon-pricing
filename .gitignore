@@ -11,3 +11,5 @@ static/dist
 coverage
 junit.xml
 cypress/screenshots
+
+.dev.vars

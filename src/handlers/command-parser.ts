@@ -46,4 +46,20 @@ const commandParser = new Command()
   .exitOverride()
   .version(packageJson.version);
 
+// Overrides to make sure we do not use TTY outputs as they are not available outside Node.js env
+commandParser.configureOutput({
+  writeOut(str: string) {
+    console.log(str);
+  },
+  writeErr(str: string) {
+    console.error(str);
+  },
+  getErrHelpWidth(): number {
+    return 0;
+  },
+  getOutHelpWidth(): number {
+    return 0;
+  },
+});
+
 export default commandParser;
