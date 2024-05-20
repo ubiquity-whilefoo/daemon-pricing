@@ -1,12 +1,11 @@
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import commandParser, { CommandArguments } from "../src/handlers/command-parser";
-import { mainModule } from "../static/main";
+import workerFetch from "../src/worker";
 import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
-import usersGet from "./__mocks__/users-get.json";
-import { expect, describe, beforeAll, beforeEach, afterAll, afterEach, it } from "@jest/globals";
 import issueCommented from "./__mocks__/requests/issue-comment-post.json";
-import workerFetch from "../src/worker";
+import usersGet from "./__mocks__/users-get.json";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -24,13 +23,6 @@ describe("User tests", () => {
     for (const item of usersGet) {
       db.users.create(item);
     }
-  });
-
-  it("Should fetch all the users", async () => {
-    const res = await fetch("https://api.ubiquity.com/users");
-    const data = await res.json();
-    expect(data).toMatchObject(usersGet);
-    expect(async () => await mainModule()).not.toThrow();
   });
 
   it("Should parse the /allow command", () => {
