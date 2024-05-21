@@ -33,20 +33,6 @@ export async function createLabel(context: Context, name: string, labelType = "d
   });
 }
 
-export async function deleteLabel(context: Context, name: string) {
-  const payload = context.payload;
-
-  try {
-    await context.octokit.issues.deleteLabel({
-      owner: payload.repository.owner.login,
-      repo: payload.repository.name,
-      name,
-    });
-  } catch (e: unknown) {
-    context.logger.fatal("Removing label failed!", e);
-  }
-}
-
 export async function clearAllPriceLabelsOnIssue(context: Context) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
