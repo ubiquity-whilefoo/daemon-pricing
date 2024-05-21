@@ -5,7 +5,7 @@ const config: KnipConfig = {
   project: ["src/**/*.ts"],
   ignore: ["src/types/config.ts"],
   ignoreExportsUsedInFile: true,
-  ignoreDependencies: ["ts-node"],
+  ignoreDependencies: ["ts-node", "@types/jest"],
 };
 
 export default config;
