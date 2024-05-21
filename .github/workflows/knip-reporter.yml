@@ -6,6 +6,9 @@ on:
     types:
       - completed
 
+permissions:
+  issues: write
+
 jobs:
   knip-reporter:
     runs-on: ubuntu-latest
