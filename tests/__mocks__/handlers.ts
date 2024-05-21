@@ -4,7 +4,7 @@ import { http, HttpResponse } from "msw";
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
-  http.get("https://api.github.com/repos/Meniole/bot/collaborators/:user/permission", () => {
+  http.get("https://api.github.com/repos/:repo/bot/collaborators/:user/permission", () => {
     return HttpResponse.json();
   }),
   http.get("https://api.github.com/orgs/:org/members/:user", () => {
