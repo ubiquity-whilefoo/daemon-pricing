@@ -53,7 +53,7 @@ looking like
   "ref": ""
 }
 ```
-For convenience you can find an `.http` file with a valid requests [here](/tests/http/request.http).
+For convenience you can find an `.http` file with a valid request [here](/tests/http/request.http).
 
 ## Testing
 
