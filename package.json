@@ -19,8 +19,6 @@
     "knip-ci": "knip --no-exit-code --reporter json --config .github/knip.ts",
     "prepare": "husky install",
     "test": "jest --setupFiles dotenv/config --coverage",
-    "cy:open": "cypress open",
-    "cy:run": "cypress run",
     "supabase:generate:local": "supabase gen types typescript --local > src/adapters/supabase/types/database.ts",
     "supabase:generate:remote": "dotenv -- cross-env-shell supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > src/adapters/supabase/types/database.ts"
   },
@@ -56,7 +54,6 @@
     "@typescript-eslint/parser": "^7.0.1",
     "cross-env": "7.0.3",
     "cspell": "^8.4.0",
-    "cypress": "13.6.6",
     "dotenv-cli": "7.4.2",
     "eslint": "^8.56.0",
     "eslint-plugin-sonarjs": "^0.24.0",

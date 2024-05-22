@@ -3,9 +3,9 @@
 Helps settings prices and adds label to the issues accordingly.
 
 ## Usage
-
+Example of valid configuration:
 ```yml
- - plugin: ubiquibot/assistive-pricing@main
+ - plugin: https://ubiquibot-assistive-pricing.ubq.fi
    type: github
    with:
      labels:
@@ -26,6 +26,34 @@ Helps settings prices and adds label to the issues accordingly.
        setLabel: true
        fundExternalClosedIssue: false
 ```
+
+## Running locally
+### Supabase
+Supabase can be started through the CLI running
+```shell
+supabase start
+```
+
+### Worker
+Start the Worker by running
+```shell
+yarn worker
+```
+
+### Make requests
+To trigger the worker, `POST` requests should be made to http://localhost:4000 with a `Content-Type: application/json` 
+header and a body 
+looking like
+```json
+{
+  "stateId": "",
+  "eventName": "",
+  "eventPayload": "",
+  "settings": "",
+  "ref": ""
+}
+```
+For convenience you can find an `.http` file with a valid requests [here](/tests/http/http-client.private.env.json).
 
 ## Testing
 
