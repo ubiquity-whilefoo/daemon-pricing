@@ -29,6 +29,23 @@ export function setPrice(context: Context, timeLabel: Label, priorityLabel: Labe
   return `Price: ${taskPrice} USD`;
 }
 
+// export function calculateDurations(labels: Label[]): number[] {
+//   // from shortest to longest
+//   const durations: number[] = [];
+//
+//   labels.forEach((label: Label) => {
+//     const matches = label.name.match(/<(\d+)\s*(\w+)/);
+//     if (matches && matches.length >= 3) {
+//       const number = parseInt(matches[1]);
+//       const unit = matches[2];
+//       const duration = ms(`${number} ${unit}`) / 1000;
+//       durations.push(duration);
+//     }
+//   });
+//
+//   return durations.sort((a, b) => a - b);
+// }
+
 export function calculateLabelValue(label: string): number {
   const matches = label.match(/\d+/);
   const number = matches && matches.length > 0 ? parseInt(matches[0]) || 0 : 0;
