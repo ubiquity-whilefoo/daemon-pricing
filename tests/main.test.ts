@@ -73,6 +73,7 @@ describe("User tests", () => {
           ...issueCommented,
           authToken: process.env.GITHUB_TOKEN,
         }),
+        method: "POST",
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -80,5 +81,18 @@ describe("User tests", () => {
       }
     );
     expect(result.ok).toEqual(true);
+  });
+
+  it("Should deny non POST request", async () => {
+    const result = await workerFetch.fetch(
+      {
+        method: "POST",
+      } as unknown as Request,
+      {
+        SUPABASE_URL: "url",
+        SUPABASE_KEY: "key",
+      }
+    );
+    expect(result.ok).toEqual(false);
   });
 });
