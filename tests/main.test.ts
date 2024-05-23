@@ -86,7 +86,7 @@ describe("User tests", () => {
   it("Should deny non POST request", async () => {
     const result = await workerFetch.fetch(
       {
-        method: "POST",
+        method: "GET",
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -94,5 +94,6 @@ describe("User tests", () => {
       }
     );
     expect(result.ok).toEqual(false);
+    expect(result.status).toEqual(405);
   });
 });
