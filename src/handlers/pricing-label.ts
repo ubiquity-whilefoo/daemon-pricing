@@ -1,7 +1,7 @@
 import { Context } from "../types/context";
 
 import { createLabel, listLabelsForRepo, addLabelToIssue, clearAllPriceLabelsOnIssue } from "../shared/label";
-import { Label } from "../types/github";
+import { Label, UserType } from "../types/github";
 import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { setPrice } from "../shared/pricing";
 import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
@@ -131,7 +131,7 @@ async function handleExistingPriceLabel(context: Context, targetPriceLabel: stri
   labeledEvents = labeledEvents.filter((event) => "label" in event && event.label.name.includes("Price"));
   if (!labeledEvents.length) return logger.error("No price labeled events found");
 
-  if (labeledEvents[labeledEvents.length - 1].actor?.type == "User") {
+  if (labeledEvents[labeledEvents.length - 1].actor?.type == UserType.User) {
     logger.info(`Skipping... already exists`);
   } else {
     await addPriceLabelToIssue(context, targetPriceLabel);
@@ -141,20 +141,6 @@ async function handleExistingPriceLabel(context: Context, targetPriceLabel: stri
 async function addPriceLabelToIssue(context: Context, targetPriceLabel: string) {
   await clearAllPriceLabelsOnIssue(context);
   await addLabelToIssue(context, targetPriceLabel);
-}
-
-export async function labelExists(context: Context, name: string): Promise<boolean> {
-  const payload = context.payload;
-  try {
-    await context.octokit.rest.issues.getLabel({
-      owner: payload.repository.owner.login,
-      repo: payload.repository.name,
-      name,
-    });
-    return true;
-  } catch (error) {
-    return false;
-  }
 }
 
 async function getAllLabeledEvents(context: Context) {

@@ -1,7 +1,7 @@
 import { addCommentToIssue, isUserAdminOrBillingManager } from "../shared/issue";
 import { Context } from "../types/context";
 import { isCommentEvent } from "../types/typeguards";
-import commandParser, { AllowedCommand, CommandArguments } from "./command-parser";
+import commandParser, { AllowedCommand, CommandArguments, isValidCommand } from "./command-parser";
 
 const commandHandlers: { [k in AllowedCommand]: (context: Context, commandArguments: CommandArguments) => Promise<void> } = {
   async allow(context, { username, labels }: CommandArguments) {
@@ -32,7 +32,11 @@ export async function handleComment(context: Context) {
 
   const payload = context.payload;
   const sender = payload.sender.login;
-  const body = payload.comment.body;
+  const body = payload.comment.body.trim();
+
+  if (!isValidCommand(body)) {
+    return logger.debug("Not a valid command.");
+  }
 
   const sufficientPrivileges = await isUserAdminOrBillingManager(context, sender);
   if (!sufficientPrivileges) {
@@ -46,7 +50,8 @@ export async function handleComment(context: Context) {
     await addCommentToIssue(
       context,
       `\`\`\`
-Error: ${e}
+assistive-pricing plugin failed to run.
+${e}
 
 ${commandParser.helpInformation()}
 \`\`\``,
