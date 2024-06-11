@@ -6,6 +6,19 @@ import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
 import issueCommented from "./__mocks__/requests/issue-comment-post.json";
 import usersGet from "./__mocks__/users-get.json";
+import * as crypto from "crypto";
+
+const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+  modulusLength: 2048,
+  publicKeyEncoding: {
+    type: "spki",
+    format: "pem",
+  },
+  privateKeyEncoding: {
+    type: "pkcs8",
+    format: "pem",
+  },
+});
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -64,20 +77,30 @@ describe("User tests", () => {
   });
 
   it("Should handle the comment", async () => {
+    const data = {
+      ...issueCommented,
+      authToken: process.env.GITHUB_TOKEN,
+    };
+    const sign = crypto.createSign("SHA256");
+    sign.update(JSON.stringify(data));
+    sign.end();
+    const signature = sign.sign(privateKey, "base64");
+
     const result = await workerFetch.fetch(
       {
         headers: {
           get: () => "application/json",
         },
         json: () => ({
-          ...issueCommented,
-          authToken: process.env.GITHUB_TOKEN,
+          ...data,
+          signature,
         }),
         method: "POST",
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
         SUPABASE_KEY: "key",
+        UBIQUIBOT_PUBLIC_KEY: publicKey,
       }
     );
     expect(result.ok).toEqual(true);
@@ -91,6 +114,7 @@ describe("User tests", () => {
       {
         SUPABASE_URL: "url",
         SUPABASE_KEY: "key",
+        UBIQUIBOT_PUBLIC_KEY: "key",
       }
     );
     expect(result.ok).toEqual(false);
