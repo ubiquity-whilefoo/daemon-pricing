@@ -19,9 +19,9 @@ export default {
           headers: { "content-type": "application/json" },
         });
       }
-      if (!envConfigValidator.test(process.env)) {
+      if (!envConfigValidator.test(env)) {
         const errorDetails: string[] = [];
-        for (const error of envConfigValidator.errors(process.env)) {
+        for (const error of envConfigValidator.errors(env)) {
           errorDetails.push(`${error.path}: ${error.message}`);
         }
         return new Response(JSON.stringify({ error: `The environment is invalid: ${errorDetails.join("; ")}` }), {
