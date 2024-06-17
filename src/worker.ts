@@ -1,6 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import { run } from "./run";
-import { Env } from "./types/env";
+import { Env, envConfigValidator } from "./types/env";
 import { assistivePricingSettingsSchema } from "./types/plugin-input";
 
 export default {
@@ -15,6 +15,16 @@ export default {
       const contentType = request.headers.get("content-type");
       if (contentType !== "application/json") {
         return new Response(JSON.stringify({ error: `Error: ${contentType} is not a valid content type` }), {
+          status: 400,
+          headers: { "content-type": "application/json" },
+        });
+      }
+      if (!envConfigValidator.test(process.env)) {
+        const errorDetails: string[] = [];
+        for (const error of envConfigValidator.errors(process.env)) {
+          errorDetails.push(`${error.path}: ${error.message}`);
+        }
+        return new Response(JSON.stringify({ error: `The environment is invalid: ${errorDetails.join("; ")}` }), {
           status: 400,
           headers: { "content-type": "application/json" },
         });
