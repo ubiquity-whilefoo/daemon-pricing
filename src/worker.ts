@@ -34,12 +34,11 @@ export default {
       delete webhookPayload.signature;
       if (!(await verifySignature(env.UBIQUIBOT_PUBLIC_KEY, webhookPayload, signature))) {
         return new Response(JSON.stringify({ error: `Error: Signature verification failed` }), {
-          status: 400,
+          status: 403,
           headers: { "content-type": "application/json" },
         });
       }
-      const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, webhookPayload.settings));
-      webhookPayload.settings = settings;
+      webhookPayload.settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, webhookPayload.settings));
       await run(webhookPayload, env);
       return new Response(JSON.stringify("OK"), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
