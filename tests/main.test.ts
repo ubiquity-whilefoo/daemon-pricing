@@ -138,7 +138,7 @@ describe("User tests", () => {
     expect(result.ok).toEqual(false);
     expect(result.status).toEqual(400);
     expect(await result.json()).toEqual({
-      error: "The environment is invalid: /UBIQUIBOT_PUBLIC_KEY: Required property; /UBIQUIBOT_PUBLIC_KEY: Expected string",
+      error: "Bad Request: the environment is invalid: /UBIQUIBOT_PUBLIC_KEY: Required property; /UBIQUIBOT_PUBLIC_KEY: Expected string",
     });
   });
 });
