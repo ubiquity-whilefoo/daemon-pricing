@@ -14,7 +14,7 @@ export default {
       }
       const contentType = request.headers.get("content-type");
       if (contentType !== "application/json") {
-        return new Response(JSON.stringify({ error: `Error: ${contentType} is not a valid content type` }), {
+        return new Response(JSON.stringify({ error: `Bad request: ${contentType} is not a valid content type` }), {
           status: 400,
           headers: { "content-type": "application/json" },
         });
@@ -24,7 +24,7 @@ export default {
         for (const error of envConfigValidator.errors(env)) {
           errorDetails.push(`${error.path}: ${error.message}`);
         }
-        return new Response(JSON.stringify({ error: `The environment is invalid: ${errorDetails.join("; ")}` }), {
+        return new Response(JSON.stringify({ error: `Bad Request: the environment is invalid. ${errorDetails.join("; ")}` }), {
           status: 400,
           headers: { "content-type": "application/json" },
         });
@@ -33,7 +33,7 @@ export default {
       const signature = webhookPayload.signature;
       delete webhookPayload.signature;
       if (!(await verifySignature(env.UBIQUIBOT_PUBLIC_KEY, webhookPayload, signature))) {
-        return new Response(JSON.stringify({ error: `Error: Signature verification failed` }), {
+        return new Response(JSON.stringify({ error: `Forbidden: Signature verification failed` }), {
           status: 403,
           headers: { "content-type": "application/json" },
         });
