@@ -14,7 +14,9 @@ export async function watchLabelChange(context: Context) {
 
   const previousLabel = changes?.name?.from;
   if (!previousLabel) {
-    throw logger.error("previous label name is undefined");
+    const errorMessage = "previous label name is undefined";
+    logger.error(errorMessage);
+    throw new Error(errorMessage);
   }
   const currentLabel = label?.name;
   const triggerUser = sender.login;

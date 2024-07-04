@@ -1,11 +1,12 @@
 import { http, HttpResponse } from "msw";
-import { db } from "./db";
 
 /**
  * Intercepts the routes and returns a custom payload
  */
 export const handlers = [
-  http.get("https://api.ubiquity.com/users", () => {
-    return HttpResponse.json(db.users.getAll());
-  }),
+  http.get("https://api.github.com/repos/:repo/bot/collaborators/:user/permission", () => HttpResponse.json()),
+  http.get("https://api.github.com/orgs/:org/members/:user", () => HttpResponse.json()),
+  http.post("https://api.github.com/repos/:org/:repo/issues/:id/comments", () => HttpResponse.json()),
+  http.get("https://api.github.com/users/:user", () => HttpResponse.json()),
+  http.get("https://api.github.com/orgs/:org/memberships/:user", () => HttpResponse.json()),
 ];
