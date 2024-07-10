@@ -5,7 +5,7 @@
     {
       "command": "/allow",
       "example": "/allow @user1 label",
-      "description": "Allows the @user1 to modify the label called 'label'."
+      "description": "Allows the user to modify the given label."
     }
   ]
 }
