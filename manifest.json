@@ -1,0 +1,11 @@
+{
+  "name": "Assistive pricing",
+  "description": "Handles assistive pricing, and allows for users to modify labels.",
+  "commands": [
+    {
+      "command": "/allow",
+      "example": "/allow @user1 label",
+      "description": "Allows the @user1 to modify the label called 'label'."
+    }
+  ]
+}
