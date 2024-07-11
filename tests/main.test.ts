@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import commandParser, { CommandArguments } from "../src/handlers/command-parser";
+import { Env } from "../src/types/env";
 import workerFetch from "../src/worker";
 import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
@@ -119,5 +120,25 @@ describe("User tests", () => {
     );
     expect(result.ok).toEqual(false);
     expect(result.status).toEqual(405);
+  });
+
+  it("Should reject an invalid environment", async () => {
+    const result = await workerFetch.fetch(
+      {
+        method: "POST",
+        headers: {
+          get: () => "application/json",
+        },
+      } as unknown as Request,
+      {
+        SUPABASE_URL: "url",
+        SUPABASE_KEY: "key",
+      } as unknown as Env
+    );
+    expect(result.ok).toEqual(false);
+    expect(result.status).toEqual(400);
+    expect(await result.json()).toEqual({
+      error: "Bad Request: the environment is invalid. /UBIQUIBOT_PUBLIC_KEY: Required property; /UBIQUIBOT_PUBLIC_KEY: Expected string",
+    });
   });
 });
