@@ -1,10 +1,10 @@
 {
   "name": "Assistive pricing",
   "description": "Handles assistive pricing, and allows for users to modify labels.",
-  "ubiquibot:listeners": [ "issues.labeled", "issues.unlabeled", "label.edited", "issue_comment.created" ],
+  "ubiquity:listeners": [ "issues.labeled", "issues.unlabeled", "label.edited", "issue_comment.created" ],
   "commands": {
     "allow": {
-      "example": "/allow @user1 label",
+      "ubiquity:example": "/allow @user1 label",
       "description": "Allows the user to modify the given label."
     }
   }
