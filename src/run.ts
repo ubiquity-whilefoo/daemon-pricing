@@ -52,6 +52,9 @@ export async function run(inputs: PluginInputs, env: Env) {
     case "issue_comment.created":
       await handleComment(context);
       break;
+    case "push":
+      () => { };
+      break;
     default:
       context.logger.warn(`Event ${eventName} is not supported`);
   }

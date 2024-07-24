@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { AssistivePricingSettings } from "./plugin-input";
 import { createAdapters } from "../adapters";
 
-export type SupportedEvents = "issues.labeled" | "issues.unlabeled" | "label.edited" | "issue_comment.created";
+export type SupportedEvents = "issues.labeled" | "issues.unlabeled" | "label.edited" | "issue_comment.created" | "push";
 
 export interface Context<T extends WebhookEventName = SupportedEvents> {
   eventName: T;

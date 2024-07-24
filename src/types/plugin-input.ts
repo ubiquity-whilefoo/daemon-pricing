@@ -30,3 +30,8 @@ export const assistivePricingSettingsSchema = T.Object({
 });
 
 export type AssistivePricingSettings = StaticDecode<typeof assistivePricingSettingsSchema>;
+
+export type Rates = {
+  previousBaseRate: number | null;
+  newBaseRate: number | null;
+};
