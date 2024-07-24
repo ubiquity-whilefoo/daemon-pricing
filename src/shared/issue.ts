@@ -42,7 +42,7 @@ export async function addCommentToIssue(context: Context, message: string, issue
   const payload = context.payload;
   try {
     await context.octokit.issues.createComment({
-      owner: owner ?? payload.repository.owner?.login as string,
+      owner: owner ?? (payload.repository.owner?.login as string),
       repo: repo ?? payload.repository.name,
       issue_number: issueNumber,
       body: message,
