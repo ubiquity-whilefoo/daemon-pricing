@@ -3,9 +3,9 @@ import { Octokit } from "@octokit/rest";
 import { AssistivePricingSettings } from "./plugin-input";
 import { createAdapters } from "../adapters";
 
-export type SupportedEvents = "issues.labeled" | "issues.unlabeled" | "label.edited" | "issue_comment.created" | "push";
+export type SupportedEvents = "issues.labeled" | "issues.unlabeled" | "label.edited" | "issue_comment.created" | "push" | "issue_comment" // last one is needed to satisfy typeguard constraints
 
-export interface Context<T extends WebhookEventName = SupportedEvents> {
+export interface Context<T extends SupportedEvents = SupportedEvents> {
   eventName: T;
   payload: WebhookEvent<T>["payload"];
   octokit: InstanceType<typeof Octokit>;

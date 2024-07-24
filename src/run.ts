@@ -8,6 +8,8 @@ import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
 import { Context } from "./types/context";
 import { Env } from "./types/env";
 import { PluginInputs } from "./types/plugin-input";
+import { globalLabelUpdate } from "./handlers/global-config-update";
+import { isIssueLabelEvent } from "./types/typeguards";
 
 export async function run(inputs: PluginInputs, env: Env) {
   const octokit = new Octokit({ auth: inputs.authToken });
@@ -43,8 +45,10 @@ export async function run(inputs: PluginInputs, env: Env) {
   switch (eventName) {
     case "issues.labeled":
     case "issues.unlabeled":
-      await syncPriceLabelsToConfig(context);
-      await onLabelChangeSetPricing(context);
+      if (isIssueLabelEvent(context)) {
+        await syncPriceLabelsToConfig(context);
+        await onLabelChangeSetPricing(context);
+      }
       break;
     case "label.edited":
       await watchLabelChange(context);
@@ -53,7 +57,7 @@ export async function run(inputs: PluginInputs, env: Env) {
       await handleComment(context);
       break;
     case "push":
-      () => { };
+      await globalLabelUpdate(context);
       break;
     default:
       context.logger.warn(`Event ${eventName} is not supported`);

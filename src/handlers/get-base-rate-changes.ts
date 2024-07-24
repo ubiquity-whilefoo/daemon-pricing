@@ -1,20 +1,31 @@
 import { Context } from "../types/context";
 import { Rates } from "../types/plugin-input";
+import { isPushEvent } from "../types/typeguards";
 
 /**
  * Parses the diff of changes to the org config file to find the old and new base rates.
  *
  * This will capture changes to either the plugin's config or the global basePriceMultiplier.
  */
-export async function getBaseRateChanges(context: Context<"push">, owner: string, repo: string): Promise<Rates> {
-  const logger = context.logger;
-  const commitSha = context.payload.head_commit?.id;
+export async function getBaseRateChanges(context: Context): Promise<Rates> {
+  if (!isPushEvent(context)) {
+    context.logger.debug("Not a push event");
+    return {
+      previousBaseRate: null,
+      newBaseRate: null,
+    };
+  }
+  const {
+    logger,
+    payload: { repository, head_commit: headCommit },
+  } = context;
+  const commitSha = headCommit?.id;
   let commitData;
 
   try {
     commitData = await context.octokit.repos.getCommit({
-      owner,
-      repo,
+      owner: repository.owner?.login as string,
+      repo: repository.name,
       ref: commitSha as string,
       mediaType: {
         format: "diff",
