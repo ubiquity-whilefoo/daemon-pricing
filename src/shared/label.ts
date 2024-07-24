@@ -9,7 +9,7 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
   const payload = context.payload;
 
   const res = await context.octokit.rest.issues.listLabelsForRepo({
-    owner: payload.repository.owner.login,
+    owner: payload.repository.owner?.login as string,
     repo: payload.repository.name,
     per_page: 100,
     page: 1,
@@ -19,14 +19,14 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
     return res.data;
   }
 
-  throw context.logger.fatal("Failed to fetch lists of labels", { status: res.status });
+  throw context.logger.error("Failed to fetch lists of labels", { status: res.status });
 }
 
 export async function createLabel(context: Context, name: string, labelType = "default" as keyof typeof COLORS): Promise<void> {
   const payload = context.payload;
 
   await context.octokit.rest.issues.createLabel({
-    owner: payload.repository.owner.login,
+    owner: payload.repository.owner?.login as string,
     repo: payload.repository.name,
     name,
     color: COLORS[labelType],
@@ -53,7 +53,7 @@ export async function clearAllPriceLabelsOnIssue(context: Context) {
         name: label.name,
       });
     } catch (e: unknown) {
-      context.logger.fatal("Clearing all price labels failed!", e);
+      context.logger.error("Clearing all price labels failed!", e);
     }
   }
 }
@@ -72,7 +72,7 @@ export async function addLabelToIssue(context: Context, labelName: string) {
       labels: [labelName],
     });
   } catch (e: unknown) {
-    context.logger.fatal("Adding a label to issue failed!", e);
+    context.logger.error("Adding a label to issue failed!", e);
   }
 }
 
@@ -90,6 +90,6 @@ export async function removeLabelFromIssue(context: Context, labelName: string) 
       name: labelName,
     });
   } catch (e: unknown) {
-    context.logger.fatal("Adding a label to issue failed!", e);
+    context.logger.error("Adding a label to issue failed!", e);
   }
 }

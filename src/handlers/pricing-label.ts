@@ -3,7 +3,7 @@ import { Context } from "../types/context";
 import { createLabel, listLabelsForRepo, addLabelToIssue, clearAllPriceLabelsOnIssue } from "../shared/label";
 import { Label, UserType } from "../types/github";
 import { labelAccessPermissionsCheck } from "../shared/permissions";
-import { setPrice } from "../shared/pricing";
+import { getPrice } from "../shared/pricing";
 import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
 import { AssistivePricingSettings } from "../types/plugin-input";
 import { isIssueLabelEvent } from "../types/typeguards";
@@ -47,7 +47,7 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
     if (smallestPriceLabelName) {
       for (const label of sortedPriceLabels) {
         await context.octokit.issues.removeLabel({
-          owner: payload.repository.owner.login,
+          owner: payload.repository.owner?.login as string,
           repo: payload.repository.name,
           issue_number: payload.issue.number,
           name: label.name,
@@ -61,7 +61,7 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
   await setPriceLabel(context, labels, config);
 }
 
-async function setPriceLabel(context: Context, issueLabels: Label[], config: AssistivePricingSettings) {
+export async function setPriceLabel(context: Context, issueLabels: Label[], config: AssistivePricingSettings) {
   const logger = context.logger;
   const labelNames = issueLabels.map((i) => i.name);
 
@@ -80,7 +80,7 @@ async function setPriceLabel(context: Context, issueLabels: Label[], config: Ass
     return;
   }
 
-  const targetPriceLabel = setPrice(context, minLabels.time, minLabels.priority);
+  const targetPriceLabel = getPrice(context, minLabels.time, minLabels.priority);
 
   if (targetPriceLabel) {
     await handleTargetPriceLabel(context, targetPriceLabel, labelNames);
@@ -163,7 +163,7 @@ async function getAllIssueEvents(context: Context) {
       per_page: 100,
     });
   } catch (err: unknown) {
-    context.logger.fatal("Failed to fetch lists of events", err);
+    context.logger.error("Failed to fetch lists of events", err);
     return [];
   }
 }

@@ -2,7 +2,7 @@ import { Context } from "../types/context";
 
 async function checkIfIsAdmin(context: Context, username: string) {
   const response = await context.octokit.rest.repos.getCollaboratorPermissionLevel({
-    owner: context.payload.repository.owner.login,
+    owner: context.payload.repository.owner?.login as string,
     repo: context.payload.repository.name,
     username,
   });
@@ -10,7 +10,7 @@ async function checkIfIsAdmin(context: Context, username: string) {
 }
 
 async function checkIfIsBillingManager(context: Context, username: string) {
-  if (!context.payload.organization) throw context.logger.fatal(`No organization found in payload!`);
+  if (!context.payload.organization) throw context.logger.error(`No organization found in payload!`);
 
   try {
     await context.octokit.rest.orgs.checkMembershipForUser({
@@ -42,12 +42,27 @@ export async function addCommentToIssue(context: Context, message: string, issue
   const payload = context.payload;
   try {
     await context.octokit.issues.createComment({
-      owner: owner ?? payload.repository.owner.login,
+      owner: owner ?? payload.repository.owner?.login as string,
       repo: repo ?? payload.repository.name,
       issue_number: issueNumber,
       body: message,
     });
   } catch (e: unknown) {
-    context.logger.fatal("Adding a comment failed!", e);
+    context.logger.error("Adding a comment failed!", e);
   }
+}
+
+export async function listOrgRepos(context: Context) {
+  const response = await context.octokit.rest.repos.listForOrg({
+    org: context.payload.organization?.login as string,
+  });
+  return response.data;
+}
+
+export async function listRepoIssues(context: Context, owner: string, repo: string) {
+  const response = await context.octokit.rest.issues.listForRepo({
+    owner,
+    repo,
+  });
+  return response.data;
 }
