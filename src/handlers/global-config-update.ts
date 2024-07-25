@@ -4,16 +4,52 @@ import { Context } from "../types/context";
 import { syncPriceLabelsToConfig } from "./sync-labels-to-config";
 import { setPriceLabel } from "./pricing-label";
 import { isPushEvent } from "../types/typeguards";
-import { listOrgRepos, listRepoIssues } from "../shared/issue";
+import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
 import { Label } from "../types/github";
+
+export async function isAuthed(context: Context): Promise<boolean> {
+  if (!isPushEvent(context)) {
+    context.logger.debug("Not a push event");
+    return false;
+  }
+
+  const { payload } = context;
+
+  // who triggered the event
+  const sender = payload.sender?.login as string;
+  // who pushed the code
+  const pusher = payload.pusher?.name;
+
+  const isPusherAuthed = await isUserAdminOrBillingManager(context, pusher)
+  const isSenderAuthed = await isUserAdminOrBillingManager(context, sender);
+
+  if (!isPusherAuthed) {
+    context.logger.error("Pusher is not an admin or billing manager");
+  }
+
+  if (!isSenderAuthed) {
+    context.logger.error("Sender is not an admin or billing manager");
+  }
+
+  if (!isPusherAuthed || !isSenderAuthed) {
+    return false;
+  }
+
+  return true;
+}
 
 export async function globalLabelUpdate(context: Context) {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return;
   }
-  const shouldUpdate = checkModifiedBaseRate(context);
-  if (!shouldUpdate) {
+
+  if (!await isAuthed(context)) {
+    context.logger.warn("Changes should be pushed and triggered by an admin or billing manager.");
+    return;
+  }
+
+  if (!await checkModifiedBaseRate(context)) {
     return;
   }
 
