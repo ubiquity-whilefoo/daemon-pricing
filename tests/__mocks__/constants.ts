@@ -66,6 +66,7 @@ export const CREATED_NEW_LABEL = "Created new price label";
 export const PUSHER_NOT_AUTHED = "Pusher is not an admin or billing manager";
 export const SENDER_NOT_AUTHED = "Sender is not an admin or billing manager";
 export const NO_RECOGNIZED_LABELS = "No recognized labels to calculate price";
+export const NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANANGER = "Changes should be pushed and triggered by an admin or billing manager.";
 export const UBQ_EMAIL = "ubiquity@ubq";
 export const authedUser = {
   email: UBQ_EMAIL,

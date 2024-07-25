@@ -159,8 +159,8 @@ export const handlers = [
     return HttpResponse.json(labels);
   }),
   // get collaborator permission
-  http.get("https://api.github.com/repos/:owner/:repo/collaborators/:user/permission", ({ params: { username } }) => {
-    switch (username) {
+  http.get("https://api.github.com/repos/:owner/:repo/collaborators/:user/permission", ({ params: { user } }) => {
+    switch (user) {
       case "ubiquity":
       case "gentlementlegen":
         return HttpResponse.json({ permission: "admin" });
@@ -172,10 +172,8 @@ export const handlers = [
   }),
   // get membership
   http.get("https://api.github.com/orgs/:org/memberships/:username", ({ params: { username } }) => {
-    console.log("emberships/:username username", username);
     switch (username) {
       case "ubiquity":
-        return HttpResponse.json({ role: "admin" });
       case "gentlementlegen":
         return HttpResponse.json({ role: "admin" });
       case "billing":

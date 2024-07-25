@@ -9,6 +9,7 @@ import { Octokit } from "@octokit/rest";
 import {
     CONFIG_CHANGED_IN_COMMIT,
     CONFIG_PATH,
+    NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANANGER,
     NO_RECOGNIZED_LABELS,
     priceMap,
     PRIORITY_LABELS,
@@ -75,11 +76,6 @@ describe("Label Base Rate Changes", () => {
         const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
         const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-        expect(warnSpy).not.toHaveBeenCalled();
-        expect(errorSpy).toHaveBeenNthCalledWith(1, NO_RECOGNIZED_LABELS);
-        expect(infoSpy).toHaveBeenNthCalledWith(1, CONFIG_CHANGED_IN_COMMIT);
-        expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 5");
-
         expect(updatedRepo?.labels).toHaveLength(40);
         expect(updatedIssue?.labels).toHaveLength(3);
         expect(updatedIssue2?.labels).toHaveLength(3);
@@ -95,6 +91,16 @@ describe("Label Base Rate Changes", () => {
 
         const noTandP = db.issue.findFirst({ where: { id: { equals: 2 } } });
         expect(noTandP?.labels).toHaveLength(0);
+
+        expect(infoSpy).toHaveBeenNthCalledWith(1, CONFIG_CHANGED_IN_COMMIT);
+        expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 5");
+        expect(infoSpy).toHaveBeenNthCalledWith(4, "Creating missing labels done");
+        expect(infoSpy).toHaveBeenNthCalledWith(5, "Updating issue 1 in test-repo");
+        expect(infoSpy).toHaveBeenNthCalledWith(7, "Updating issue 3 in test-repo");
+
+        expect(infoSpy).toHaveBeenNthCalledWith(6, "Updating issue 2 in test-repo");
+        expect(errorSpy).toHaveBeenNthCalledWith(1, NO_RECOGNIZED_LABELS);
+        expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it("Should not update base rate if the user is not authenticated", async () => {
@@ -130,7 +136,7 @@ describe("Label Base Rate Changes", () => {
             amount: 5,
         }, pusher);
         await globalLabelUpdate(context);
-        expect(errorSpy).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS);
         expect(warnSpy).not.toHaveBeenCalled();
     });
 
@@ -167,7 +173,7 @@ describe("Label Base Rate Changes", () => {
         }, pusher);
 
         await globalLabelUpdate(context);
-        expect(errorSpy).not.toHaveBeenCalled();
+        expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS);
         expect(warnSpy).not.toHaveBeenCalled();
     });
 
@@ -188,6 +194,9 @@ describe("Label Base Rate Changes", () => {
         await globalLabelUpdate(context);
         expect(infoSpy).toHaveBeenCalledTimes(1);
         expect(infoSpy).toHaveBeenCalledWith("Skipping push events. A new branch was created");
+
+        expect(errorSpy).not.toHaveBeenCalled();
+        expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it("Should allow a billing manager to update the base rate", async () => {
@@ -230,6 +239,16 @@ describe("Label Base Rate Changes", () => {
 
         expect(pusher?.name).toBe("billing");
         expect(sender_?.login).toBe("billing");
+
+        expect(infoSpy).toHaveBeenNthCalledWith(1, CONFIG_CHANGED_IN_COMMIT);
+        expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 27");
+
+        expect(infoSpy).toHaveBeenNthCalledWith(4, "Creating missing labels done");
+        expect(infoSpy).toHaveBeenNthCalledWith(5, "Updating issue 1 in test-repo");
+        expect(infoSpy).toHaveBeenNthCalledWith(7, "Updating issue 3 in test-repo");
+
+        expect(infoSpy).toHaveBeenNthCalledWith(6, "Updating issue 2 in test-repo");
+        expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS); // these two are connected ^
     });
 
     it("Should not update if non-auth pushes the code and admin merges the PR", async () => {
@@ -255,14 +274,15 @@ describe("Label Base Rate Changes", () => {
 
         await globalLabelUpdate(context);
         expect(errorSpy).toHaveBeenNthCalledWith(1, PUSHER_NOT_AUTHED);
+        expect(warnSpy).toHaveBeenCalledWith(NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANANGER);
         expect(infoSpy).not.toHaveBeenCalled();
     });
 
     it("Should not update if non-auth pushes the code and billing manager merges the PR", async () => {
         const commits = inMemoryCommits(SHA_1, false, true, true);
-        const pusher = db.users.findFirst({ where: { id: { equals: 3 } } }) as unknown as Context["payload"]["sender"];
+        const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
         const { context, errorSpy, warnSpy } = innerSetup(
-            1,
+            3,
             commits,
             SHA_1,
             SHA_1,
@@ -280,39 +300,15 @@ describe("Label Base Rate Changes", () => {
         );
 
         await globalLabelUpdate(context);
-        expect(errorSpy).toHaveBeenNthCalledWith(1, SENDER_NOT_AUTHED);
+        expect(errorSpy).toHaveBeenNthCalledWith(1, PUSHER_NOT_AUTHED);
+        expect(warnSpy).toHaveBeenCalledWith(NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANANGER);
     });
 
     it("Should not update if auth pushes the code and non-auth merges the PR", async () => {
-        const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
-        const commits = inMemoryCommits(SHA_1, true, true, true);
-        const { context, errorSpy, infoSpy, warnSpy } = innerSetup(
-            1,
-            commits,
-            SHA_1,
-            SHA_1,
-            {
-                owner: UBIQUITY,
-                repo: TEST_REPO,
-                sha: SHA_1,
-                modified: [CONFIG_PATH],
-                added: [],
-                withBaseRateChanges: true,
-                withPlugin: true,
-                amount: 5,
-            },
-            pusher
-        );
-
-        await globalLabelUpdate(context);
-        expect(errorSpy).toHaveBeenCalledWith(PUSHER_NOT_AUTHED);
-    });
-
-    it("Should not update if auth pushes the code and admin merges the PR", async () => {
         const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
         const commits = inMemoryCommits(SHA_1, true, true, true);
-        const { context, errorSpy, warnSpy } = innerSetup(
-            1,
+        const { context, errorSpy, infoSpy, warnSpy } = innerSetup(
+            2,
             commits,
             SHA_1,
             SHA_1,
@@ -330,7 +326,8 @@ describe("Label Base Rate Changes", () => {
         );
 
         await globalLabelUpdate(context);
-        expect(warnSpy).toHaveBeenCalledWith("Changes should be pushed and triggered by an admin or billing manager.");
+        expect(errorSpy).toHaveBeenCalledWith(SENDER_NOT_AUTHED);
+        expect(warnSpy).toHaveBeenCalledWith(NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANANGER);
     });
 
     it("Should update if auth pushes the code and billing manager merges the PR", async () => {
@@ -360,9 +357,7 @@ describe("Label Base Rate Changes", () => {
         const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
         const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-        expect(warnSpy).toHaveBeenCalledWith("Changes should be pushed and triggered by an admin or billing manager.");
-
-        expect(updatedRepo?.labels).toHaveLength(29);
+        expect(updatedRepo?.labels).toHaveLength(46);
         expect(updatedIssue?.labels).toHaveLength(3);
         expect(updatedIssue2?.labels).toHaveLength(3);
 
@@ -374,6 +369,15 @@ describe("Label Base Rate Changes", () => {
 
         expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
         expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
+
+        expect(infoSpy).toHaveBeenNthCalledWith(1, CONFIG_CHANGED_IN_COMMIT);
+        expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 8.5");
+        expect(infoSpy).toHaveBeenNthCalledWith(4, "Creating missing labels done");
+        expect(infoSpy).toHaveBeenNthCalledWith(5, "Updating issue 1 in test-repo");
+        expect(infoSpy).toHaveBeenNthCalledWith(7, "Updating issue 3 in test-repo");
+
+        expect(infoSpy).toHaveBeenNthCalledWith(6, "Updating issue 2 in test-repo");
+        expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS); // these two are connected ^
     });
 });
 
