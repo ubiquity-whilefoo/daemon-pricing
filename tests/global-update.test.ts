@@ -103,25 +103,6 @@ describe("Label Base Rate Changes", () => {
         expect(warnSpy).not.toHaveBeenCalled();
     });
 
-    it("Should not update base rate if the user is not authenticated", async () => {
-        const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
-        const commits = inMemoryCommits(SHA_1, false);
-        const { context, errorSpy } = innerSetup(2, commits, SHA_1, SHA_1, {
-            owner: USER_2,
-            repo: TEST_REPO,
-            sha: SHA_1,
-            modified: [CONFIG_PATH],
-            added: [],
-            withBaseRateChanges: true,
-            withPlugin: false,
-            amount: 5,
-        }, pusher);
-
-        await globalLabelUpdate(context);
-        expect(errorSpy).toHaveBeenNthCalledWith(1, PUSHER_NOT_AUTHED);
-        expect(errorSpy).toHaveBeenNthCalledWith(2, SENDER_NOT_AUTHED);
-    });
-
     it("Should update base rate if the user is authenticated", async () => {
         const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
         const commits = inMemoryCommits(SHA_1);
@@ -140,24 +121,6 @@ describe("Label Base Rate Changes", () => {
         expect(warnSpy).not.toHaveBeenCalled();
     });
 
-    it("Should not update base rate if there are no changes", async () => {
-        const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
-        const commits = inMemoryCommits(SHA_1, true, false);
-        const { context, infoSpy } = innerSetup(1, commits, SHA_1, SHA_1, {
-            owner: UBIQUITY,
-            repo: TEST_REPO,
-            sha: SHA_1,
-            modified: [],
-            added: [],
-            withBaseRateChanges: false,
-            withPlugin: false,
-            amount: 5,
-        }, pusher);
-
-        await globalLabelUpdate(context);
-        expect(infoSpy).toHaveBeenCalledWith("No files were changed in the commits, so no action is required.");
-    });
-
     it("Should update base rate if there are changes in the plugin config", async () => {
         const pusher = db.users.findFirst({ where: { id: { equals: 4 } } }) as unknown as Context["payload"]["sender"];
         const commits = inMemoryCommits(SHA_1, true, true);
@@ -174,28 +137,6 @@ describe("Label Base Rate Changes", () => {
 
         await globalLabelUpdate(context);
         expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS);
-        expect(warnSpy).not.toHaveBeenCalled();
-    });
-
-    it("Should not update base rate if a new branch was created", async () => {
-        const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
-        const commits = inMemoryCommits(SHA_1);
-        const { context, errorSpy, infoSpy, warnSpy } = innerSetup(3, commits, ZERO_SHA, SHA_1, {
-            owner: UBIQUITY,
-            repo: TEST_REPO,
-            sha: SHA_1,
-            modified: [CONFIG_PATH],
-            added: [],
-            withBaseRateChanges: true,
-            withPlugin: false,
-            amount: 5,
-        }, pusher);
-
-        await globalLabelUpdate(context);
-        expect(infoSpy).toHaveBeenCalledTimes(1);
-        expect(infoSpy).toHaveBeenCalledWith("Skipping push events. A new branch was created");
-
-        expect(errorSpy).not.toHaveBeenCalled();
         expect(warnSpy).not.toHaveBeenCalled();
     });
 
@@ -249,6 +190,143 @@ describe("Label Base Rate Changes", () => {
 
         expect(infoSpy).toHaveBeenNthCalledWith(6, "Updating issue 2 in test-repo");
         expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS); // these two are connected ^
+    });
+
+    it("Should update if auth pushes the code and billing manager merges the PR", async () => {
+        const pusher = db.users.findFirst({ where: { id: { equals: 3 } } }) as unknown as Context["payload"]["sender"];
+        const commits = inMemoryCommits(SHA_1, true, true, true);
+        const { context, errorSpy, infoSpy, warnSpy } = innerSetup(
+            1,
+            commits,
+            SHA_1,
+            SHA_1,
+            {
+                owner: UBIQUITY,
+                repo: TEST_REPO,
+                sha: SHA_1,
+                modified: [CONFIG_PATH],
+                added: [],
+                withBaseRateChanges: true,
+                withPlugin: true,
+                amount: 8.5,
+            },
+            pusher
+        );
+
+        await globalLabelUpdate(context);
+
+        const updatedRepo = db.repo.findFirst({ where: { id: { equals: 1 } } });
+        const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
+        const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
+
+        expect(updatedRepo?.labels).toHaveLength(46);
+        expect(updatedIssue?.labels).toHaveLength(3);
+        expect(updatedIssue2?.labels).toHaveLength(3);
+
+        const priceLabels = updatedIssue?.labels.filter((label) => (label as Label).name.includes("Price:"));
+        const priceLabels2 = updatedIssue2?.labels.filter((label) => (label as Label).name.includes("Price:"));
+
+        expect(priceLabels).toHaveLength(1);
+        expect(priceLabels2).toHaveLength(1);
+
+        expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
+        expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
+
+        expect(infoSpy).toHaveBeenNthCalledWith(1, CONFIG_CHANGED_IN_COMMIT);
+        expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 8.5");
+        expect(infoSpy).toHaveBeenNthCalledWith(4, "Creating missing labels done");
+        expect(infoSpy).toHaveBeenNthCalledWith(5, "Updating issue 1 in test-repo");
+        expect(infoSpy).toHaveBeenNthCalledWith(7, "Updating issue 3 in test-repo");
+
+        expect(infoSpy).toHaveBeenNthCalledWith(6, "Updating issue 2 in test-repo");
+        expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS); // these two are connected ^
+    });
+
+    it("Should not globally update exluded repos", async () => {
+        const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+        const commits = inMemoryCommits(SHA_1);
+        const { context, infoSpy, warnSpy, errorSpy } = innerSetup(1, commits, SHA_1, SHA_1, {
+            owner: UBIQUITY,
+            repo: TEST_REPO,
+            sha: SHA_1,
+            modified: [CONFIG_PATH],
+            added: [],
+            withBaseRateChanges: true,
+            withPlugin: false,
+            amount: 5,
+        }, pusher);
+
+        context.config.globalConfigUpdate.exludeRepos = [TEST_REPO];
+        await globalLabelUpdate(context);
+
+        expect(infoSpy).toHaveBeenNthCalledWith(1, CONFIG_CHANGED_IN_COMMIT);
+        expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 5");
+        expect(infoSpy).toHaveBeenNthCalledWith(4, "Creating missing labels done");
+        expect(infoSpy).toHaveBeenNthCalledWith(5, `Skipping excluded repository ${TEST_REPO}`);
+        expect(warnSpy).not.toHaveBeenCalled();
+        expect(errorSpy).not.toHaveBeenCalled();
+    });
+
+    it("Should not globally update if it's disabled", async () => {
+        const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+        const commits = inMemoryCommits(SHA_1);
+        const { context, infoSpy, warnSpy, errorSpy } = innerSetup(1, commits, SHA_1, SHA_1, {
+            owner: UBIQUITY,
+            repo: TEST_REPO,
+            sha: SHA_1,
+            modified: [CONFIG_PATH],
+            added: [],
+            withBaseRateChanges: true,
+            withPlugin: false,
+            amount: 5,
+        }, pusher);
+
+        context.config.globalConfigUpdate.exludeRepos = [TEST_REPO];
+        await globalLabelUpdate(context);
+
+        expect(infoSpy).toHaveBeenNthCalledWith(1, CONFIG_CHANGED_IN_COMMIT);
+        expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 5");
+        expect(infoSpy).toHaveBeenNthCalledWith(4, "Creating missing labels done");
+        expect(infoSpy).toHaveBeenNthCalledWith(5, `Skipping excluded repository ${TEST_REPO}`);
+        expect(warnSpy).not.toHaveBeenCalled();
+        expect(errorSpy).not.toHaveBeenCalled();
+    });
+
+    it("Should not update base rate if the user is not authenticated", async () => {
+        const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
+        const commits = inMemoryCommits(SHA_1, false);
+        const { context, errorSpy } = innerSetup(2, commits, SHA_1, SHA_1, {
+            owner: USER_2,
+            repo: TEST_REPO,
+            sha: SHA_1,
+            modified: [CONFIG_PATH],
+            added: [],
+            withBaseRateChanges: true,
+            withPlugin: false,
+            amount: 5,
+        }, pusher);
+
+        await globalLabelUpdate(context);
+        expect(errorSpy).toHaveBeenNthCalledWith(1, PUSHER_NOT_AUTHED);
+        expect(errorSpy).toHaveBeenNthCalledWith(2, SENDER_NOT_AUTHED);
+    });
+
+    it("Should not update base rate if there are no changes", async () => {
+        const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+        const commits = inMemoryCommits(SHA_1, true, false);
+        const { context, infoSpy } = innerSetup(1, commits, SHA_1, SHA_1, {
+            owner: UBIQUITY,
+            repo: TEST_REPO,
+            sha: SHA_1,
+            modified: [],
+            added: [],
+            withBaseRateChanges: false,
+            withPlugin: false,
+            amount: 5,
+        }, pusher);
+
+        await globalLabelUpdate(context);
+        expect(infoSpy).toHaveBeenCalledWith("No files were changed in the commits, so no action is required.");
     });
 
     it("Should not update if non-auth pushes the code and admin merges the PR", async () => {
@@ -330,55 +408,29 @@ describe("Label Base Rate Changes", () => {
         expect(warnSpy).toHaveBeenCalledWith(NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANANGER);
     });
 
-    it("Should update if auth pushes the code and billing manager merges the PR", async () => {
-        const pusher = db.users.findFirst({ where: { id: { equals: 3 } } }) as unknown as Context["payload"]["sender"];
-        const commits = inMemoryCommits(SHA_1, true, true, true);
-        const { context, errorSpy, infoSpy, warnSpy } = innerSetup(
-            1,
-            commits,
-            SHA_1,
-            SHA_1,
-            {
-                owner: UBIQUITY,
-                repo: TEST_REPO,
-                sha: SHA_1,
-                modified: [CONFIG_PATH],
-                added: [],
-                withBaseRateChanges: true,
-                withPlugin: true,
-                amount: 8.5,
-            },
-            pusher
-        );
+    it("Should not update base rate if a new branch was created", async () => {
+        const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+        const commits = inMemoryCommits(SHA_1);
+        const { context, errorSpy, infoSpy, warnSpy } = innerSetup(3, commits, ZERO_SHA, SHA_1, {
+            owner: UBIQUITY,
+            repo: TEST_REPO,
+            sha: SHA_1,
+            modified: [CONFIG_PATH],
+            added: [],
+            withBaseRateChanges: true,
+            withPlugin: false,
+            amount: 5,
+        }, pusher);
 
         await globalLabelUpdate(context);
+        expect(infoSpy).toHaveBeenCalledTimes(1);
+        expect(infoSpy).toHaveBeenCalledWith("Skipping push events. A new branch was created");
 
-        const updatedRepo = db.repo.findFirst({ where: { id: { equals: 1 } } });
-        const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
-        const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
-
-        expect(updatedRepo?.labels).toHaveLength(46);
-        expect(updatedIssue?.labels).toHaveLength(3);
-        expect(updatedIssue2?.labels).toHaveLength(3);
-
-        const priceLabels = updatedIssue?.labels.filter((label) => (label as Label).name.includes("Price:"));
-        const priceLabels2 = updatedIssue2?.labels.filter((label) => (label as Label).name.includes("Price:"));
-
-        expect(priceLabels).toHaveLength(1);
-        expect(priceLabels2).toHaveLength(1);
-
-        expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
-        expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
-
-        expect(infoSpy).toHaveBeenNthCalledWith(1, CONFIG_CHANGED_IN_COMMIT);
-        expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 8.5");
-        expect(infoSpy).toHaveBeenNthCalledWith(4, "Creating missing labels done");
-        expect(infoSpy).toHaveBeenNthCalledWith(5, "Updating issue 1 in test-repo");
-        expect(infoSpy).toHaveBeenNthCalledWith(7, "Updating issue 3 in test-repo");
-
-        expect(infoSpy).toHaveBeenNthCalledWith(6, "Updating issue 2 in test-repo");
-        expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS); // these two are connected ^
+        expect(errorSpy).not.toHaveBeenCalled();
+        expect(warnSpy).not.toHaveBeenCalled();
     });
+
+
 });
 
 function innerSetup(
@@ -423,7 +475,11 @@ function createContext(
     commits: Context<"push">["payload"]["commits"],
     before: string,
     after: string,
-    pusher?: Context["payload"]["sender"]
+    pusher?: Context["payload"]["sender"],
+    globalConfigUpdate?: {
+        enabled: boolean;
+        exludeRepos: string[];
+    }
 ): Context {
     return {
         adapters: {} as never,
@@ -486,7 +542,10 @@ function createContext(
                 fundExternalClosedIssue: false,
                 setLabel: true,
             },
-            globallyUpdateLabelsWithConfig: true,
+            globalConfigUpdate: globalConfigUpdate ?? {
+                enabled: true,
+                exludeRepos: [],
+            },
             basePriceMultiplier: 2,
         },
         octokit: octokit,

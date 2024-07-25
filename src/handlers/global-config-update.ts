@@ -66,34 +66,40 @@ export async function globalLabelUpdate(context: Context) {
   await syncPriceLabelsToConfig(context);
 
   // update all issues with the new pricing
-  if (context.config.globallyUpdateLabelsWithConfig) {
+  if (context.config.globalConfigUpdate.enabled) {
     await updateAllIssuePriceLabels(context);
   }
 }
 
 async function updateAllIssuePriceLabels(context: Context) {
+  const { logger, config } = context;
   const repos = await listOrgRepos(context);
   for (const repo of repos) {
     if (repo.archived) {
-      context.logger.info(`Skipping archived repository ${repo.name}`);
+      logger.info(`Skipping archived repository ${repo.name}`);
       continue;
     }
     if (repo.disabled) {
-      context.logger.info(`Skipping disabled repository ${repo.name}`);
+      logger.info(`Skipping disabled repository ${repo.name}`);
+      continue;
+    }
+
+    if (config.globalConfigUpdate.exludeRepos.includes(repo.name)) {
+      logger.info(`Skipping excluded repository ${repo.name}`);
       continue;
     }
 
     const issues = await listRepoIssues(context, repo.owner.login, repo.name);
+
     for (const issue of issues) {
-      context.logger.info(`Updating issue ${issue.number} in ${repo.name}`);
-      const ctx = {
+      logger.info(`Updating issue ${issue.number} in ${repo.name}`);
+      await setPriceLabel({
         ...context,
         payload: {
           repository: repo,
           issue,
         },
-      };
-      await setPriceLabel(ctx as Context, issue.labels as Label[], context.config);
+      } as Context, issue.labels as Label[], config);
     }
   }
 }
