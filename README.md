@@ -27,6 +27,9 @@ Example of valid configuration:
     publicAccessControl:
       setLabel: true
       fundExternalClosedIssue: false
+    globalConfigUpdate:
+      enabled: true
+      excludeRepos: ["devpool-directory", "devpool-directory-private"]
 ```
 
 ## Running locally
