@@ -31,7 +31,7 @@ export async function isAuthed(context: Context): Promise<boolean> {
     context.logger.error("Sender is not an admin or billing manager");
   }
 
-  return !isPusherAuthed || !isSenderAuthed;
+  return !!(isPusherAuthed && isSenderAuthed);
 }
 
 export async function globalLabelUpdate(context: Context) {
