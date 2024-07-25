@@ -53,16 +53,26 @@ export async function addCommentToIssue(context: Context, message: string, issue
 }
 
 export async function listOrgRepos(context: Context) {
-  const response = await context.octokit.rest.repos.listForOrg({
-    org: context.payload.organization?.login as string,
-  });
-  return response.data;
+  try {
+    const response = await context.octokit.rest.repos.listForOrg({
+      org: context.payload.organization?.login as string,
+    });
+    return response.data;
+  } catch (er) {
+    context.logger.error(er);
+    return [];
+  }
 }
 
 export async function listRepoIssues(context: Context, owner: string, repo: string) {
-  const response = await context.octokit.rest.issues.listForRepo({
-    owner,
-    repo,
-  });
-  return response.data;
+  try {
+    const response = await context.octokit.rest.issues.listForRepo({
+      owner,
+      repo,
+    });
+    return response.data;
+  } catch (er) {
+    context.logger.error(er);
+    return [];
+  }
 }
