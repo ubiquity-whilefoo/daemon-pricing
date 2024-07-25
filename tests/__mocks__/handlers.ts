@@ -45,21 +45,8 @@ export const handlers = [
     return HttpResponse.json(db.repo.findMany({ where: { owner: { login: { equals: org } } } }));
   }),
   // issues list for repo
-  http.get(
-    "https://api.github.com/repos/:owner/:repo/issues",
-    (() => {
-      let callCount = 0; // Encapsulate callCount within the closure
-
-      return ({ params: { owner, repo } }) => {
-        if (callCount === 0) {
-          callCount++;
-          // Return the issues for the first call
-          return HttpResponse.json(db.issue.findMany({ where: { owner: { equals: owner as string }, repo: { equals: repo as string } } }));
-        }
-        // Return an empty array for subsequent calls
-        return HttpResponse.json([]);
-      };
-    })()
+  http.get("https://api.github.com/repos/:owner/:repo/issues", ({ params: { owner, repo } }) =>
+    HttpResponse.json(db.issue.findMany({ where: { owner: { equals: owner as string }, repo: { equals: repo as string } } }))
   ),
   // delete label
   http.delete(REPO_LABELS_NAME, ({ params: { owner, repo, name } }) => {

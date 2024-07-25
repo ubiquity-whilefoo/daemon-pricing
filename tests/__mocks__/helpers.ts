@@ -13,35 +13,27 @@ export function getBaseRateChanges(changeAmt: number, withChanges = true, withPl
   @@ - 7, 7 + 7, 7 @@features:
           setLabel: true
        fundExternalClosedIssue: true
-  ${
-    withChanges
+  ${withChanges
       ? `
   payments: 
   -  basePriceMultiplier: 1
   +  basePriceMultiplier: ${changeAmt}`
       : ""
-  }
+    }
       timers:
       reviewDelayTolerance: 86400000
       taskStaleTimeoutDuration: 2419200000
-  ${
-    withPlugin
+  ${withPlugin
       ? `
     with: 
       labels:
         time: []
-        priority: []
-  -    payments: 
-  -      basePriceMultiplier: 1
-  +    payments:
-  +      basePriceMultiplier: ${changeAmt * 2}
-      features:
-        publicAccessControl: 
+@ -40,115 +36,124 @@
           setLabel: true
         assistivePricing: true
   `
       : ""
-  }
+    }
       `;
 }
 
