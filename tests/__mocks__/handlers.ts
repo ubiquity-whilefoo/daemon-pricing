@@ -3,6 +3,9 @@ import { db } from "./db";
 import issueTemplate from "./issue-template";
 import { Label } from "../../src/types/github";
 
+const REPO_LABELS = "https://api.github.com/repos/:owner/:repo/labels";
+const REPO_LABELS_NAME = "https://api.github.com/repos/:owner/:repo/labels/:name";
+
 /**
  * Intercepts the routes and returns a custom payload
  */
@@ -12,7 +15,7 @@ export const handlers = [
   http.get("https://api.github.com/users/:user", ({ params: { user } }) => {
     return HttpResponse.json(db.users.findFirst({ where: { login: { equals: user as string } } }));
   }),
-  http.post("https://api.github.com/repos/:owner/:repo/issues/:issueNumber/comments", ({ params: { owner, repo, issueNumber } }) => {
+  http.post("https://api.github.com/repos/:owner/:repo/issues/:issueNumber/comments", () => {
     return HttpResponse.json({
       id: 1,
       body: "Hello, world!",
@@ -29,10 +32,7 @@ export const handlers = [
     }
     return HttpResponse.json(item);
   }),
-  // get issue
-  http.get("https://api.github.com/repos/:owner/:repo/issues", ({ params: { owner, repo } }: { params: { owner: string; repo: string } }) => {
-    return HttpResponse.json(db.issue.findMany({ where: { owner: { equals: owner as string }, repo: { equals: repo as string } } }));
-  }),
+
   // create issue
   http.post("https://api.github.com/repos/:owner/:repo/issues", () => {
     const id = db.issue.count() + 1;
@@ -62,7 +62,7 @@ export const handlers = [
     })()
   ),
   // delete label
-  http.delete("https://api.github.com/repos/:owner/:repo/labels/:name", ({ params: { owner, repo, name } }) => {
+  http.delete(REPO_LABELS_NAME, ({ params: { owner, repo, name } }) => {
     const currentRepo = db.repo.findFirst({ where: { name: { equals: repo as string } } });
     const labels = currentRepo?.labels.filter((label) => (label as Label).name !== name) || [];
     db.repo.update({
@@ -98,7 +98,7 @@ export const handlers = [
     return HttpResponse.json({});
   }),
   // get label
-  http.get("https://api.github.com/repos/:owner/:repo/labels/:name", ({ params: { repo, name } }) => {
+  http.get(REPO_LABELS_NAME, ({ params: { repo, name } }) => {
     const item = db.repo.findFirst({ where: { name: { equals: repo as string } } })?.labels.find((label) => (label as Label).name === name);
     if (!item) {
       return new HttpResponse(null, { status: 404 });
@@ -106,7 +106,7 @@ export const handlers = [
     return HttpResponse.json(item);
   }),
   // get labels for repo
-  http.get("https://api.github.com/repos/:owner/:repo/labels", ({ params: { repo } }) => {
+  http.get(REPO_LABELS, ({ params: { repo } }) => {
     const labels = db.repo.findFirst({ where: { name: { equals: repo as string } } })?.labels;
     if (!labels) {
       return new HttpResponse(null, { status: 404 });
@@ -114,7 +114,7 @@ export const handlers = [
     return HttpResponse.json(labels);
   }),
   // create label
-  http.post("https://api.github.com/repos/:owner/:repo/labels", async ({ params: { repo }, request: { body } }) => {
+  http.post(REPO_LABELS, async ({ params: { repo }, request: { body } }) => {
     const newLabel = await getLabel(body);
     db.repo.update({
       where: { name: { equals: repo as string } },
@@ -145,7 +145,7 @@ export const handlers = [
     return HttpResponse.json(newLabel);
   }),
   // update label
-  http.patch("https://api.github.com/repos/:owner/:repo/labels/:name", async ({ params: { repo, name }, request: { body } }) => {
+  http.patch(REPO_LABELS_NAME, async ({ params: { repo, name }, request: { body } }) => {
     const { labels } = await getLabel(body);
     const updatedLabel = await getLabel(body);
     const currentRepo = db.repo.findFirst({ where: { name: { equals: repo as string } } });
@@ -194,7 +194,7 @@ export const handlers = [
     });
   }),
   // update label
-  http.patch("https://api.github.com/repos/:owner/:repo/labels", async ({ params: { repo }, request: { body } }) => {
+  http.patch(REPO_LABELS, async ({ params: { repo }, request: { body } }) => {
     const { labels } = await getLabel(body);
     const updatedLabel = await getLabel(body);
     const currentRepo = db.repo.findFirst({ where: { name: { equals: repo as string } } });

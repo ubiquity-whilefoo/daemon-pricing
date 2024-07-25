@@ -20,7 +20,7 @@ export async function isAuthed(context: Context): Promise<boolean> {
   // who pushed the code
   const pusher = payload.pusher?.name;
 
-  const isPusherAuthed = await isUserAdminOrBillingManager(context, pusher)
+  const isPusherAuthed = await isUserAdminOrBillingManager(context, pusher);
   const isSenderAuthed = await isUserAdminOrBillingManager(context, sender);
 
   if (!isPusherAuthed) {
@@ -31,11 +31,7 @@ export async function isAuthed(context: Context): Promise<boolean> {
     context.logger.error("Sender is not an admin or billing manager");
   }
 
-  if (!isPusherAuthed || !isSenderAuthed) {
-    return false;
-  }
-
-  return true;
+  return !isPusherAuthed || !isSenderAuthed;
 }
 
 export async function globalLabelUpdate(context: Context) {
@@ -44,12 +40,12 @@ export async function globalLabelUpdate(context: Context) {
     return;
   }
 
-  if (!await isAuthed(context)) {
+  if (!(await isAuthed(context))) {
     context.logger.warn("Changes should be pushed and triggered by an admin or billing manager.");
     return;
   }
 
-  if (!await checkModifiedBaseRate(context)) {
+  if (!(await checkModifiedBaseRate(context))) {
     return;
   }
 
@@ -84,7 +80,7 @@ async function updateAllIssuePriceLabels(context: Context) {
       continue;
     }
 
-    if (config.globalConfigUpdate.exludeRepos.includes(repo.name)) {
+    if (config.globalConfigUpdate.excludeRepos.includes(repo.name)) {
       logger.info(`Skipping excluded repository ${repo.name}`);
       continue;
     }
@@ -93,13 +89,17 @@ async function updateAllIssuePriceLabels(context: Context) {
 
     for (const issue of issues) {
       logger.info(`Updating issue ${issue.number} in ${repo.name}`);
-      await setPriceLabel({
-        ...context,
-        payload: {
-          repository: repo,
-          issue,
-        },
-      } as Context, issue.labels as Label[], config);
+      await setPriceLabel(
+        {
+          ...context,
+          payload: {
+            repository: repo,
+            issue,
+          },
+        } as Context,
+        issue.labels as Label[],
+        config
+      );
     }
   }
 }

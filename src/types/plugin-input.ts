@@ -15,7 +15,7 @@ export const assistivePricingSettingsSchema = T.Object({
   globalConfigUpdate: T.Object(
     {
       enabled: T.Boolean({ default: false }),
-      exludeRepos: T.Array(T.String(), { default: [] }),
+      excludeRepos: T.Array(T.String(), { default: [] }),
     },
     { default: {} }
   ),
