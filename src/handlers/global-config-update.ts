@@ -7,13 +7,12 @@ import { isPushEvent } from "../types/typeguards";
 import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
 import { Label } from "../types/github";
 
-export async function isAuthed(context: Context): Promise<boolean> {
+async function isAuthed(context: Context): Promise<boolean> {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return false;
   }
-
-  const { payload } = context;
+  const { payload, logger } = context;
 
   // who triggered the event
   const sender = payload.sender?.login as string;
@@ -24,11 +23,11 @@ export async function isAuthed(context: Context): Promise<boolean> {
   const isSenderAuthed = await isUserAdminOrBillingManager(context, sender);
 
   if (!isPusherAuthed) {
-    context.logger.error("Pusher is not an admin or billing manager");
+    logger.error("Pusher is not an admin or billing manager");
   }
 
   if (!isSenderAuthed) {
-    context.logger.error("Sender is not an admin or billing manager");
+    logger.error("Sender is not an admin or billing manager");
   }
 
   return !!(isPusherAuthed && isSenderAuthed);
@@ -40,8 +39,10 @@ export async function globalLabelUpdate(context: Context) {
     return;
   }
 
+  const { logger } = context;
+
   if (!(await isAuthed(context))) {
-    context.logger.warn("Changes should be pushed and triggered by an admin or billing manager.");
+    logger.warn("Changes should be pushed and triggered by an admin or billing manager.");
     return;
   }
 
@@ -52,11 +53,11 @@ export async function globalLabelUpdate(context: Context) {
   const rates = await getBaseRateChanges(context);
 
   if (rates.newBaseRate === null) {
-    context.logger.error("No new base rate found in the diff");
+    logger.error("No new base rate found in the diff");
     return;
   }
 
-  context.logger.info(`Updating base rate from ${rates.previousBaseRate} to ${rates.newBaseRate}`);
+  logger.info(`Updating base rate from ${rates.previousBaseRate} to ${rates.newBaseRate}`);
   context.config.basePriceMultiplier = rates.newBaseRate;
 
   await syncPriceLabelsToConfig(context);

@@ -137,8 +137,6 @@ describe("Label Base Rate Changes", () => {
     expect(infoSpy).toHaveBeenCalledWith(UPDATING_ISSUE_1_IN_TEST_REPO);
     expect(infoSpy).toHaveBeenCalledWith(UPDATING_ISSUE_3_IN_TEST_REPO);
     expect(infoSpy).toHaveBeenCalledWith(UPDATING_ISSUE_2_IN_TEST_REPO);
-
-
   });
 
   it("Should update base rate if the user is authenticated", async () => {
@@ -172,7 +170,6 @@ describe("Label Base Rate Changes", () => {
     expect(infoSpy).toHaveBeenCalledWith(UPDATING_ISSUE_3_IN_TEST_REPO);
     expect(infoSpy).toHaveBeenCalledWith(UPDATING_ISSUE_2_IN_TEST_REPO);
     expect(errorSpy).toHaveBeenCalledWith(NO_RECOGNIZED_LABELS);
-
   });
 
   it("Should allow a billing manager to update the base rate", async () => {
@@ -506,8 +503,6 @@ describe("Label Base Rate Changes", () => {
     expect(errorSpy).not.toHaveBeenCalled();
     expect(warnSpy).not.toHaveBeenCalled();
   });
-
-
 });
 
 function innerSetup(
