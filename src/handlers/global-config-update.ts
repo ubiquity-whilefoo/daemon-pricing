@@ -63,7 +63,7 @@ export async function globalLabelUpdate(context: Context) {
   await syncPriceLabelsToConfig(context);
 
   // update all issues with the new pricing
-  if (context.config.globalConfigUpdate.enabled) {
+  if (!context.config.globalConfigUpdate.disable) {
     await updateAllIssuePriceLabels(context);
   }
 }

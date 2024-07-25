@@ -14,7 +14,7 @@ export interface PluginInputs<T extends WebhookEventName = SupportedEvents> {
 export const assistivePricingSettingsSchema = T.Object({
   globalConfigUpdate: T.Object(
     {
-      enabled: T.Boolean({ default: false }),
+      disable: T.Boolean({ default: false }),
       excludeRepos: T.Array(T.String(), { default: [] }),
     },
     { default: {} }
