@@ -15,7 +15,7 @@ async function isAuthed(context: Context): Promise<boolean> {
   const { payload, logger } = context;
 
   // who triggered the event
-  const sender = payload.sender?.login as string;
+  const sender = payload.sender?.login;
   // who pushed the code
   const pusher = payload.pusher?.name;
 

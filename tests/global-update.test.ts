@@ -604,10 +604,10 @@ function createContext(
         tree_id: SHA_1,
       },
       pusher: {
-        name: pusher?.login ?? (sender?.login as string),
+        name: pusher?.login ?? sender?.login,
         email: "...",
         date: new Date().toISOString(),
-        username: pusher?.login ?? (sender?.login as string),
+        username: pusher?.login ?? sender?.login,
       },
     } as Context<"push">["payload"],
     logger: {

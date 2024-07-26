@@ -25,8 +25,12 @@ export async function watchLabelChange(context: Context) {
     return logger.debug("No label name change.. skipping");
   }
 
+  if (!triggerUser) {
+    return logger.debug("No user found.. skipping");
+  }
+
   // check if user is authorized to make the change
-  const hasAccess = await hasLabelEditPermission(context, currentLabel, triggerUser as string);
+  const hasAccess = await hasLabelEditPermission(context, currentLabel, triggerUser);
 
   await context.adapters.supabase.label.saveLabelChange({
     previousLabel,

@@ -1,3 +1,4 @@
+import { returnOptional } from "../shared/issue";
 import { Context } from "../types/context";
 import { Rates } from "../types/plugin-input";
 import { isPushEvent } from "../types/typeguards";
@@ -22,11 +23,16 @@ export async function getBaseRateChanges(context: Context): Promise<Rates> {
   const commitSha = headCommit?.id;
   let commitData;
 
+  if (!commitSha) {
+    throw new Error("No commit sha found");
+  }
+  const owner = returnOptional(repository.owner?.login);
+
   try {
     commitData = await context.octokit.repos.getCommit({
-      owner: repository.owner?.login as string,
+      owner,
       repo: repository.name,
-      ref: commitSha as string,
+      ref: commitSha,
       mediaType: {
         format: "diff",
       },

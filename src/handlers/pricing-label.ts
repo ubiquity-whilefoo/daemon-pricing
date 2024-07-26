@@ -7,6 +7,7 @@ import { getPrice } from "../shared/pricing";
 import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
 import { AssistivePricingSettings } from "../types/plugin-input";
 import { isIssueLabelEvent } from "../types/typeguards";
+import { returnOptional } from "../shared/issue";
 
 export async function onLabelChangeSetPricing(context: Context): Promise<void> {
   if (!isIssueLabelEvent(context)) {
@@ -47,7 +48,7 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
     if (smallestPriceLabelName) {
       for (const label of sortedPriceLabels) {
         await context.octokit.issues.removeLabel({
-          owner: payload.repository.owner?.login as string,
+          owner: returnOptional(payload.repository.owner?.login),
           repo: payload.repository.name,
           issue_number: payload.issue.number,
           name: label.name,

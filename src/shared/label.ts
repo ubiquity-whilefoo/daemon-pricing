@@ -1,5 +1,6 @@
 import { Context } from "../types/context";
 import { Label } from "../types/github";
+import { returnOptional } from "./issue";
 
 // cspell:disable
 const COLORS = { default: "ededed", price: "1f883d" };
@@ -9,7 +10,7 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
   const payload = context.payload;
 
   const res = await context.octokit.rest.issues.listLabelsForRepo({
-    owner: payload.repository.owner?.login as string,
+    owner: returnOptional(payload.repository.owner?.login),
     repo: payload.repository.name,
     per_page: 100,
     page: 1,
@@ -26,7 +27,7 @@ export async function createLabel(context: Context, name: string, labelType = "d
   const payload = context.payload;
 
   await context.octokit.rest.issues.createLabel({
-    owner: payload.repository.owner?.login as string,
+    owner: returnOptional(payload.repository.owner?.login),
     repo: payload.repository.name,
     name,
     color: COLORS[labelType],

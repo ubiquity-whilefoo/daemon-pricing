@@ -2,7 +2,7 @@ import { Context } from "../types/context";
 
 // Collects all the modified and added files from the commits.
 export function getCommitChanges(commits: Context<"push">["payload"]["commits"]): string[] {
-  const changes = [] as string[];
+  const changes: string[] = [];
 
   for (const commit of commits) {
     if (commit.modified?.length) {

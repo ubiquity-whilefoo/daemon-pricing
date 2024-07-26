@@ -1,8 +1,13 @@
 import { Context } from "../types/context";
 
+export function returnOptional<T>(value: T | undefined): T {
+  if (value === undefined) throw new Error("Value is undefined");
+  return value;
+}
+
 async function checkIfIsAdmin(context: Context, username: string) {
   const response = await context.octokit.rest.repos.getCollaboratorPermissionLevel({
-    owner: context.payload.repository.owner?.login as string,
+    owner: returnOptional(context.payload.repository.owner?.login),
     repo: context.payload.repository.name,
     username,
   });
@@ -28,7 +33,8 @@ async function checkIfIsBillingManager(context: Context, username: string) {
   return membership.role === "billing_manager";
 }
 
-export async function isUserAdminOrBillingManager(context: Context, username: string): Promise<"admin" | "billing_manager" | false> {
+export async function isUserAdminOrBillingManager(context: Context, username?: string): Promise<"admin" | "billing_manager" | false> {
+  if (!username) return false;
   const isAdmin = await checkIfIsAdmin(context, username);
   if (isAdmin) return "admin";
 
@@ -42,7 +48,7 @@ export async function addCommentToIssue(context: Context, message: string, issue
   const payload = context.payload;
   try {
     await context.octokit.issues.createComment({
-      owner: owner ?? (payload.repository.owner?.login as string),
+      owner: owner ?? returnOptional(payload.repository.owner?.login),
       repo: repo ?? payload.repository.name,
       issue_number: issueNumber,
       body: message,
@@ -55,7 +61,7 @@ export async function addCommentToIssue(context: Context, message: string, issue
 export async function listOrgRepos(context: Context) {
   try {
     const response = await context.octokit.rest.repos.listForOrg({
-      org: context.payload.organization?.login as string,
+      org: returnOptional(context.payload.organization?.login),
     });
     return response.data;
   } catch (er) {

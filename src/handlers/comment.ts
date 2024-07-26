@@ -10,9 +10,9 @@ const commandHandlers: { [k in AllowedCommand]: (context: Context, commandArgume
       return logger.debug("Not an comment event");
     }
     const payload = context.payload;
-    const sender = payload.sender?.login as string;
+    const sender = payload.sender?.login;
     const { access, user } = context.adapters.supabase;
-    const url = payload.comment?.html_url as string;
+    const url = payload.comment?.html_url;
     if (!url) throw new Error("Comment url is undefined");
 
     const userId = await user.getUserId(context, username);
@@ -31,7 +31,8 @@ export async function handleComment(context: Context) {
   }
 
   const payload = context.payload;
-  const sender = payload.sender?.login as string;
+  const sender = payload.sender?.login;
+
   const body = payload.comment.body.trim();
 
   if (!isValidCommand(body)) {
