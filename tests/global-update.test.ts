@@ -302,6 +302,11 @@ describe("Label Base Rate Changes", () => {
       pusher
     );
 
+    if (!context.config.globalConfigUpdate) {
+      context.config.globalConfigUpdate = {
+        excludeRepos: [],
+      };
+    }
     context.config.globalConfigUpdate.excludeRepos = [TEST_REPO];
     await globalLabelUpdate(context);
 
@@ -334,6 +339,11 @@ describe("Label Base Rate Changes", () => {
       pusher
     );
 
+    if (!context.config.globalConfigUpdate) {
+      context.config.globalConfigUpdate = {
+        excludeRepos: [],
+      };
+    }
     context.config.globalConfigUpdate.excludeRepos = [TEST_REPO];
     await globalLabelUpdate(context);
 
@@ -513,7 +523,6 @@ function innerSetup(
   commitParams: CreateCommitParams,
   pusher?: Context["payload"]["sender"],
   globalConfigUpdate?: {
-    enabled: boolean;
     excludeRepos: string[];
   }
 ) {
@@ -553,7 +562,6 @@ function createContext(
   after: string,
   pusher?: Context["payload"]["sender"],
   globalConfigUpdate?: {
-    enabled: boolean;
     excludeRepos: string[];
   }
 ): Context {
@@ -619,7 +627,6 @@ function createContext(
         setLabel: true,
       },
       globalConfigUpdate: globalConfigUpdate ?? {
-        enabled: true,
         excludeRepos: [],
       },
       basePriceMultiplier: 2,
