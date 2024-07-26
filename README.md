@@ -28,7 +28,6 @@ Example of valid configuration:
       setLabel: true
       fundExternalClosedIssue: false
     globalConfigUpdate:
-      disable: true
       excludeRepos: ["devpool-directory", "devpool-directory-private"]
 ```
 

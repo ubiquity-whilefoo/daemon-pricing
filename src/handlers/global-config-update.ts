@@ -39,7 +39,7 @@ export async function globalLabelUpdate(context: Context) {
     return;
   }
 
-  const { logger } = context;
+  const { logger, config } = context;
 
   if (!(await isAuthed(context))) {
     logger.warn("Changes should be pushed and triggered by an admin or billing manager.");
@@ -58,17 +58,17 @@ export async function globalLabelUpdate(context: Context) {
   }
 
   logger.info(`Updating base rate from ${rates.previousBaseRate} to ${rates.newBaseRate}`);
-  context.config.basePriceMultiplier = rates.newBaseRate;
+  config.basePriceMultiplier = rates.newBaseRate;
 
   await syncPriceLabelsToConfig(context);
 
   // update all issues with the new pricing
-  if (!context.config.globalConfigUpdate.disable) {
-    await updateAllIssuePriceLabels(context);
+  if (config.globalConfigUpdate) {
+    await updateAllIssuePriceLabels(context, config.globalConfigUpdate.excludeRepos);
   }
 }
 
-async function updateAllIssuePriceLabels(context: Context) {
+async function updateAllIssuePriceLabels(context: Context, excludeRepos: string[]) {
   const { logger, config } = context;
   const repos = await listOrgRepos(context);
   for (const repo of repos) {
@@ -81,7 +81,7 @@ async function updateAllIssuePriceLabels(context: Context) {
       continue;
     }
 
-    if (config.globalConfigUpdate.excludeRepos.includes(repo.name)) {
+    if (excludeRepos.includes(repo.name)) {
       logger.info(`Skipping excluded repository ${repo.name}`);
       continue;
     }
