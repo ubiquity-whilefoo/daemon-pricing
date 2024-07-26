@@ -1,3 +1,5 @@
+import { STRINGS } from "./strings";
+
 export const TIME_LABELS = [
   {
     name: "Time: <1 Hour",
@@ -56,41 +58,24 @@ export const PRICE_LABELS = [
   { name: "Price: 1000 USD", color: "1f883d" },
 ];
 
-export const CONFIG_PATH = ".github/ubiquibot-config.yml";
-export const UBIQUITY = "ubiquity";
-export const USER_2 = "user2";
-export const TEST_REPO = "test-repo";
-export const SHA_1 = "1234";
-export const CONFIG_CHANGED_IN_COMMIT = ".github/ubiquibot-config.yml was modified or added in the commits";
-export const CREATED_NEW_LABEL = "Created new price label";
-export const UPDATING_ISSUE_1_IN_TEST_REPO = "Updating issue 1 in test-repo";
-export const UPDATING_ISSUE_2_IN_TEST_REPO = "Updating issue 2 in test-repo";
-export const UPDATING_ISSUE_3_IN_TEST_REPO = "Updating issue 3 in test-repo";
-export const UPDATING_FROM_1_TO_5 = "Updating base rate from 1 to 5";
-export const CREATING_MISSING_LABELS = "Creating missing labels done";
-export const PUSHER_NOT_AUTHED = "Pusher is not an admin or billing manager";
-export const SENDER_NOT_AUTHED = "Sender is not an admin or billing manager";
-export const NO_RECOGNIZED_LABELS = "No recognized labels to calculate price";
-export const NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER = "Changes should be pushed and triggered by an admin or billing manager.";
-export const UBQ_EMAIL = "ubiquity@ubq";
-export const authedUser = {
-  email: UBQ_EMAIL,
-  name: UBIQUITY,
-  username: UBIQUITY,
+export const AUTHED_USER = {
+  email: STRINGS.UBQ_EMAIL,
+  name: STRINGS.UBIQUITY,
+  username: STRINGS.UBIQUITY,
   date: new Date().toISOString(),
 };
 
-export const billingManager = {
+export const BILLING_MANAGER = {
   email: "billing@ubq",
   name: "billing",
   username: "billing",
   date: new Date().toISOString(),
 };
 
-export const unAuthedUser = {
+export const UNAUTHED_USER = {
   email: "user2@ubq",
-  name: USER_2,
-  username: USER_2,
+  name: STRINGS.USER_2,
+  username: STRINGS.USER_2,
   date: new Date().toISOString(),
 };
 export const priceMap: { [key: number]: number } = {

@@ -1,7 +1,8 @@
 import { Context } from "../../src/types/context";
-import { authedUser, billingManager, unAuthedUser, CONFIG_PATH, TEST_REPO, UBIQUITY, PRICE_LABELS, TIME_LABELS, PRIORITY_LABELS } from "./constants";
+import { AUTHED_USER, BILLING_MANAGER, UNAUTHED_USER, PRICE_LABELS, TIME_LABELS, PRIORITY_LABELS } from "./constants";
 import { db } from "./db";
 import issueTemplate from "./issue-template";
+import { STRINGS } from "./strings";
 import usersGet from "./users-get.json";
 
 export function getBaseRateChanges(changeAmt: number, withChanges = true, withPlugin = false) {
@@ -13,19 +14,17 @@ export function getBaseRateChanges(changeAmt: number, withChanges = true, withPl
   @@ - 7, 7 + 7, 7 @@features:
           setLabel: true
        fundExternalClosedIssue: true
-  ${
-    withChanges
+  ${withChanges
       ? `
   payments: 
   -  basePriceMultiplier: 1
   +  basePriceMultiplier: ${changeAmt}`
       : ""
-  }
+    }
       timers:
       reviewDelayTolerance: 86400000
       taskStaleTimeoutDuration: 2419200000
-  ${
-    withPlugin
+  ${withPlugin
       ? `
     with: 
       labels:
@@ -35,20 +34,20 @@ export function getBaseRateChanges(changeAmt: number, withChanges = true, withPl
         assistivePricing: true
   `
       : ""
-  }
+    }
       `;
 }
 
 export function getAuthor(isAuthed: boolean, isBilling: boolean) {
   if (isAuthed) {
-    return authedUser;
+    return AUTHED_USER;
   }
 
   if (isBilling) {
-    return billingManager;
+    return BILLING_MANAGER;
   }
 
-  return unAuthedUser;
+  return UNAUTHED_USER;
 }
 
 export function inMemoryCommits(id: string, isAuthed = true, withBaseRateChanges = true, isBilling = false): Context<"push">["payload"]["commits"] {
@@ -62,7 +61,7 @@ export function inMemoryCommits(id: string, isAuthed = true, withBaseRateChanges
       tree_id: id,
       url: "",
       added: [],
-      modified: withBaseRateChanges ? [CONFIG_PATH] : [],
+      modified: withBaseRateChanges ? [STRINGS.CONFIG_PATH] : [],
       removed: [],
       distinct: true,
     },
@@ -112,9 +111,9 @@ export async function setupTests() {
   db.repo.create({
     id: 1,
     html_url: "",
-    name: TEST_REPO,
+    name: STRINGS.TEST_REPO,
     owner: {
-      login: UBIQUITY,
+      login: STRINGS.UBIQUITY,
       id: 1,
     },
     issues: [],
