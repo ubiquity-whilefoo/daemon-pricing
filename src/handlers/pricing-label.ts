@@ -164,7 +164,7 @@ async function getAllIssueEvents(context: Context) {
       per_page: 100,
     });
   } catch (err: unknown) {
-    context.logger.error("Failed to fetch lists of events", err);
+    context.logger.error("Failed to fetch lists of events", { err });
     return [];
   }
 }

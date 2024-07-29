@@ -7,7 +7,8 @@ const commandHandlers: { [k in AllowedCommand]: (context: Context, commandArgume
   async allow(context, { username, labels }: CommandArguments) {
     const logger = context.logger;
     if (!isCommentEvent(context)) {
-      return logger.debug("Not an comment event");
+      logger.debug("Not an comment event");
+      return;
     }
     const payload = context.payload;
     const sender = payload.sender?.login;

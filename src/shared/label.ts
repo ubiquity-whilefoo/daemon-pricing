@@ -53,8 +53,8 @@ export async function clearAllPriceLabelsOnIssue(context: Context) {
         issue_number: payload.issue.number,
         name: label.name,
       });
-    } catch (e: unknown) {
-      context.logger.error("Clearing all price labels failed!", e);
+    } catch (err: unknown) {
+      context.logger.error("Clearing all price labels failed!", { err });
     }
   }
 }
@@ -72,8 +72,8 @@ export async function addLabelToIssue(context: Context, labelName: string) {
       issue_number: payload.issue.number,
       labels: [labelName],
     });
-  } catch (e: unknown) {
-    context.logger.error("Adding a label to issue failed!", e);
+  } catch (err: unknown) {
+    context.logger.error("Adding a label to issue failed!", { err });
   }
 }
 
@@ -90,7 +90,7 @@ export async function removeLabelFromIssue(context: Context, labelName: string) 
       issue_number: payload.issue.number,
       name: labelName,
     });
-  } catch (e: unknown) {
-    context.logger.error("Adding a label to issue failed!", e);
+  } catch (err: unknown) {
+    context.logger.error("Adding a label to issue failed!", { err });
   }
 }

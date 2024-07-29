@@ -37,8 +37,8 @@ export async function getBaseRateChanges(context: Context): Promise<Rates> {
         format: "diff",
       },
     });
-  } catch (error: unknown) {
-    logger.debug("Commit sha error.", { error });
+  } catch (err: unknown) {
+    logger.debug("Commit sha error.", { err });
   }
 
   if (!commitData) {

@@ -42,7 +42,7 @@ export async function globalLabelUpdate(context: Context) {
   const { logger, config } = context;
 
   if (!(await isAuthed(context))) {
-    logger.warn("Changes should be pushed and triggered by an admin or billing manager.");
+    logger.error("Changes should be pushed and triggered by an admin or billing manager.");
     return;
   }
 
