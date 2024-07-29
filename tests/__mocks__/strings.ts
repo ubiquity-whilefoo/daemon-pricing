@@ -4,7 +4,7 @@ export const STRINGS = {
     USER_2: "user2",
     TEST_REPO: "test-repo",
     SHA_1: "1234",
-    UBQ_EMAIL: "ubiquity@ubq",
+    EMAIL: "ubiquity@dao",
     CONFIG_CHANGED_IN_COMMIT: ".github/ubiquibot-config.yml was modified or added in the commits",
     CREATED_NEW_LABEL: "Created new price label",
     UPDATING_ISSUE_1_IN_TEST_REPO: "Updating issue 1 in test-repo",

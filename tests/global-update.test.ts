@@ -573,12 +573,12 @@ function createContext(
         timestamp: new Date().toISOString(),
         url: "",
         author: {
-          email: STRINGS.UBQ_EMAIL,
+          email: STRINGS.EMAIL,
           name: STRINGS.UBIQUITY,
           username: STRINGS.UBIQUITY,
         },
         committer: {
-          email: STRINGS.UBQ_EMAIL,
+          email: STRINGS.EMAIL,
           name: STRINGS.UBIQUITY,
           username: STRINGS.UBIQUITY,
         },

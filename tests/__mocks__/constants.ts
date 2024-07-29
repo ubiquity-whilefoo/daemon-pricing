@@ -59,21 +59,21 @@ export const PRICE_LABELS = [
 ];
 
 export const AUTHED_USER = {
-  email: STRINGS.UBQ_EMAIL,
+  email: STRINGS.EMAIL,
   name: STRINGS.UBIQUITY,
   username: STRINGS.UBIQUITY,
   date: new Date().toISOString(),
 };
 
 export const BILLING_MANAGER = {
-  email: "billing@ubq",
+  email: "billing@dao",
   name: "billing",
   username: "billing",
   date: new Date().toISOString(),
 };
 
 export const UNAUTHED_USER = {
-  email: "user2@ubq",
+  email: "user2@dao",
   name: STRINGS.USER_2,
   username: STRINGS.USER_2,
   date: new Date().toISOString(),
