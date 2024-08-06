@@ -1,4 +1,4 @@
-import { checkModifiedBaseRate } from "./check-modified-base-rate";
+import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
 import { Context } from "../types/context";
 import { syncPriceLabelsToConfig } from "./sync-labels-to-config";
@@ -46,7 +46,7 @@ export async function globalLabelUpdate(context: Context) {
     return;
   }
 
-  if (!(await checkModifiedBaseRate(context))) {
+  if (!(await isConfigModified(context))) {
     return;
   }
 

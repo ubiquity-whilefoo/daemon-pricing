@@ -26,7 +26,12 @@ export async function labelAccessPermissionsCheck(context: Context) {
   const repo = payload.repository;
   const sufficientPrivileges = await isUserAdminOrBillingManager(context, sender);
   // event in plain english
-  const action = (payload as { action: string }).action as "labeled" | "unlabeled";
+  let action;
+  if ("action" in payload) {
+    action = payload.action
+  } else {
+    throw new Error("No action found in payload")
+  }
   const eventName = action === "labeled" ? "add" : "remove";
   const labelName = payload.label.name;
 

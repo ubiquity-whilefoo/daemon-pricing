@@ -54,7 +54,7 @@ export async function addCommentToIssue(context: Context, message: string, issue
       body: message,
     });
   } catch (err: unknown) {
-    context.logger.error("Adding a comment failed!", { err });
+    throw context.logger.error("Adding a comment failed!", { err });
   }
 }
 
@@ -65,8 +65,7 @@ export async function listOrgRepos(context: Context) {
     });
     return response.data;
   } catch (err) {
-    context.logger.error("Listing org repos failed!", { err });
-    return [];
+    throw context.logger.error("Listing org repos failed!", { err });
   }
 }
 
@@ -78,7 +77,6 @@ export async function listRepoIssues(context: Context, owner: string, repo: stri
     });
     return response.data;
   } catch (err) {
-    context.logger.error("Listing repo issues failed!", { err });
-    return [];
+    throw context.logger.error("Listing repo issues failed!", { err });
   }
 }

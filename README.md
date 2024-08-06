@@ -8,7 +8,6 @@ Example of valid configuration:
 
 ```yml
 - plugin: https://ubiquibot-assistive-pricing.ubq.fi
-  type: github
   with:
     labels:
       time:

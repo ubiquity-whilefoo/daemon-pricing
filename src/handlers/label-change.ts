@@ -1,4 +1,4 @@
-import { isUserAdminOrBillingManager } from "../shared/issue";
+import { isUserAdminOrBillingManager, returnOptional } from "../shared/issue";
 import { Context } from "../types/context";
 import { isLabelEditedEvent } from "../types/typeguards";
 
@@ -37,8 +37,9 @@ export async function watchLabelChange(context: Context) {
     currentLabel,
     authorized: hasAccess,
     repositoryId: payload.repository.id,
-    userId: sender?.id as number,
+    userId: returnOptional(sender?.id),
   });
+
   return logger.debug("label name change saved to db");
 }
 
