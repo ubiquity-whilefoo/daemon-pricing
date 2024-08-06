@@ -1,7 +1,7 @@
 import { Context } from "../types/context";
 import { UserType } from "../types/github";
 import { isIssueLabelEvent } from "../types/typeguards";
-import { addCommentToIssue, isUserAdminOrBillingManager, returnOptional } from "./issue";
+import { addCommentToIssue, isUserAdminOrBillingManager } from "./issue";
 import { addLabelToIssue, removeLabelFromIssue } from "./label";
 
 export async function labelAccessPermissionsCheck(context: Context) {
@@ -22,7 +22,11 @@ export async function labelAccessPermissionsCheck(context: Context) {
     return true;
   }
 
-  const sender = returnOptional(payload.sender?.login);
+  const sender = payload.sender?.login;
+  if (!sender) {
+    throw logger.error("No sender found in the payload");
+  }
+
   const repo = payload.repository;
   const sufficientPrivileges = await isUserAdminOrBillingManager(context, sender);
   // event in plain english

@@ -1,13 +1,10 @@
 import { Context } from "../types/context";
 
-export function returnOptional<T>(value: T | undefined): T {
-  if (value === undefined) throw new Error("Value is undefined");
-  return value;
-}
-
 async function checkIfIsAdmin(context: Context, username: string) {
+  const owner = context.payload.repository.owner?.login;
+  if (!owner) throw context.logger.error("No owner found in the repository!");
   const response = await context.octokit.rest.repos.getCollaboratorPermissionLevel({
-    owner: returnOptional(context.payload.repository.owner?.login),
+    owner,
     repo: context.payload.repository.name,
     username,
   });
@@ -44,11 +41,14 @@ export async function isUserAdminOrBillingManager(context: Context, username?: s
   return false;
 }
 
-export async function addCommentToIssue(context: Context, message: string, issueNumber: number, owner?: string, repo?: string) {
+export async function addCommentToIssue(context: Context, message: string, issueNumber: number, owner_?: string, repo?: string) {
   const payload = context.payload;
+  const owner = owner_ || payload.repository.owner?.login;
+  if (!owner) throw context.logger.error("No owner found in the repository!");
+
   try {
     await context.octokit.issues.createComment({
-      owner: owner ?? returnOptional(payload.repository.owner?.login),
+      owner,
       repo: repo ?? payload.repository.name,
       issue_number: issueNumber,
       body: message,
@@ -59,9 +59,12 @@ export async function addCommentToIssue(context: Context, message: string, issue
 }
 
 export async function listOrgRepos(context: Context) {
+  const org = context.payload.organization?.login;
+  if (!org) throw context.logger.error("No organization found in payload!");
+
   try {
     const response = await context.octokit.rest.repos.listForOrg({
-      org: returnOptional(context.payload.organization?.login),
+      org,
     });
     return response.data;
   } catch (err) {

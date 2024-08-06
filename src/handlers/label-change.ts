@@ -1,4 +1,4 @@
-import { isUserAdminOrBillingManager, returnOptional } from "../shared/issue";
+import { isUserAdminOrBillingManager } from "../shared/issue";
 import { Context } from "../types/context";
 import { isLabelEditedEvent } from "../types/typeguards";
 
@@ -20,24 +20,27 @@ export async function watchLabelChange(context: Context) {
   }
   const currentLabel = label?.name;
   const triggerUser = sender?.login;
+  const triggerUserId = sender?.id;
 
   if (!previousLabel || !currentLabel) {
     return logger.debug("No label name change.. skipping");
   }
 
-  if (!triggerUser) {
+  if (!triggerUser || !triggerUserId) {
     return logger.debug("No user found.. skipping");
   }
 
   // check if user is authorized to make the change
   const hasAccess = await hasLabelEditPermission(context, currentLabel, triggerUser);
 
+
+
   await context.adapters.supabase.label.saveLabelChange({
     previousLabel,
     currentLabel,
     authorized: hasAccess,
     repositoryId: payload.repository.id,
-    userId: returnOptional(sender?.id),
+    userId: triggerUserId,
   });
 
   return logger.debug("label name change saved to db");

@@ -1,6 +1,5 @@
 import { Context } from "../types/context";
 import { Label } from "../types/github";
-import { returnOptional } from "./issue";
 
 // cspell:disable
 const COLORS = { default: "ededed", price: "1f883d" };
@@ -9,8 +8,13 @@ const COLORS = { default: "ededed", price: "1f883d" };
 export async function listLabelsForRepo(context: Context): Promise<Label[]> {
   const payload = context.payload;
 
+  const owner = payload.repository.owner?.login;
+  if (!owner) {
+    throw context.logger.error("No owner found in the repository!");
+  }
+
   const res = await context.octokit.rest.issues.listLabelsForRepo({
-    owner: returnOptional(payload.repository.owner?.login),
+    owner,
     repo: payload.repository.name,
     per_page: 100,
     page: 1,
@@ -26,8 +30,13 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
 export async function createLabel(context: Context, name: string, labelType = "default" as keyof typeof COLORS): Promise<void> {
   const payload = context.payload;
 
+  const owner = payload.repository.owner?.login;
+  if (!owner) {
+    throw context.logger.error("No owner found in the repository!");
+  }
+
   await context.octokit.rest.issues.createLabel({
-    owner: returnOptional(payload.repository.owner?.login),
+    owner,
     repo: payload.repository.name,
     name,
     color: COLORS[labelType],
