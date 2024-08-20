@@ -6,5 +6,8 @@
       "ubiquity:example": "/allow @user1 label",
       "description": "Allows the user to modify the given label."
     }
-  }
+  },
+    "ubiquity:listeners": [
+      "issues.labeled"
+  ]
 }
