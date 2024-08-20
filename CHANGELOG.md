@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/ubiquibot/assistive-pricing/compare/v1.0.1...v1.0.2) (2024-08-20)
+
+
+### Bug Fixes
+
+* temporarily disable auth ([97c8b36](https://github.com/ubiquibot/assistive-pricing/commit/97c8b364381d7bb1abf09ffe10f7f88a4ad9f4c6))
+
 ## [1.0.1](https://github.com/ubiquibot/assistive-pricing/compare/v1.0.0...v1.0.1) (2024-08-20)
 
 
