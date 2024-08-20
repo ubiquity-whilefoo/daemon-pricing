@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/ubiquibot/assistive-pricing/compare/v1.0.0...v1.0.1) (2024-08-20)
+
+
+### Bug Fixes
+
+* updated manifest.json ([3aa6c14](https://github.com/ubiquibot/assistive-pricing/commit/3aa6c14b3d250b7bb53a2ca4828049cf02318b8d))
+
 ## 1.0.0 (2024-07-08)
 
 
