@@ -39,15 +39,14 @@ export default {
         });
       }
       const webhookPayload = await request.json();
-      // TODO: temporarily disabled, should be added back with the proper key in the configuration.
-      // const signature = webhookPayload.signature;
-      // delete webhookPayload.signature;
-      // if (!(await verifySignature(env.UBIQUIBOT_PUBLIC_KEY, webhookPayload, signature))) {
-      //   return new Response(JSON.stringify({ error: `Forbidden: Signature verification failed` }), {
-      //     status: 403,
-      //     headers: { "content-type": "application/json" },
-      //   });
-      // }
+      const signature = webhookPayload.signature;
+      delete webhookPayload.signature;
+      if (!(await verifySignature(env.UBIQUIBOT_PUBLIC_KEY, webhookPayload, signature))) {
+        return new Response(JSON.stringify({ error: `Forbidden: Signature verification failed` }), {
+          status: 403,
+          headers: { "content-type": "application/json" },
+        });
+      }
       webhookPayload.settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, webhookPayload.settings));
       await run(webhookPayload, env);
       return new Response(JSON.stringify("OK"), { status: 200, headers: { "content-type": "application/json" } });
