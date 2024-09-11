@@ -111,6 +111,7 @@ describe("User tests", () => {
     const result = await workerFetch.fetch(
       {
         method: "GET",
+        url: "http://localhost:4000",
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
