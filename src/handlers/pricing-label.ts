@@ -1,12 +1,12 @@
 import { Context } from "../types/context";
 
-import { createLabel, listLabelsForRepo, addLabelToIssue, clearAllPriceLabelsOnIssue } from "../shared/label";
-import { Label, UserType } from "../types/github";
+import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo } from "../shared/label";
 import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { setPrice } from "../shared/pricing";
-import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
+import { Label, UserType } from "../types/github";
 import { AssistivePricingSettings } from "../types/plugin-input";
 import { isIssueLabelEvent } from "../types/typeguards";
+import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
 
 export async function onLabelChangeSetPricing(context: Context): Promise<void> {
   if (!isIssueLabelEvent(context)) {
@@ -163,7 +163,7 @@ async function getAllIssueEvents(context: Context) {
       per_page: 100,
     });
   } catch (err: unknown) {
-    context.logger.fatal("Failed to fetch lists of events", err);
+    context.logger.error("Failed to fetch lists of events", err);
     return [];
   }
 }

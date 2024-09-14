@@ -10,7 +10,7 @@ async function checkIfIsAdmin(context: Context, username: string) {
 }
 
 async function checkIfIsBillingManager(context: Context, username: string) {
-  if (!context.payload.organization) throw context.logger.fatal(`No organization found in payload!`);
+  if (!context.payload.organization) throw context.logger.error(`No organization found in payload!`);
 
   try {
     await context.octokit.rest.orgs.checkMembershipForUser({
@@ -48,6 +48,6 @@ export async function addCommentToIssue(context: Context, message: string, issue
       body: message,
     });
   } catch (e: unknown) {
-    context.logger.fatal("Adding a comment failed!", e);
+    context.logger.error("Adding a comment failed!", e);
   }
 }
