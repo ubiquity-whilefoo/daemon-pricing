@@ -1,4 +1,5 @@
 import { EmitterWebhookEvent as WebhookEvent, EmitterWebhookEventName as WebhookEventName } from "@octokit/webhooks";
+import { StandardValidator } from "typebox-validators";
 import { SupportedEvents } from "./context";
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 
@@ -11,22 +12,27 @@ export interface PluginInputs<T extends WebhookEventName = SupportedEvents> {
   ref: string;
 }
 
-export const assistivePricingSettingsSchema = T.Object({
-  labels: T.Object(
-    {
-      time: T.Array(T.String(), { default: [] }),
-      priority: T.Array(T.String(), { default: [] }),
-    },
-    { default: {} }
-  ),
-  basePriceMultiplier: T.Number({ default: 1 }),
-  publicAccessControl: T.Object(
-    {
-      setLabel: T.Boolean({ default: false }),
-      fundExternalClosedIssue: T.Boolean({ default: false }),
-    },
-    { default: {} }
-  ),
-});
+export const assistivePricingSettingsSchema = T.Object(
+  {
+    labels: T.Object(
+      {
+        time: T.Array(T.String(), { default: [] }),
+        priority: T.Array(T.String(), { default: [] }),
+      },
+      { default: {} }
+    ),
+    basePriceMultiplier: T.Number({ default: 1 }),
+    publicAccessControl: T.Object(
+      {
+        setLabel: T.Boolean({ default: false }),
+        fundExternalClosedIssue: T.Boolean({ default: false }),
+      },
+      { default: {} }
+    ),
+  },
+  { default: {} }
+);
+
+export const assistivePricingSchemaValidator = new StandardValidator(assistivePricingSettingsSchema);
 
 export type AssistivePricingSettings = StaticDecode<typeof assistivePricingSettingsSchema>;
