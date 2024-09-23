@@ -15,10 +15,7 @@ export default {
         } else if (request.method === "POST") {
           const webhookPayload = await request.json();
 
-          const result = validateAndDecodeSchemas(env, webhookPayload.settings);
-          if (result instanceof Response) {
-            return result;
-          }
+          validateAndDecodeSchemas(env, webhookPayload.settings);
           return new Response(JSON.stringify({ message: "Schema is valid" }), { status: 200, headers: { "content-type": "application/json" } });
         }
       }
@@ -47,12 +44,8 @@ export default {
       // }
       const result = validateAndDecodeSchemas(env, webhookPayload.settings);
 
-      if (result instanceof Response) {
-        return result;
-      }
-
       webhookPayload.settings = result.decodedSettings;
-      await run(webhookPayload, env);
+      await run(webhookPayload, result.decodedEnv);
       return new Response(JSON.stringify("OK"), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
       return handleUncaughtError(error);
@@ -60,10 +53,10 @@ export default {
   },
 };
 
-function handleUncaughtError(error: unknown) {
-  console.error(error);
+function handleUncaughtError(errors: unknown) {
+  console.error(errors);
   const status = 500;
-  return new Response(JSON.stringify({ error }), { status: status, headers: { "content-type": "application/json" } });
+  return new Response(JSON.stringify(errors), { status: status, headers: { "content-type": "application/json" } });
 }
 
 // async function verifySignature(publicKeyPem: string, payload: unknown, signature: string) {
