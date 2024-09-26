@@ -1,8 +1,10 @@
 import { Context } from "../types/context";
 
 async function checkIfIsAdmin(context: Context, username: string) {
+  const owner = context.payload.repository.owner?.login;
+  if (!owner) throw context.logger.error("No owner found in the repository!");
   const response = await context.octokit.rest.repos.getCollaboratorPermissionLevel({
-    owner: context.payload.repository.owner.login,
+    owner,
     repo: context.payload.repository.name,
     username,
   });
@@ -28,7 +30,8 @@ async function checkIfIsBillingManager(context: Context, username: string) {
   return membership.role === "billing_manager";
 }
 
-export async function isUserAdminOrBillingManager(context: Context, username: string): Promise<"admin" | "billing_manager" | false> {
+export async function isUserAdminOrBillingManager(context: Context, username?: string): Promise<"admin" | "billing_manager" | false> {
+  if (!username) return false;
   const isAdmin = await checkIfIsAdmin(context, username);
   if (isAdmin) return "admin";
 
@@ -38,16 +41,19 @@ export async function isUserAdminOrBillingManager(context: Context, username: st
   return false;
 }
 
-export async function addCommentToIssue(context: Context, message: string, issueNumber: number, owner?: string, repo?: string) {
+export async function addCommentToIssue(context: Context, message: string, issueNumber: number, owner_?: string, repo?: string) {
   const payload = context.payload;
+  const owner = owner_ || payload.repository.owner?.login;
+  if (!owner) throw context.logger.error("No owner found in the repository!");
+
   try {
     await context.octokit.issues.createComment({
-      owner: owner ?? payload.repository.owner.login,
+      owner,
       repo: repo ?? payload.repository.name,
       issue_number: issueNumber,
       body: message,
     });
-  } catch (e: unknown) {
-    context.logger.error("Adding a comment failed!", e);
+  } catch (err: unknown) {
+    context.logger.error("Adding a comment failed!", { err });
   }
 }

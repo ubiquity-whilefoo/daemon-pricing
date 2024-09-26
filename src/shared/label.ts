@@ -8,8 +8,13 @@ const COLORS = { default: "ededed", price: "1f883d" };
 export async function listLabelsForRepo(context: Context): Promise<Label[]> {
   const payload = context.payload;
 
+  const owner = payload.repository.owner?.login;
+  if (!owner) {
+    throw context.logger.error("No owner found in the repository!");
+  }
+
   const res = await context.octokit.rest.issues.listLabelsForRepo({
-    owner: payload.repository.owner.login,
+    owner,
     repo: payload.repository.name,
     per_page: 100,
     page: 1,
@@ -25,9 +30,13 @@ export async function createLabel(context: Context, name: string, labelType = "d
   const payload = context.payload;
 
   const color = name.startsWith("Price: ") ? COLORS.price : COLORS[labelType];
+  const owner = payload.repository.owner?.login;
+  if (!owner) {
+    throw context.logger.error("No owner found in the repository!");
+  }
 
   await context.octokit.rest.issues.createLabel({
-    owner: payload.repository.owner.login,
+    owner,
     repo: payload.repository.name,
     name,
     color,
@@ -53,8 +62,8 @@ export async function clearAllPriceLabelsOnIssue(context: Context) {
         issue_number: payload.issue.number,
         name: label.name,
       });
-    } catch (e: unknown) {
-      context.logger.error("Clearing all price labels failed!", e);
+    } catch (err: unknown) {
+      context.logger.error("Clearing all price labels failed!", { err });
     }
   }
 }
@@ -76,8 +85,8 @@ export async function addLabelToIssue(context: Context, labelName: string) {
     if (labelName.startsWith("Price: ")) {
       await updateLabelColor(context, labelName, COLORS.price);
     }
-  } catch (e: unknown) {
-    context.logger.error("Adding a label to issue failed!", e);
+  } catch (err: unknown) {
+    context.logger.error("Adding a label to issue failed!", { err });
   }
 }
 
@@ -94,21 +103,27 @@ export async function removeLabelFromIssue(context: Context, labelName: string) 
       issue_number: payload.issue.number,
       name: labelName,
     });
-  } catch (e: unknown) {
-    context.logger.error("Adding a label to issue failed!", e);
+  } catch (err: unknown) {
+    context.logger.error("Adding a label to issue failed!", { err });
   }
 }
 
 async function updateLabelColor(context: Context, labelName: string, color: string) {
   const payload = context.payload;
+  const owner = payload.repository.owner?.login;
+
+  if (!owner) {
+    throw context.logger.error("No owner found in the repository!");
+  }
+
   try {
     await context.octokit.rest.issues.updateLabel({
-      owner: payload.repository.owner.login,
+      owner,
       repo: payload.repository.name,
       name: labelName,
       color,
     });
-  } catch (e: unknown) {
-    context.logger.error("Updating label color failed!", e);
+  } catch (err: unknown) {
+    context.logger.error("Updating label color failed!", { err });
   }
 }
