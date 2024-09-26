@@ -116,8 +116,8 @@ async function updateLabelColor(context: Context, labelName: string, color: stri
     throw context.logger.error("No owner found in the repository!");
   }
 
-  const issueLAbels = await listLabelsForRepo(context);
-  const label = issueLAbels.find((label) => label.name === labelName);
+  const issueLabels = await listLabelsForRepo(context);
+  const label = issueLabels.find((label) => label.name === labelName);
 
   if (!label) {
     throw context.logger.error("Label not found!", { labelName });
