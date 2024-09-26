@@ -57,3 +57,29 @@ export async function addCommentToIssue(context: Context, message: string, issue
     context.logger.error("Adding a comment failed!", { err });
   }
 }
+
+export async function listOrgRepos(context: Context) {
+  const org = context.payload.organization?.login;
+  if (!org) throw context.logger.error("No organization found in payload!");
+
+  try {
+    const response = await context.octokit.rest.repos.listForOrg({
+      org,
+    });
+    return response.data;
+  } catch (err) {
+    throw context.logger.error("Listing org repos failed!", { err });
+  }
+}
+
+export async function listRepoIssues(context: Context, owner: string, repo: string) {
+  try {
+    const response = await context.octokit.rest.issues.listForRepo({
+      owner,
+      repo,
+    });
+    return response.data;
+  } catch (err) {
+    throw context.logger.error("Listing repo issues failed!", { err });
+  }
+}

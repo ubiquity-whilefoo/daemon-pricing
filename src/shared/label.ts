@@ -116,11 +116,21 @@ async function updateLabelColor(context: Context, labelName: string, color: stri
     throw context.logger.error("No owner found in the repository!");
   }
 
+  const issueLAbels = await listLabelsForRepo(context);
+  const label = issueLAbels.find((label) => label.name === labelName);
+
+  if (!label) {
+    throw context.logger.error("Label not found!", { labelName });
+  }
+
+  if (label.color === color) return;
+
   try {
     await context.octokit.rest.issues.updateLabel({
       owner,
       repo: payload.repository.name,
-      name: labelName,
+      name: label.name,
+      new_name: labelName,
       color,
     });
   } catch (err: unknown) {
