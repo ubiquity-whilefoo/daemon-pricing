@@ -63,7 +63,7 @@ describe("Label Base Rate Changes", () => {
     const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
     const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-    expect(updatedRepo?.labels).toHaveLength(40);
+    expect(updatedRepo?.labels).toHaveLength(27);
     expect(updatedIssue?.labels).toHaveLength(3);
     expect(updatedIssue2?.labels).toHaveLength(3);
 
@@ -82,9 +82,9 @@ describe("Label Base Rate Changes", () => {
     expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
     expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
     expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(5, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(7, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(6, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
     expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.NO_RECOGNIZED_LABELS);
   });
 
@@ -180,7 +180,7 @@ describe("Label Base Rate Changes", () => {
 
     expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
 
-    expect(updatedRepo?.labels).toHaveLength(46);
+    expect(updatedRepo?.labels).toHaveLength(27);
     expect(updatedIssue?.labels).toHaveLength(3);
     expect(updatedIssue2?.labels).toHaveLength(3);
 
@@ -202,9 +202,9 @@ describe("Label Base Rate Changes", () => {
     expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 27");
 
     expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(5, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(7, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(6, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
 
     expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS); // these two are connected ^
   });
@@ -236,7 +236,7 @@ describe("Label Base Rate Changes", () => {
     const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
     const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-    expect(updatedRepo?.labels).toHaveLength(46);
+    expect(updatedRepo?.labels).toHaveLength(27);
     expect(updatedIssue?.labels).toHaveLength(3);
     expect(updatedIssue2?.labels).toHaveLength(3);
 
@@ -252,11 +252,11 @@ describe("Label Base Rate Changes", () => {
     expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
     expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 8.5");
     expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(5, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(7, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+    expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
 
-    expect(infoSpy).toHaveBeenNthCalledWith(6, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS); // these two are connected ^
+    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
   });
 
   it("Should not globally update excluded repos", async () => {
@@ -277,28 +277,24 @@ describe("Label Base Rate Changes", () => {
         withPlugin: false,
         amount: 5,
       },
-      pusher
+      pusher,
+      {
+        excludeRepos: [STRINGS.TEST_REPO],
+      }
     );
 
-    if (!context.config.globalConfigUpdate) {
-      context.config.globalConfigUpdate = {
-        excludeRepos: [],
-      };
-    }
-    context.config.globalConfigUpdate.excludeRepos = [STRINGS.TEST_REPO];
     await globalLabelUpdate(context);
 
     expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
     expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
-    expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(5, `Skipping excluded repository ${STRINGS.TEST_REPO}`);
+    expect(infoSpy).toHaveBeenCalledTimes(2);
     expect(errorSpy).not.toHaveBeenCalled();
   });
 
   it("Should not globally update if it's disabled", async () => {
     const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
     const commits = inMemoryCommits(STRINGS.SHA_1);
-    const { context, infoSpy, errorSpy } = innerSetup(
+    const { context, infoSpy } = innerSetup(
       1,
       commits,
       STRINGS.SHA_1,
@@ -316,19 +312,13 @@ describe("Label Base Rate Changes", () => {
       pusher
     );
 
-    if (!context.config.globalConfigUpdate) {
-      context.config.globalConfigUpdate = {
-        excludeRepos: [],
-      };
-    }
-    context.config.globalConfigUpdate.excludeRepos = [STRINGS.TEST_REPO];
+    context.config.globalConfigUpdate = undefined;
     await globalLabelUpdate(context);
 
     expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
     expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
     expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(5, `Skipping excluded repository ${STRINGS.TEST_REPO}`);
-    expect(errorSpy).not.toHaveBeenCalled();
+    expect(infoSpy).toHaveBeenNthCalledWith(6, "Removing incorrect price labels done");
   });
 
   it("Should not update base rate if the user is not authenticated", async () => {

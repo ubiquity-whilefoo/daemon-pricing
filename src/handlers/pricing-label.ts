@@ -141,7 +141,6 @@ async function handleExistingPriceLabel(context: Context, targetPriceLabel: stri
   if (labeledEvents[labeledEvents.length - 1].actor?.type == UserType.User) {
     logger.info(`Skipping... already exists`);
   } else {
-
     await addPriceLabelToIssue(context, targetPriceLabel);
   }
 }

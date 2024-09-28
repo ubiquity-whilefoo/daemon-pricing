@@ -41,7 +41,7 @@ describe("User tests", () => {
     }
   });
 
-  it.only("Should not include globalConfigUpdate in defaults if omitted", () => {
+  it("Should not include globalConfigUpdate in defaults if omitted", () => {
     const settings = Value.Default(assistivePricingSettingsSchema, {}) as AssistivePricingSettings;
     const decodedSettings = Value.Decode(assistivePricingSettingsSchema, settings);
     expect(decodedSettings.globalConfigUpdate).toBeUndefined();
