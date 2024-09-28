@@ -1,5 +1,4 @@
 import { Context } from "../types/context";
-
 import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo } from "../shared/label";
 import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { Label, UserType } from "../types/github";
@@ -114,7 +113,11 @@ function getMinLabels(recognizedLabels: { time: Label[]; priority: Label[] }) {
 }
 
 async function handleTargetPriceLabel(context: Context, targetPriceLabel: string, labelNames: string[]) {
-  const _targetPriceLabel = labelNames.find((name) => name.includes("Price") && name.includes(targetPriceLabel));
+  const { repository } = context.payload;
+  if (repository.name === "devpool-directory") {
+    targetPriceLabel = targetPriceLabel.replace("Price: ", "Pricing: ");
+  }
+  const _targetPriceLabel = labelNames.find((name) => name.includes(targetPriceLabel));
 
   if (_targetPriceLabel) {
     await handleExistingPriceLabel(context, targetPriceLabel);
@@ -138,6 +141,7 @@ async function handleExistingPriceLabel(context: Context, targetPriceLabel: stri
   if (labeledEvents[labeledEvents.length - 1].actor?.type == UserType.User) {
     logger.info(`Skipping... already exists`);
   } else {
+
     await addPriceLabelToIssue(context, targetPriceLabel);
   }
 }

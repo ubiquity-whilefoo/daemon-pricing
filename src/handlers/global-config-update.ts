@@ -60,32 +60,32 @@ export async function globalLabelUpdate(context: Context) {
   logger.info(`Updating base rate from ${rates.previousBaseRate} to ${rates.newBaseRate}`);
   config.basePriceMultiplier = rates.newBaseRate;
 
-  await syncPriceLabelsToConfig(context);
+  const repos = await listOrgRepos(context);
+
+  for (const repo of repos) {
+    const ctx = {
+      ...context,
+      payload: {
+        repository: repo,
+      },
+    } as Context;
+
+    // this should create labels on the repos that are missing
+    await syncPriceLabelsToConfig(ctx);
+  }
 
   // update all issues with the new pricing
   if (config.globalConfigUpdate) {
-    await updateAllIssuePriceLabels(context, config.globalConfigUpdate.excludeRepos);
+    await updateAllIssuePriceLabels(context);
   }
 }
 
-async function updateAllIssuePriceLabels(context: Context, excludeRepos: string[]) {
+async function updateAllIssuePriceLabels(context: Context) {
   const { logger, config } = context;
   const repos = await listOrgRepos(context);
+
   for (const repo of repos) {
-    if (repo.archived) {
-      logger.info(`Skipping archived repository ${repo.name}`);
-      continue;
-    }
-    if (repo.disabled) {
-      logger.info(`Skipping disabled repository ${repo.name}`);
-      continue;
-    }
-
-    if (excludeRepos.includes(repo.name)) {
-      logger.info(`Skipping excluded repository ${repo.name}`);
-      continue;
-    }
-
+    logger.info(`Fetching issues for ${repo.name}`);
     const issues = await listRepoIssues(context, repo.owner.login, repo.name);
 
     for (const issue of issues) {
@@ -101,6 +101,8 @@ async function updateAllIssuePriceLabels(context: Context, excludeRepos: string[
         issue.labels as Label[],
         config
       );
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
   }
 }
