@@ -33,8 +33,6 @@ export async function watchLabelChange(context: Context) {
   // check if user is authorized to make the change
   const hasAccess = await hasLabelEditPermission(context, currentLabel, triggerUser);
 
-
-
   await context.adapters.supabase.label.saveLabelChange({
     previousLabel,
     currentLabel,

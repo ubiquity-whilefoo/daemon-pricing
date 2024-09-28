@@ -13,12 +13,9 @@ export interface PluginInputs<T extends WebhookEventName = SupportedEvents> {
 
 export const assistivePricingSettingsSchema = T.Object({
   globalConfigUpdate: T.Optional(
-    T.Object(
-      {
-        excludeRepos: T.Array(T.String(), { default: [] }),
-      },
-      { default: {} }
-    )
+    T.Object({
+      excludeRepos: T.Array(T.String()),
+    })
   ),
   labels: T.Object(
     {

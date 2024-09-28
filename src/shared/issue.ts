@@ -41,9 +41,9 @@ export async function isUserAdminOrBillingManager(context: Context, username?: s
   return false;
 }
 
-export async function addCommentToIssue(context: Context, message: string, issueNumber: number, owner_?: string, repo?: string) {
+export async function addCommentToIssue(context: Context, message: string, issueNumber: number, repoOwner?: string, repo?: string) {
   const payload = context.payload;
-  const owner = owner_ || payload.repository.owner?.login;
+  const owner = repoOwner || payload.repository.owner?.login;
   if (!owner) throw context.logger.error("No owner found in the repository!");
 
   try {
@@ -66,7 +66,7 @@ export async function listOrgRepos(context: Context) {
     const response = await context.octokit.rest.repos.listForOrg({
       org,
     });
-    return response.data;
+    return response.data.filter((repo) => !repo.archived && !repo.disabled && !context.config.globalConfigUpdate?.excludeRepos.includes(repo.name));
   } catch (err) {
     throw context.logger.error("Listing org repos failed!", { err });
   }

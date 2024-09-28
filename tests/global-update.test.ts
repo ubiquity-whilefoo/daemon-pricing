@@ -6,11 +6,7 @@ import { it, describe, beforeAll, beforeEach, afterAll, expect, afterEach, jest 
 import { ZERO_SHA } from "../src/handlers/check-modified-base-rate";
 import dotenv from "dotenv";
 import { Octokit } from "@octokit/rest";
-import {
-  priceMap,
-  PRIORITY_LABELS,
-  TIME_LABELS,
-} from "./__mocks__/constants";
+import { priceMap, PRIORITY_LABELS, TIME_LABELS } from "./__mocks__/constants";
 import { STRINGS } from "./__mocks__/strings";
 import { Label } from "../src/types/github";
 import { globalLabelUpdate } from "../src/handlers/global-config-update";

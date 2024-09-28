@@ -25,7 +25,7 @@ export async function getBaseRateChanges(context: Context): Promise<Rates> {
   if (!commitSha) {
     throw new Error("No commit sha found");
   }
-  const owner = repository.owner?.login
+  const owner = repository.owner?.login;
 
   if (!owner) {
     throw logger.error("No owner found in the repository");
