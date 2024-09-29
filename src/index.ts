@@ -9,10 +9,11 @@ import { run } from "./run";
  * Run the plugin as a GitHub Action instance.
  */
 async function actionRun() {
+
   const payloadEnv = {
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,
-    UBIQUIBOT_PUBLIC_KEY: process.env.UBIQUIBOT_PUBLIC_KEY,
+    UBIQUIBOT_PUBLIC_KEY: process.env.UBIQUIBOT_PUBLIC_KEY || "temporarily-disabled",
   };
 
   const env = Value.Decode(envSchema, payloadEnv);
