@@ -23,7 +23,8 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
   });
 
   if (res.length > 0) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // we'll hit a secondary rate limit if using the runner token
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     return res;
   }
 
