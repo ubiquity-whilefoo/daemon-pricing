@@ -22,20 +22,9 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   // List all the labels for a repository
   const allLabels = await listLabelsForRepo(context);
 
-  // Get the missing labels
-  const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label)))];
-
-  // Create missing labels
-  if (missingLabels.length > 0) {
-    logger.info("Missing labels found, creating them", { missingLabels });
-    await Promise.allSettled(missingLabels.map((label) => createLabel(context, label)));
-    logger.info(`Creating missing labels done`);
-  }
-
   const incorrectPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && !priceLabels.includes(label.name));
 
-  // Remove incorrect price labels
-  if (incorrectPriceLabels.length > 0) {
+  if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
     const owner = context.payload.repository.owner?.login;
     if (!owner) {
@@ -73,5 +62,15 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
       )
     );
     logger.info(`Updating incorrect color labels done`);
+  }
+
+  // Get the missing labels
+  const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label)))];
+
+  // Create missing labels
+  if (missingLabels.length > 0) {
+    logger.info("Missing labels found, creating them", { missingLabels });
+    await Promise.allSettled(missingLabels.map((label) => createLabel(context, label)));
+    logger.info(`Creating missing labels done`);
   }
 }

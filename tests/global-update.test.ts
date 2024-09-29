@@ -85,7 +85,7 @@ describe("Label Base Rate Changes", () => {
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
       expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
-      expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenNthCalledWith(6, STRINGS.CREATING_MISSING_LABELS);
       expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
@@ -217,7 +217,7 @@ describe("Label Base Rate Changes", () => {
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
       expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 27");
 
-      expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenNthCalledWith(6, STRINGS.CREATING_MISSING_LABELS);
       expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
@@ -271,7 +271,7 @@ describe("Label Base Rate Changes", () => {
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
       expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 8.5");
-      expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenNthCalledWith(6, STRINGS.CREATING_MISSING_LABELS);
       expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
@@ -346,7 +346,6 @@ describe("Label Base Rate Changes", () => {
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
       expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
       expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-      expect(infoSpy).toHaveBeenNthCalledWith(6, "Removing incorrect price labels done");
     },
     THIRTY_SECONDS
   );
