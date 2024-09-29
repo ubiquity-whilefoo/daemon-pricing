@@ -1,7 +1,7 @@
 import * as github from "@actions/github";
 import * as core from "@actions/core";
 import { Value } from "@sinclair/typebox/value";
-import { Env, envSchema } from "./types/env";
+import { envSchema } from "./types/env";
 import { assistivePricingSettingsSchema, PluginInputs } from "./types/plugin-input";
 import { run } from "./run";
 
@@ -9,7 +9,6 @@ import { run } from "./run";
  * Run the plugin as a GitHub Action instance.
  */
 async function actionRun() {
-
   const payloadEnv = {
     SUPABASE_KEY: process.env.SUPABASE_KEY,
     SUPABASE_URL: process.env.SUPABASE_URL,

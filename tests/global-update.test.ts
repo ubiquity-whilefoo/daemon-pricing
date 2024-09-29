@@ -18,6 +18,8 @@ jest.requireActual("@octokit/rest");
 
 const octokit = new Octokit();
 
+const THIRTY_SECONDS = 30 * 1000;
+
 type CreateCommitParams = {
   owner: string;
   repo: string;
@@ -44,90 +46,11 @@ describe("Label Base Rate Changes", () => {
     await setupTests();
   });
 
-  it("Should change the base rate of all price labels", async () => {
-    const commits = inMemoryCommits(STRINGS.SHA_1);
-    const { context, errorSpy, infoSpy } = innerSetup(1, commits, STRINGS.SHA_1, STRINGS.SHA_1, {
-      owner: STRINGS.UBIQUITY,
-      repo: STRINGS.TEST_REPO,
-      sha: STRINGS.SHA_1,
-      modified: [STRINGS.CONFIG_PATH],
-      added: [],
-      withBaseRateChanges: true,
-      withPlugin: false,
-      amount: 5,
-    });
-
-    await globalLabelUpdate(context);
-
-    const updatedRepo = db.repo.findFirst({ where: { id: { equals: 1 } } });
-    const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
-    const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
-
-    expect(updatedRepo?.labels).toHaveLength(27);
-    expect(updatedIssue?.labels).toHaveLength(3);
-    expect(updatedIssue2?.labels).toHaveLength(3);
-
-    const priceLabels = updatedIssue?.labels.filter((label) => (label as Label).name.includes("Price:"));
-    const priceLabels2 = updatedIssue2?.labels.filter((label) => (label as Label).name.includes("Price:"));
-
-    expect(priceLabels).toHaveLength(1);
-    expect(priceLabels2).toHaveLength(1);
-
-    expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 5} USD`);
-    expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 5} USD`);
-
-    const noTandP = db.issue.findFirst({ where: { id: { equals: 2 } } });
-    expect(noTandP?.labels).toHaveLength(0);
-
-    expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-    expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
-    expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
-    expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.NO_RECOGNIZED_LABELS);
-  });
-
-  it("Should update base rate if there are changes in the plugin config", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 4 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1, true, true);
-    const { context, errorSpy, infoSpy } = innerSetup(
-      1,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: true,
-        amount: 5,
-      },
-      pusher
-    );
-
-    await globalLabelUpdate(context);
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.CONFIG_CHANGED_IN_COMMIT);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_FROM_1_TO_5);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
-  });
-
-  it("Should update base rate if the user is authenticated", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1, true, true);
-    const { context, errorSpy, infoSpy } = innerSetup(
-      1,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
+  it(
+    "Should change the base rate of all price labels",
+    async () => {
+      const commits = inMemoryCommits(STRINGS.SHA_1);
+      const { context, errorSpy, infoSpy } = innerSetup(1, commits, STRINGS.SHA_1, STRINGS.SHA_1, {
         owner: STRINGS.UBIQUITY,
         repo: STRINGS.TEST_REPO,
         sha: STRINGS.SHA_1,
@@ -136,348 +59,479 @@ describe("Label Base Rate Changes", () => {
         withBaseRateChanges: true,
         withPlugin: false,
         amount: 5,
-      },
-      pusher
-    );
+      });
 
-    await globalLabelUpdate(context);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.CONFIG_CHANGED_IN_COMMIT);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_FROM_1_TO_5);
+      await globalLabelUpdate(context);
 
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
-  });
+      const updatedRepo = db.repo.findFirst({ where: { id: { equals: 1 } } });
+      const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
+      const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-  it("Should allow a billing manager to update the base rate", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 3 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1, false, true, true);
-    const { context, errorSpy, infoSpy } = innerSetup(
-      3,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: true,
-        amount: 27, // billing manager's last day
-      },
-      pusher
-    );
+      expect(updatedRepo?.labels).toHaveLength(27);
+      expect(updatedIssue?.labels).toHaveLength(3);
+      expect(updatedIssue2?.labels).toHaveLength(3);
 
-    await globalLabelUpdate(context);
+      const priceLabels = updatedIssue?.labels.filter((label) => (label as Label).name.includes("Price:"));
+      const priceLabels2 = updatedIssue2?.labels.filter((label) => (label as Label).name.includes("Price:"));
 
-    const updatedRepo = db.repo.findFirst({ where: { id: { equals: 1 } } });
-    const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
-    const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
+      expect(priceLabels).toHaveLength(1);
+      expect(priceLabels2).toHaveLength(1);
 
-    expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
+      expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 5} USD`);
+      expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 5} USD`);
 
-    expect(updatedRepo?.labels).toHaveLength(27);
-    expect(updatedIssue?.labels).toHaveLength(3);
-    expect(updatedIssue2?.labels).toHaveLength(3);
+      const noTandP = db.issue.findFirst({ where: { id: { equals: 2 } } });
+      expect(noTandP?.labels).toHaveLength(0);
 
-    const priceLabels = updatedIssue?.labels.filter((label) => (label as Label).name.includes("Price:"));
-    const priceLabels2 = updatedIssue2?.labels.filter((label) => (label as Label).name.includes("Price:"));
+      expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
+      expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
+      expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
+      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.NO_RECOGNIZED_LABELS);
+    },
+    THIRTY_SECONDS
+  );
 
-    expect(priceLabels).toHaveLength(1);
-    expect(priceLabels2).toHaveLength(1);
+  it(
+    "Should update base rate if there are changes in the plugin config",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 4 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1, true, true);
+      const { context, errorSpy, infoSpy } = innerSetup(
+        1,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: true,
+          amount: 5,
+        },
+        pusher
+      );
 
-    expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 27} USD`);
-    expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 27} USD`);
+      await globalLabelUpdate(context);
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.CONFIG_CHANGED_IN_COMMIT);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_FROM_1_TO_5);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+    },
+    THIRTY_SECONDS
+  );
 
-    const sender_ = context.payload.sender;
+  it(
+    "Should update base rate if the user is authenticated",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1, true, true);
+      const { context, errorSpy, infoSpy } = innerSetup(
+        1,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: false,
+          amount: 5,
+        },
+        pusher
+      );
 
-    expect(pusher?.name).toBe("billing");
-    expect(sender_?.login).toBe("billing");
+      await globalLabelUpdate(context);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.CONFIG_CHANGED_IN_COMMIT);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_FROM_1_TO_5);
 
-    expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-    expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 27");
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
+    },
+    THIRTY_SECONDS
+  );
 
-    expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
+  it(
+    "Should allow a billing manager to update the base rate",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 3 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1, false, true, true);
+      const { context, errorSpy, infoSpy } = innerSetup(
+        3,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: true,
+          amount: 27, // billing manager's last day
+        },
+        pusher
+      );
 
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS); // these two are connected ^
-  });
+      await globalLabelUpdate(context);
 
-  it("Should update if auth pushes the code and billing manager merges the PR", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 3 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1, true, true, true);
-    const { context, errorSpy, infoSpy } = innerSetup(
-      1,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: true,
-        amount: 8.5,
-      },
-      pusher
-    );
+      const updatedRepo = db.repo.findFirst({ where: { id: { equals: 1 } } });
+      const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
+      const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-    await globalLabelUpdate(context);
+      expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
 
-    const updatedRepo = db.repo.findFirst({ where: { id: { equals: 1 } } });
-    const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
-    const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
+      expect(updatedRepo?.labels).toHaveLength(27);
+      expect(updatedIssue?.labels).toHaveLength(3);
+      expect(updatedIssue2?.labels).toHaveLength(3);
 
-    expect(updatedRepo?.labels).toHaveLength(27);
-    expect(updatedIssue?.labels).toHaveLength(3);
-    expect(updatedIssue2?.labels).toHaveLength(3);
+      const priceLabels = updatedIssue?.labels.filter((label) => (label as Label).name.includes("Price:"));
+      const priceLabels2 = updatedIssue2?.labels.filter((label) => (label as Label).name.includes("Price:"));
 
-    const priceLabels = updatedIssue?.labels.filter((label) => (label as Label).name.includes("Price:"));
-    const priceLabels2 = updatedIssue2?.labels.filter((label) => (label as Label).name.includes("Price:"));
+      expect(priceLabels).toHaveLength(1);
+      expect(priceLabels2).toHaveLength(1);
 
-    expect(priceLabels).toHaveLength(1);
-    expect(priceLabels2).toHaveLength(1);
+      expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 27} USD`);
+      expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 27} USD`);
 
-    expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
-    expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
+      const sender_ = context.payload.sender;
 
-    expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-    expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 8.5");
-    expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
-    expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
+      expect(pusher?.name).toBe("billing");
+      expect(sender_?.login).toBe("billing");
 
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
-  });
+      expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
+      expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 27");
 
-  it("Should not globally update excluded repos", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1);
-    const { context, infoSpy, errorSpy } = innerSetup(
-      1,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: false,
-        amount: 5,
-      },
-      pusher,
-      {
-        excludeRepos: [STRINGS.TEST_REPO],
-      }
-    );
+      expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
 
-    await globalLabelUpdate(context);
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS); // these two are connected ^
+    },
+    THIRTY_SECONDS
+  );
 
-    expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-    expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
-    expect(infoSpy).toHaveBeenCalledTimes(2);
-    expect(errorSpy).not.toHaveBeenCalled();
-  });
+  it(
+    "Should update if auth pushes the code and billing manager merges the PR",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 3 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1, true, true, true);
+      const { context, errorSpy, infoSpy } = innerSetup(
+        1,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: true,
+          amount: 8.5,
+        },
+        pusher
+      );
 
-  it("Should not globally update if it's disabled", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1);
-    const { context, infoSpy } = innerSetup(
-      1,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: false,
-        amount: 5,
-      },
-      pusher
-    );
+      await globalLabelUpdate(context);
 
-    context.config.globalConfigUpdate = undefined;
-    await globalLabelUpdate(context);
+      const updatedRepo = db.repo.findFirst({ where: { id: { equals: 1 } } });
+      const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
+      const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-    expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-    expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
-    expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
-    expect(infoSpy).toHaveBeenNthCalledWith(6, "Removing incorrect price labels done");
-  });
+      expect(updatedRepo?.labels).toHaveLength(27);
+      expect(updatedIssue?.labels).toHaveLength(3);
+      expect(updatedIssue2?.labels).toHaveLength(3);
 
-  it("Should not update base rate if the user is not authenticated", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1, false);
-    const { context, errorSpy } = innerSetup(
-      2,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.USER_2,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: false,
-        amount: 5,
-      },
-      pusher
-    );
+      const priceLabels = updatedIssue?.labels.filter((label) => (label as Label).name.includes("Price:"));
+      const priceLabels2 = updatedIssue2?.labels.filter((label) => (label as Label).name.includes("Price:"));
 
-    await globalLabelUpdate(context);
-    expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
-    expect(errorSpy).toHaveBeenNthCalledWith(2, STRINGS.SENDER_NOT_AUTHED);
-  });
+      expect(priceLabels).toHaveLength(1);
+      expect(priceLabels2).toHaveLength(1);
 
-  it("Should not update base rate if there are no changes", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1, true, false);
-    const { context, infoSpy } = innerSetup(
-      1,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [],
-        added: [],
-        withBaseRateChanges: false,
-        withPlugin: false,
-        amount: 5,
-      },
-      pusher
-    );
+      expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
+      expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
 
-    await globalLabelUpdate(context);
-    expect(infoSpy).toHaveBeenCalledWith("No files were changed in the commits, so no action is required.");
-  });
+      expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
+      expect(infoSpy).toHaveBeenNthCalledWith(2, "Updating base rate from 1 to 8.5");
+      expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenNthCalledWith(8, STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenNthCalledWith(9, STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+      expect(infoSpy).toHaveBeenNthCalledWith(10, STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
 
-  it("Should not update if non-auth pushes the code and admin merges the PR", async () => {
-    const commits = inMemoryCommits(STRINGS.SHA_1, false, true, true);
-    const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
-    const { context, errorSpy, infoSpy } = innerSetup(
-      1,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: true,
-        amount: 5,
-      },
-      pusher
-    );
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
+    },
+    THIRTY_SECONDS
+  );
 
-    await globalLabelUpdate(context);
-    expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
-    expect(infoSpy).not.toHaveBeenCalled();
-  });
+  it(
+    "Should not globally update excluded repos",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1);
+      const { context, infoSpy, errorSpy } = innerSetup(
+        1,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: false,
+          amount: 5,
+        },
+        pusher,
+        {
+          excludeRepos: [STRINGS.TEST_REPO],
+        }
+      );
 
-  it("Should not update if non-auth pushes the code and billing manager merges the PR", async () => {
-    const commits = inMemoryCommits(STRINGS.SHA_1, false, true, true);
-    const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
-    const { context, errorSpy } = innerSetup(
-      3,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: true,
-        amount: 5,
-      },
-      pusher
-    );
+      await globalLabelUpdate(context);
 
-    await globalLabelUpdate(context);
-    expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
-  });
+      expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
+      expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
+      expect(infoSpy).toHaveBeenCalledTimes(2);
+      expect(errorSpy).not.toHaveBeenCalled();
+    },
+    THIRTY_SECONDS
+  );
 
-  it("Should not update if auth pushes the code and non-auth merges the PR", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1, true, true, true);
-    const { context, errorSpy } = innerSetup(
-      2,
-      commits,
-      STRINGS.SHA_1,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: true,
-        amount: 5,
-      },
-      pusher
-    );
+  it(
+    "Should not globally update if it's disabled",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1);
+      const { context, infoSpy } = innerSetup(
+        1,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: false,
+          amount: 5,
+        },
+        pusher
+      );
 
-    await globalLabelUpdate(context);
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.SENDER_NOT_AUTHED);
-    expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
-  });
+      context.config.globalConfigUpdate = undefined;
+      await globalLabelUpdate(context);
 
-  it("Should not update base rate if a new branch was created", async () => {
-    const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
-    const commits = inMemoryCommits(STRINGS.SHA_1);
-    const { context, errorSpy, infoSpy } = innerSetup(
-      3,
-      commits,
-      ZERO_SHA,
-      STRINGS.SHA_1,
-      {
-        owner: STRINGS.UBIQUITY,
-        repo: STRINGS.TEST_REPO,
-        sha: STRINGS.SHA_1,
-        modified: [STRINGS.CONFIG_PATH],
-        added: [],
-        withBaseRateChanges: true,
-        withPlugin: false,
-        amount: 5,
-      },
-      pusher
-    );
+      expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
+      expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
+      expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
+      expect(infoSpy).toHaveBeenNthCalledWith(6, "Removing incorrect price labels done");
+    },
+    THIRTY_SECONDS
+  );
 
-    await globalLabelUpdate(context);
-    expect(infoSpy).toHaveBeenCalledTimes(1);
-    expect(infoSpy).toHaveBeenCalledWith("Skipping push events. A new branch was created");
+  it(
+    "Should not update base rate if the user is not authenticated",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1, false);
+      const { context, errorSpy } = innerSetup(
+        2,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.USER_2,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: false,
+          amount: 5,
+        },
+        pusher
+      );
 
-    expect(errorSpy).not.toHaveBeenCalled();
-  });
+      await globalLabelUpdate(context);
+      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
+      expect(errorSpy).toHaveBeenNthCalledWith(2, STRINGS.SENDER_NOT_AUTHED);
+    },
+    THIRTY_SECONDS
+  );
+
+  it(
+    "Should not update base rate if there are no changes",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1, true, false);
+      const { context, infoSpy } = innerSetup(
+        1,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [],
+          added: [],
+          withBaseRateChanges: false,
+          withPlugin: false,
+          amount: 5,
+        },
+        pusher
+      );
+
+      await globalLabelUpdate(context);
+      expect(infoSpy).toHaveBeenCalledWith("No files were changed in the commits, so no action is required.");
+    },
+    THIRTY_SECONDS
+  );
+
+  it(
+    "Should not update if non-auth pushes the code and admin merges the PR",
+    async () => {
+      const commits = inMemoryCommits(STRINGS.SHA_1, false, true, true);
+      const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
+      const { context, errorSpy, infoSpy } = innerSetup(
+        1,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: true,
+          amount: 5,
+        },
+        pusher
+      );
+
+      await globalLabelUpdate(context);
+      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
+      expect(infoSpy).not.toHaveBeenCalled();
+    },
+    THIRTY_SECONDS
+  );
+
+  it(
+    "Should not update if non-auth pushes the code and billing manager merges the PR",
+    async () => {
+      const commits = inMemoryCommits(STRINGS.SHA_1, false, true, true);
+      const pusher = db.users.findFirst({ where: { id: { equals: 2 } } }) as unknown as Context["payload"]["sender"];
+      const { context, errorSpy } = innerSetup(
+        3,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: true,
+          amount: 5,
+        },
+        pusher
+      );
+
+      await globalLabelUpdate(context);
+      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
+    },
+    THIRTY_SECONDS
+  );
+
+  it(
+    "Should not update if auth pushes the code and non-auth merges the PR",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1, true, true, true);
+      const { context, errorSpy } = innerSetup(
+        2,
+        commits,
+        STRINGS.SHA_1,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: true,
+          amount: 5,
+        },
+        pusher
+      );
+
+      await globalLabelUpdate(context);
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.SENDER_NOT_AUTHED);
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
+    },
+    THIRTY_SECONDS
+  );
+
+  it(
+    "Should not update base rate if a new branch was created",
+    async () => {
+      const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
+      const commits = inMemoryCommits(STRINGS.SHA_1);
+      const { context, errorSpy, infoSpy } = innerSetup(
+        3,
+        commits,
+        ZERO_SHA,
+        STRINGS.SHA_1,
+        {
+          owner: STRINGS.UBIQUITY,
+          repo: STRINGS.TEST_REPO,
+          sha: STRINGS.SHA_1,
+          modified: [STRINGS.CONFIG_PATH],
+          added: [],
+          withBaseRateChanges: true,
+          withPlugin: false,
+          amount: 5,
+        },
+        pusher
+      );
+
+      await globalLabelUpdate(context);
+      expect(infoSpy).toHaveBeenCalledTimes(1);
+      expect(infoSpy).toHaveBeenCalledWith("Skipping push events. A new branch was created");
+
+      expect(errorSpy).not.toHaveBeenCalled();
+    },
+    THIRTY_SECONDS
+  );
 });
 
 function innerSetup(
@@ -590,5 +644,10 @@ function createContext(
     },
     octokit: octokit,
     eventName: "push",
+    env: {
+      SUPABASE_KEY: "key",
+      SUPABASE_URL: "url",
+      UBIQUIBOT_PUBLIC_KEY: "key",
+    },
   };
 }

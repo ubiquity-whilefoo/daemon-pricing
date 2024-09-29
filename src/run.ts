@@ -23,6 +23,7 @@ export async function run(inputs: PluginInputs, env: Env) {
     octokit,
     logger: new Logs("info"),
     adapters: {} as ReturnType<typeof createAdapters>,
+    env,
   };
   context.adapters = createAdapters(supabaseClient, context);
 
