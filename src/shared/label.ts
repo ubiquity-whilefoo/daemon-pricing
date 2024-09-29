@@ -23,6 +23,7 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
   });
 
   if (res.length > 0) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     return res;
   }
 
