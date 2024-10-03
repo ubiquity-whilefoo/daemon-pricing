@@ -1,10 +1,10 @@
 import { TransformDecodeCheckError, TransformDecodeError, Value, ValueError } from "@sinclair/typebox/value";
 import { Env, envConfigValidator, envSchema } from "../types/env";
-import { assistivePricingSchemaValidator, AssistivePricingSettings, assistivePricingSettingsSchema } from "../types/plugin-input";
+import { assistivePricingSchemaValidator, AssistivePricingSettings, pluginSettingsSchema } from "../types/plugin-input";
 
 export function validateAndDecodeSchemas(env: Env, rawSettings: object) {
   const errors: ValueError[] = [];
-  const settings = Value.Default(assistivePricingSettingsSchema, rawSettings) as AssistivePricingSettings;
+  const settings = Value.Default(pluginSettingsSchema, rawSettings) as AssistivePricingSettings;
 
   if (!assistivePricingSchemaValidator.test(settings)) {
     for (const error of assistivePricingSchemaValidator.errors(settings)) {
@@ -26,7 +26,7 @@ export function validateAndDecodeSchemas(env: Env, rawSettings: object) {
 
   try {
     const decodedEnv = Value.Decode(envSchema, env);
-    const decodedSettings = Value.Decode(assistivePricingSettingsSchema, settings);
+    const decodedSettings = Value.Decode(pluginSettingsSchema, settings);
     return { decodedEnv, decodedSettings };
   } catch (e) {
     if (e instanceof TransformDecodeCheckError || e instanceof TransformDecodeError) {
