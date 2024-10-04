@@ -21,6 +21,8 @@ const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
   },
 });
 
+const url = "http://localhost:4000";
+
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -97,6 +99,7 @@ describe("User tests", () => {
           signature,
         }),
         method: "POST",
+        url,
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -111,7 +114,7 @@ describe("User tests", () => {
     const result = await workerFetch.fetch(
       {
         method: "GET",
-        url: "http://localhost:4000",
+        url,
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -130,6 +133,10 @@ describe("User tests", () => {
         headers: {
           get: () => "application/json",
         },
+        url,
+        json() {
+          return { settings: {} };
+        },
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -137,9 +144,26 @@ describe("User tests", () => {
       } as unknown as Env
     );
     expect(result.ok).toEqual(false);
-    expect(result.status).toEqual(400);
+    expect(result.status).toEqual(500);
     expect(await result.json()).toEqual({
-      error: "Bad Request: the environment is invalid. /UBIQUIBOT_PUBLIC_KEY: Required property; /UBIQUIBOT_PUBLIC_KEY: Expected string",
+      errors: [
+        {
+          message: "Required property",
+          path: "/UBIQUIBOT_PUBLIC_KEY",
+          schema: {
+            type: "string",
+          },
+          type: 45,
+        },
+        {
+          message: "Expected string",
+          path: "/UBIQUIBOT_PUBLIC_KEY",
+          schema: {
+            type: "string",
+          },
+          type: 54,
+        },
+      ],
     });
   });
 });

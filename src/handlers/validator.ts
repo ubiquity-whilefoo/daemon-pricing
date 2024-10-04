@@ -8,14 +8,12 @@ export function validateAndDecodeSchemas(env: Env, rawSettings: object) {
 
   if (!assistivePricingSchemaValidator.test(settings)) {
     for (const error of assistivePricingSchemaValidator.errors(settings)) {
-      console.error(error);
       errors.push(error);
     }
   }
 
   if (!envConfigValidator.test(env)) {
     for (const error of envConfigValidator.errors(env)) {
-      console.error(error);
       errors.push(error);
     }
   }
