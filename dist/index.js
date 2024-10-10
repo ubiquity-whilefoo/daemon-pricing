@@ -46152,13 +46152,15 @@
           }
           const s = yield (0, o.getBaseRateChanges)(e);
           const A = yield (0, i.getLabelsChanges)(e);
-          t.info("Current list of labels", { labels: A });
-          if (s.newBaseRate === null || A.newLabels === null) {
-            t.error("No new base rate found in the diff");
+          t.info("Current list of labels ==>", { labels: A, prevConf: r });
+          if (s.newBaseRate === null && A.newLabels === null) {
+            t.error("No changes found in the diff, skipping.");
             return;
           }
-          t.info(`Updating base rate from ${s.previousBaseRate} to ${s.newBaseRate}`);
-          r.basePriceMultiplier = s.newBaseRate;
+          if (s.newBaseRate !== null) {
+            t.info(`Updating base rate from ${s.previousBaseRate} to ${s.newBaseRate}`);
+            r.basePriceMultiplier = s.newBaseRate;
+          }
           const d = yield (0, c.listOrgRepos)(e);
           for (const t of d) {
             const r = Object.assign(Object.assign({}, e), { payload: { repository: t } });
