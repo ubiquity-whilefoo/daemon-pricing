@@ -1,11 +1,10 @@
 import { COLORS, createLabel, listLabelsForRepo } from "../shared/label";
 import { calculateLabelValue, calculateTaskPrice } from "../shared/pricing";
 import { Context } from "../types/context";
+import { COLLABORATOR_ONLY_DESCRIPTION } from "../types/plugin-input";
 
 // This just checks all the labels in the config have been set in gh issue
 // If there's something missing, they will be added
-
-const COLLABORATOR_ONLY_DESCRIPTION = "Collaborator only.";
 
 export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const { config, logger } = context;

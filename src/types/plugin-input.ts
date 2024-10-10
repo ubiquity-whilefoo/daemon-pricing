@@ -58,3 +58,5 @@ export type Rates = {
   previousBaseRate: number | null;
   newBaseRate: number | null;
 };
+
+export const COLLABORATOR_ONLY_DESCRIPTION = "Collaborator only.";

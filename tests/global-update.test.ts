@@ -629,9 +629,12 @@ function createContext(
     logger: new Logs("debug"),
     config: {
       labels: {
-        priority: PRIORITY_LABELS.map((label) => label.name),
+        priority: PRIORITY_LABELS.map((label) => ({
+          name: label.name,
+          collaboratorOnly: false,
+        })),
         time: TIME_LABELS.map((label) => ({
-          value: label.name,
+          name: label.name,
           collaboratorOnly: false,
         })),
       },
