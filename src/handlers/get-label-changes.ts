@@ -48,6 +48,8 @@ export async function getLabelsChanges(
   const data = commitData.data as unknown as string;
   const changes = data.split("\n");
 
+  logger.info("Last commit changes", { changes });
+
   const newLabelsRegex = /\+\s*"labels":\s*({[^}]*})/;
   const oldLabelsRegex = /-\s*"labels":\s*({[^}]*})/;
 
