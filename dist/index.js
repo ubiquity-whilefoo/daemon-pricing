@@ -47127,7 +47127,7 @@
         { default: {} }
       );
       t.assistivePricingSchemaValidator = new s.StandardValidator(t.pluginSettingsSchema);
-      t.COLLABORATOR_ONLY_DESCRIPTION = "Collaborator only";
+      t.COLLABORATOR_ONLY_DESCRIPTION = "⚠️ Collaborator only";
     },
     36273: (e, t) => {
       "use strict";
