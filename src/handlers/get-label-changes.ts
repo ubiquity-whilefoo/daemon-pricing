@@ -50,8 +50,8 @@ export async function getLabelsChanges(
 
   logger.info("Last commit changes", { changes });
 
-  const newLabelsRegex = /\+\s*"collaboratorOnly":\s*({[^}]*})/;
-  const oldLabelsRegex = /-\s*"collaboratorOnly":\s*({[^}]*})/;
+  const newLabelsRegex = /\+\s*collaboratorOnly:\s*(\S+})/;
+  const oldLabelsRegex = /-\s*collaboratorOnly:\s*(\S+)/;
 
   const newLabels = extractLabels(changes, newLabelsRegex);
   const previousLabels = extractLabels(changes, oldLabelsRegex);
@@ -67,8 +67,7 @@ export async function getLabelsChanges(
 }
 
 function extractLabels(changes: string[], regex: RegExp): string | undefined {
-  const matchedLines = changes.filter((line) => regex.test(line));
-  const matchedData = matchedLines.join("\n");
-  const match = matchedData.match(regex);
+  const matchedLine = changes?.find((line) => regex.test(line));
+  const match = matchedLine?.match(regex);
   return match ? match[1] : undefined;
 }
