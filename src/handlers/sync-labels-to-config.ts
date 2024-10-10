@@ -69,19 +69,13 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
   const incorrectDescriptionLabels = pricingLabels.filter((label) => {
     const item = allLabels.find((o) => o.name === label.name);
-    logger.info("checking label for update", {
-      label,
-      item,
-      shouldDelete:
-        !!item &&
-        ((label.collaboratorOnly && (!item.description || item.description !== COLLABORATOR_ONLY_DESCRIPTION)) ||
-          (!label.collaboratorOnly && item.description)),
-    });
     // Either we should not have a collaborator only but there is a description, or there is a description when
-    // collaborator only is false, or the description doesn't match the current configuration
-    return (
+    // collaborator only is false, or the description doesn't match the current configuration, and it's not a Price
+    // label
+    return Boolean(
       !!item &&
-      ((label.collaboratorOnly && (!item.description || item.description !== COLLABORATOR_ONLY_DESCRIPTION)) || (!label.collaboratorOnly && item.description))
+        !label.name.startsWith("Price: ") &&
+        ((label.collaboratorOnly && (!item.description || item.description !== COLLABORATOR_ONLY_DESCRIPTION)) || (!label.collaboratorOnly && item.description))
     );
   });
 
