@@ -1,11 +1,11 @@
-# `@ubiquibot/assistive-pricing`
+# `@ubiquity-os/daemon-pricing`
 
 Helps settings prices and adds label to the issues accordingly.
 
 ## Usage
 Example of valid configuration:
 ```yml
- - plugin: https://ubiquibot-assistive-pricing.ubq.fi
+ - plugin: https://ubiquity-os-daemon-pricing.ubq.fi
    type: github
    with:
      labels:
@@ -41,8 +41,8 @@ yarn worker
 ```
 
 ### Make requests
-To trigger the worker, `POST` requests should be made to http://localhost:4000 with a `Content-Type: application/json` 
-header and a body 
+To trigger the worker, `POST` requests should be made to http://localhost:4000 with a `Content-Type: application/json`
+header and a body
 looking like
 ```json
 {

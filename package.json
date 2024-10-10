@@ -1,5 +1,5 @@
 {
-  "name": "@ubiquibot/assistive-pricing",
+  "name": "@ubiquity-os/daemon-pricing",
   "version": "1.0.0",
   "description": "Helps set pricing for GitHub Issues and their rewards.",
   "main": "build/index.ts",
