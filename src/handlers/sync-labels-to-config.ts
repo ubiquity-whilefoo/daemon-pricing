@@ -16,7 +16,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
     for (const priorityLabel of config.labels.priority) {
       const targetPrice = calculateTaskPrice(context, calculateLabelValue(timeLabel.name), calculateLabelValue(priorityLabel.name), config.basePriceMultiplier);
       const targetPriceLabel = `Price: ${targetPrice} USD`;
-      priceLabels.push({ name: targetPriceLabel, collaboratorOnly: priorityLabel.collaboratorOnly });
+      priceLabels.push({ name: targetPriceLabel, collaboratorOnly: false });
     }
   }
 
@@ -25,11 +25,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   // List all the labels for a repository
   const allLabels = await listLabelsForRepo(context);
 
-  const incorrectPriceLabels = allLabels.filter(
-    (label) =>
-      label.name.startsWith("Price: ") &&
-      !priceLabels.some((o) => o.name === label.name && o.collaboratorOnly && label.description === COLLABORATOR_ONLY_DESCRIPTION)
-  );
+  const incorrectPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && !priceLabels.some((o) => o.name === label.name));
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });

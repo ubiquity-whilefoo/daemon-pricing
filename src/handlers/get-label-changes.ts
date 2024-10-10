@@ -1,16 +1,10 @@
 import { Context } from "../types/context";
-import { PluginInputs } from "../types/plugin-input";
 import { isPushEvent } from "../types/typeguards";
 
-export async function getLabelsChanges(
-  context: Context
-): Promise<{ previousLabels: PluginInputs["settings"]["labels"]["time"] | null; newLabels: PluginInputs["settings"]["labels"]["time"] | null }> {
+export async function getLabelsChanges(context: Context) {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
-    return {
-      previousLabels: null,
-      newLabels: null,
-    };
+    return false;
   }
   const {
     logger,
@@ -48,8 +42,6 @@ export async function getLabelsChanges(
   const data = commitData.data as unknown as string;
   const changes = data.split("\n");
 
-  logger.info("Last commit changes", { changes });
-
   const newLabelsRegex = /\+\s*collaboratorOnly:\s*(\S+)/;
   const oldLabelsRegex = /-\s*collaboratorOnly:\s*(\S+)/;
 
@@ -60,10 +52,7 @@ export async function getLabelsChanges(
     logger.error("No label changes found in the diff");
   }
 
-  return {
-    previousLabels: previousLabels ? JSON.parse(previousLabels) : null,
-    newLabels: newLabels ? JSON.parse(newLabels) : null,
-  };
+  return !!previousLabels?.length || !!newLabels?.length;
 }
 
 function extractLabels(changes: string[], regex: RegExp): string | undefined {
