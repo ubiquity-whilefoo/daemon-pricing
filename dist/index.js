@@ -46603,15 +46603,10 @@
           }
           const m = d.filter((e) => {
             const t = p.find((t) => t.name === e.name);
-            l.info("checking label for update", {
-              label: e,
-              item: t,
-              shouldDelete:
-                !!t &&
-                ((e.collaboratorOnly && (!t.description || t.description !== i.COLLABORATOR_ONLY_DESCRIPTION)) || (!e.collaboratorOnly && t.description)),
-            });
-            return (
-              !!t && ((e.collaboratorOnly && (!t.description || t.description !== i.COLLABORATOR_ONLY_DESCRIPTION)) || (!e.collaboratorOnly && t.description))
+            return Boolean(
+              !!t &&
+                !e.name.startsWith("Price: ") &&
+                ((e.collaboratorOnly && (!t.description || t.description !== i.COLLABORATOR_ONLY_DESCRIPTION)) || (!e.collaboratorOnly && t.description))
             );
           });
           if (m.length > 0) {
