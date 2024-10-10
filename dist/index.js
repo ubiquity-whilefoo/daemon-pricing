@@ -46057,8 +46057,8 @@
           const l = a.data;
           const c = l.split("\n");
           r.info("Last commit changes", { changes: c });
-          const d = /\+\s*"labels":\s*({[^}]*})/;
-          const p = /-\s*"labels":\s*({[^}]*})/;
+          const d = /\+\s*"collaboratorOnly":\s*({[^}]*})/;
+          const p = /-\s*"collaboratorOnly":\s*({[^}]*})/;
           const u = extractLabels(c, d);
           const g = extractLabels(c, p);
           if (!g && !u) {
