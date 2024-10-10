@@ -73,6 +73,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
   const incorrectDescriptionLabels = pricingLabels.filter((label) => {
     const item = allLabels.find((o) => o.name === label.name);
+    logger.info("checking label for update", { label, item });
     return !!(item && !!item.description !== label.collaboratorOnly);
   });
 
