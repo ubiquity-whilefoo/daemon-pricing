@@ -6,6 +6,8 @@ import { COLLABORATOR_ONLY_DESCRIPTION } from "../types/plugin-input";
 // This just checks all the labels in the config have been set in gh issue
 // If there's something missing, they will be added
 
+const NO_OWNER_FOUND = "No owner found in the repository!";
+
 export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const { config, logger } = context;
 
@@ -26,14 +28,14 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const incorrectPriceLabels = allLabels.filter(
     (label) =>
       label.name.startsWith("Price: ") &&
-      !priceLabels.some((o) => o.name === label.name || (o.collaboratorOnly && label.description !== COLLABORATOR_ONLY_DESCRIPTION))
+      !priceLabels.some((o) => o.name === label.name && o.collaboratorOnly && label.description === COLLABORATOR_ONLY_DESCRIPTION)
   );
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
     const owner = context.payload.repository.owner?.login;
     if (!owner) {
-      throw logger.error("No owner found in the repository!");
+      throw logger.error(NO_OWNER_FOUND);
     }
     await Promise.allSettled(
       incorrectPriceLabels.map((label) =>
@@ -54,7 +56,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
     logger.info("Incorrect color labels found, updating them", { incorrectColorPriceLabels: incorrectColorPriceLabels.map((label) => label.name) });
     const owner = context.payload.repository.owner?.login;
     if (!owner) {
-      throw logger.error("No owner found in the repository!");
+      throw logger.error(NO_OWNER_FOUND);
     }
     await Promise.allSettled(
       incorrectColorPriceLabels.map((label) =>
@@ -67,6 +69,33 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
       )
     );
     logger.info(`Updating incorrect color labels done`);
+  }
+
+  const incorrectDescriptionLabels = pricingLabels.filter((label) => {
+    const item = allLabels.find((o) => o.name === label.name);
+    return !!(item && !!item.description !== label.collaboratorOnly);
+  });
+
+  // Update incorrect description labels
+  if (incorrectDescriptionLabels.length > 0) {
+    logger.info("Incorrect description labels found, updating them", {
+      incorrectDescriptionLabels: incorrectDescriptionLabels.map((label) => label.name),
+    });
+    const owner = context.payload.repository.owner?.login;
+    if (!owner) {
+      throw logger.error(NO_OWNER_FOUND);
+    }
+    await Promise.allSettled(
+      incorrectDescriptionLabels.map((label) =>
+        context.octokit.rest.issues.updateLabel({
+          owner,
+          repo: context.payload.repository.name,
+          name: label.name,
+          description: label.collaboratorOnly ? COLLABORATOR_ONLY_DESCRIPTION : undefined,
+        })
+      )
+    );
+    logger.info(`Updating incorrect description labels done`);
   }
 
   // Get the missing labels
