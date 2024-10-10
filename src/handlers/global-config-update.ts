@@ -60,8 +60,10 @@ export async function globalLabelUpdate(context: Context) {
     return;
   }
 
-  logger.info(`Updating base rate from ${rates.previousBaseRate} to ${rates.newBaseRate}`);
-  config.basePriceMultiplier = rates.newBaseRate;
+  if (rates.newBaseRate !== null) {
+    logger.info(`Updating base rate from ${rates.previousBaseRate} to ${rates.newBaseRate}`);
+    config.basePriceMultiplier = rates.newBaseRate;
+  }
 
   const repos = await listOrgRepos(context);
 
