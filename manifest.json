@@ -7,5 +7,62 @@
       "ubiquity:example": "/allow @user1 label",
       "description": "Allows the user to modify the given label."
     }
+  },
+  "configuration": {
+    "default": {},
+    "type": "object",
+    "properties": {
+      "labels": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "time": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "priority": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "time",
+          "priority"
+        ]
+      },
+      "basePriceMultiplier": {
+        "default": 1,
+        "type": "number"
+      },
+      "publicAccessControl": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "setLabel": {
+            "default": false,
+            "type": "boolean"
+          },
+          "fundExternalClosedIssue": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "setLabel",
+          "fundExternalClosedIssue"
+        ]
+      }
+    },
+    "required": [
+      "labels",
+      "basePriceMultiplier",
+      "publicAccessControl"
+    ]
   }
 }

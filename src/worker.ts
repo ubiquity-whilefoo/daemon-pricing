@@ -1,19 +1,16 @@
-import { Value } from "@sinclair/typebox/value";
-import { run } from "./run";
-import { Env, envConfigValidator } from "./types/env";
-import { assistivePricingSettingsSchema } from "./types/plugin-input";
 import manifest from "../manifest.json";
+import { validateAndDecodeSchemas } from "./handlers/validator";
+import { run } from "./run";
+import { Env } from "./types/env";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
-      if (request.method === "GET") {
-        const url = new URL(request.url);
-        if (url.pathname === "/manifest.json") {
-          return new Response(JSON.stringify(manifest), {
-            headers: { "content-type": "application/json" },
-          });
-        }
+      const url = new URL(request.url);
+      if (url.pathname === "/manifest.json" && request.method === "GET") {
+        return new Response(JSON.stringify(manifest), {
+          headers: { "content-type": "application/json" },
+        });
       }
       if (request.method !== "POST") {
         return new Response(JSON.stringify({ error: `Only POST requests are supported.` }), {
@@ -28,16 +25,6 @@ export default {
           headers: { "content-type": "application/json" },
         });
       }
-      if (!envConfigValidator.test(env)) {
-        const errorDetails: string[] = [];
-        for (const error of envConfigValidator.errors(env)) {
-          errorDetails.push(`${error.path}: ${error.message}`);
-        }
-        return new Response(JSON.stringify({ error: `Bad Request: the environment is invalid. ${errorDetails.join("; ")}` }), {
-          status: 400,
-          headers: { "content-type": "application/json" },
-        });
-      }
       const webhookPayload = await request.json();
       // TODO: temporarily disabled, should be added back with the proper key in the configuration.
       // const signature = webhookPayload.signature;
@@ -48,8 +35,10 @@ export default {
       //     headers: { "content-type": "application/json" },
       //   });
       // }
-      webhookPayload.settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, webhookPayload.settings));
-      await run(webhookPayload, env);
+      const result = validateAndDecodeSchemas(env, webhookPayload.settings);
+
+      webhookPayload.settings = result.decodedSettings;
+      await run(webhookPayload, result.decodedEnv);
       return new Response(JSON.stringify("OK"), { status: 200, headers: { "content-type": "application/json" } });
     } catch (error) {
       return handleUncaughtError(error);
@@ -57,16 +46,16 @@ export default {
   },
 };
 
-function handleUncaughtError(error: unknown) {
-  console.error(error);
+function handleUncaughtError(errors: unknown) {
+  console.error(errors);
   const status = 500;
-  return new Response(JSON.stringify({ error }), { status: status, headers: { "content-type": "application/json" } });
+  return new Response(JSON.stringify(errors), { status: status, headers: { "content-type": "application/json" } });
 }
 
 // async function verifySignature(publicKeyPem: string, payload: unknown, signature: string) {
 //   const pemContents = publicKeyPem.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "").trim();
 //   const binaryDer = Uint8Array.from(atob(pemContents), (c) => c.charCodeAt(0));
-
+//
 //   const publicKey = await crypto.subtle.importKey(
 //     "spki",
 //     binaryDer.buffer,
@@ -77,9 +66,9 @@ function handleUncaughtError(error: unknown) {
 //     true,
 //     ["verify"]
 //   );
-
+//
 //   const signatureArray = Uint8Array.from(atob(signature), (c) => c.charCodeAt(0));
 //   const dataArray = new TextEncoder().encode(JSON.stringify(payload));
-
+//
 //   return await crypto.subtle.verify("RSASSA-PKCS1-v1_5", publicKey, signatureArray, dataArray);
 // }

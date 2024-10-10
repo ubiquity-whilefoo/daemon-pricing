@@ -8,6 +8,8 @@ import { server } from "./__mocks__/node";
 import issueCommented from "./__mocks__/requests/issue-comment-post.json";
 import usersGet from "./__mocks__/users-get.json";
 import * as crypto from "crypto";
+import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
+import { Context } from "../src/types/context";
 import { AssistivePricingSettings, assistivePricingSettingsSchema } from "../src/types/plugin-input";
 import { Value } from "@sinclair/typebox/value";
 
@@ -22,6 +24,8 @@ const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
     format: "pem",
   },
 });
+
+const url = "http://localhost:4000";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -85,6 +89,53 @@ describe("User tests", () => {
     });
   });
 
+  it("Should accurately calculates prices", () => {
+    const context = {
+      config: {
+        basePriceMultiplier: 3.0,
+      },
+    };
+    const priority1 = "1 priority";
+    const priority2 = "2 priority";
+    const priority3 = "3 priority";
+    const testCases = [
+      {
+        timeValue: calculateLabelValue("<1 minutes"),
+        priorityValue: calculateLabelValue(priority3),
+        expectedPrice: "1.8",
+      },
+      {
+        timeValue: calculateLabelValue("<4 hours"),
+        priorityValue: calculateLabelValue(priority2),
+        expectedPrice: "300",
+      },
+      {
+        timeValue: calculateLabelValue("<1 hours"),
+        priorityValue: calculateLabelValue(priority2),
+        expectedPrice: "75",
+      },
+      {
+        timeValue: calculateLabelValue("<1.52 hours"),
+        priorityValue: calculateLabelValue(priority3),
+        expectedPrice: "112.5",
+      },
+      {
+        timeValue: calculateLabelValue("<139.876 minutes"),
+        priorityValue: calculateLabelValue(priority1),
+        expectedPrice: "83.4",
+      },
+      {
+        timeValue: calculateLabelValue("<12.333333 weeks"),
+        priorityValue: calculateLabelValue(priority2),
+        expectedPrice: "7800",
+      },
+    ];
+    for (const testCase of testCases) {
+      const price = calculateTaskPrice(context as unknown as Context, testCase.timeValue, testCase.priorityValue);
+      expect(price).toEqual(testCase.expectedPrice);
+    }
+  });
+
   it("Should handle the comment", async () => {
     const data = {
       ...issueCommented,
@@ -105,6 +156,7 @@ describe("User tests", () => {
           signature,
         }),
         method: "POST",
+        url,
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -119,8 +171,8 @@ describe("User tests", () => {
     const result = await workerFetch.fetch(
       {
         method: "GET",
-        url: "https://example.com",
-      } as Request,
+        url,
+      } as unknown as Request,
       {
         SUPABASE_URL: "url",
         SUPABASE_KEY: "key",
@@ -138,6 +190,10 @@ describe("User tests", () => {
         headers: {
           get: () => "application/json",
         },
+        url,
+        json() {
+          return { settings: {} };
+        },
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -146,8 +202,25 @@ describe("User tests", () => {
     );
     expect(result.ok).toEqual(false);
     expect(result.status).toEqual(500);
-    // expect(await result.json()).toEqual({
-    //   error: "Bad Request: the environment is invalid. /UBIQUIBOT_PUBLIC_KEY: Required property; /UBIQUIBOT_PUBLIC_KEY: Expected string",
-    // });
+    expect(await result.json()).toEqual({
+      errors: [
+        {
+          message: "Required property",
+          path: "/UBIQUIBOT_PUBLIC_KEY",
+          schema: {
+            type: "string",
+          },
+          type: 45,
+        },
+        {
+          message: "Expected string",
+          path: "/UBIQUIBOT_PUBLIC_KEY",
+          schema: {
+            type: "string",
+          },
+          type: 54,
+        },
+      ],
+    });
   });
 });
