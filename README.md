@@ -10,18 +10,27 @@ Example of valid configuration:
 - plugin: https://ubiquibot-assistive-pricing.ubq.fi
   with:
     labels:
-      time:
-        - "Time: <1 Hour"
-        - "Time: <2 Hours"
-        - "Time: <4 Hours"
-        - "Time: <1 Day"
-        - "Time: <1 Week"
-      priority:
-        - "Priority: 1 (Normal)"
-        - "Priority: 2 (Medium)"
-        - "Priority: 3 (High)"
-        - "Priority: 4 (Urgent)"
-        - "Priority: 5 (Emergency)"
+      - name: "Time: <1 Hour"
+        collaboratorOnly: false
+      - name: "Time: <2 Hours"
+        collaboratorOnly: false
+      - name: "Time: <4 Hours"
+        collaboratorOnly: false
+      - name: "Time: <1 Day"
+        collaboratorOnly: false
+      - name: "Time: <1 Week"
+        collaboratorOnly: false
+    priority:
+      - name: "Priority: 1 (Normal)"
+        collaboratorOnly: false
+      - name: "Priority: 2 (Medium)"
+        collaboratorOnly: true
+      - name: "Priority: 3 (High)"
+        collaboratorOnly: false
+      - name: "Priority: 4 (Urgent)"
+        collaboratorOnly: false
+      - name: "Priority: 5 (Emergency)"
+        collaboratorOnly: false
     basePriceMultiplier: 1
     publicAccessControl:
       setLabel: true
