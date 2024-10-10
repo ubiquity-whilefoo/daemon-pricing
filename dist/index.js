@@ -45990,6 +45990,89 @@
         return s;
       }
     },
+    22880: function (e, t, r) {
+      "use strict";
+      var s =
+        (this && this.__awaiter) ||
+        function (e, t, r, s) {
+          function adopt(e) {
+            return e instanceof r
+              ? e
+              : new r(function (t) {
+                  t(e);
+                });
+          }
+          return new (r || (r = Promise))(function (r, n) {
+            function fulfilled(e) {
+              try {
+                step(s.next(e));
+              } catch (e) {
+                n(e);
+              }
+            }
+            function rejected(e) {
+              try {
+                step(s["throw"](e));
+              } catch (e) {
+                n(e);
+              }
+            }
+            function step(e) {
+              e.done ? r(e.value) : adopt(e.value).then(fulfilled, rejected);
+            }
+            step((s = s.apply(e, t || [])).next());
+          });
+        };
+      Object.defineProperty(t, "__esModule", { value: true });
+      t.getLabelsChanges = getLabelsChanges;
+      const n = r(36273);
+      function getLabelsChanges(e) {
+        return s(this, void 0, void 0, function* () {
+          var t;
+          if (!(0, n.isPushEvent)(e)) {
+            e.logger.debug("Not a push event");
+            return { previousLabels: null, newLabels: null };
+          }
+          const {
+            logger: r,
+            payload: { repository: s, head_commit: o },
+          } = e;
+          const i = o === null || o === void 0 ? void 0 : o.id;
+          let a;
+          if (!i) {
+            throw new Error("No commit sha found");
+          }
+          const A = (t = s.owner) === null || t === void 0 ? void 0 : t.login;
+          if (!A) {
+            throw r.error("No owner found in the repository");
+          }
+          try {
+            a = yield e.octokit.repos.getCommit({ owner: A, repo: s.name, ref: i, mediaType: { format: "diff" } });
+          } catch (e) {
+            r.debug("Commit sha error.", { err: e });
+          }
+          if (!a) {
+            throw new Error("No commit data found");
+          }
+          const l = a.data;
+          const c = l.split("\n");
+          const d = /\+\s*"labels":\s*({[^}]*})/;
+          const p = /-\s*"labels":\s*({[^}]*})/;
+          const u = extractLabels(c, d);
+          const g = extractLabels(c, p);
+          if (!g && !u) {
+            r.error("No label changes found in the diff");
+          }
+          return { previousLabels: g ? JSON.parse(g) : null, newLabels: u ? JSON.parse(u) : null };
+        });
+      }
+      function extractLabels(e, t) {
+        const r = e.filter((e) => t.test(e));
+        const s = r.join("\n");
+        const n = s.match(t);
+        return n ? n[1] : undefined;
+      }
+    },
     26109: function (e, t, r) {
       "use strict";
       var s =
@@ -46027,34 +46110,35 @@
       t.globalLabelUpdate = globalLabelUpdate;
       const n = r(5508);
       const o = r(22032);
-      const i = r(4045);
-      const a = r(74534);
-      const A = r(36273);
-      const l = r(78416);
+      const i = r(22880);
+      const a = r(4045);
+      const A = r(74534);
+      const l = r(36273);
+      const c = r(78416);
       function isAuthed(e) {
         return s(this, void 0, void 0, function* () {
           var t, r;
-          if (!(0, A.isPushEvent)(e)) {
+          if (!(0, l.isPushEvent)(e)) {
             e.logger.debug("Not a push event");
             return false;
           }
           const { payload: s, logger: n } = e;
           const o = (t = s.sender) === null || t === void 0 ? void 0 : t.login;
           const i = (r = s.pusher) === null || r === void 0 ? void 0 : r.name;
-          const a = yield (0, l.isUserAdminOrBillingManager)(e, i);
-          const c = yield (0, l.isUserAdminOrBillingManager)(e, o);
+          const a = yield (0, c.isUserAdminOrBillingManager)(e, i);
+          const A = yield (0, c.isUserAdminOrBillingManager)(e, o);
           if (!a) {
             n.error("Pusher is not an admin or billing manager");
           }
-          if (!c) {
+          if (!A) {
             n.error("Sender is not an admin or billing manager");
           }
-          return !!(a && c);
+          return !!(a && A);
         });
       }
       function globalLabelUpdate(e) {
         return s(this, void 0, void 0, function* () {
-          if (!(0, A.isPushEvent)(e)) {
+          if (!(0, l.isPushEvent)(e)) {
             e.logger.debug("Not a push event");
             return;
           }
@@ -46067,16 +46151,18 @@
             return;
           }
           const s = yield (0, o.getBaseRateChanges)(e);
-          if (s.newBaseRate === null) {
+          const A = yield (0, i.getLabelsChanges)(e);
+          t.info("Current list of labels", { labels: A });
+          if (s.newBaseRate === null || A.newLabels === null) {
             t.error("No new base rate found in the diff");
             return;
           }
           t.info(`Updating base rate from ${s.previousBaseRate} to ${s.newBaseRate}`);
           r.basePriceMultiplier = s.newBaseRate;
-          const a = yield (0, l.listOrgRepos)(e);
-          for (const t of a) {
+          const d = yield (0, c.listOrgRepos)(e);
+          for (const t of d) {
             const r = Object.assign(Object.assign({}, e), { payload: { repository: t } });
-            yield (0, i.syncPriceLabelsToConfig)(r);
+            yield (0, a.syncPriceLabelsToConfig)(r);
           }
           if (r.globalConfigUpdate) {
             yield updateAllIssuePriceLabels(e);
@@ -46086,13 +46172,13 @@
       function updateAllIssuePriceLabels(e) {
         return s(this, void 0, void 0, function* () {
           const { logger: t, config: r } = e;
-          const s = yield (0, l.listOrgRepos)(e);
+          const s = yield (0, c.listOrgRepos)(e);
           for (const n of s) {
             t.info(`Fetching issues for ${n.name}`);
-            const s = yield (0, l.listRepoIssues)(e, n.owner.login, n.name);
+            const s = yield (0, c.listRepoIssues)(e, n.owner.login, n.name);
             for (const o of s) {
               t.info(`Updating issue ${o.number} in ${n.name}`);
-              yield (0, a.setPriceLabel)(Object.assign(Object.assign({}, e), { payload: { repository: n, issue: o } }), o.labels, r);
+              yield (0, A.setPriceLabel)(Object.assign(Object.assign({}, e), { payload: { repository: n, issue: o } }), o.labels, r);
               yield new Promise((e) => setTimeout(e, 50));
             }
           }
