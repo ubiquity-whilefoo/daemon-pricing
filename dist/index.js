@@ -46057,8 +46057,8 @@
           const l = a.data;
           const c = l.split("\n");
           r.info("Last commit changes", { changes: c });
-          const d = /\+\s*"collaboratorOnly":\s*({[^}]*})/;
-          const p = /-\s*"collaboratorOnly":\s*({[^}]*})/;
+          const d = /\+\s*collaboratorOnly:\s*(\S+})/;
+          const p = /-\s*collaboratorOnly:\s*(\S+)/;
           const u = extractLabels(c, d);
           const g = extractLabels(c, p);
           if (!g && !u) {
@@ -46068,10 +46068,9 @@
         });
       }
       function extractLabels(e, t) {
-        const r = e.filter((e) => t.test(e));
-        const s = r.join("\n");
-        const n = s.match(t);
-        return n ? n[1] : undefined;
+        const r = e === null || e === void 0 ? void 0 : e.find((e) => t.test(e));
+        const s = r === null || r === void 0 ? void 0 : r.match(t);
+        return s ? s[1] : undefined;
       }
     },
     26109: function (e, t, r) {
