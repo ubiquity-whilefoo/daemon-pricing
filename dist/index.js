@@ -46603,8 +46603,16 @@
           }
           const m = d.filter((e) => {
             const t = p.find((t) => t.name === e.name);
-            l.info("checking label for update", { label: e, item: t });
-            return !!(t && !!t.description !== e.collaboratorOnly);
+            l.info("checking label for update", {
+              label: e,
+              item: t,
+              shouldDelete:
+                !!t &&
+                ((e.collaboratorOnly && (!t.description || t.description !== i.COLLABORATOR_ONLY_DESCRIPTION)) || (!e.collaboratorOnly && t.description)),
+            });
+            return (
+              !!t && ((e.collaboratorOnly && (!t.description || t.description !== i.COLLABORATOR_ONLY_DESCRIPTION)) || (!e.collaboratorOnly && t.description))
+            );
           });
           if (m.length > 0) {
             l.info("Incorrect description labels found, updating them", { incorrectDescriptionLabels: m.map((e) => e.name) });
