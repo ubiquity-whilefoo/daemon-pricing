@@ -16,7 +16,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
     for (const priorityLabel of config.labels.priority) {
       const targetPrice = calculateTaskPrice(context, calculateLabelValue(timeLabel.name), calculateLabelValue(priorityLabel.name), config.basePriceMultiplier);
       const targetPriceLabel = `Price: ${targetPrice} USD`;
-      priceLabels.push({ name: targetPriceLabel, collaboratorOnly: priorityLabel.collaboratorOnly });
+      priceLabels.push({ name: targetPriceLabel, collaboratorOnly: false });
     }
   }
 
@@ -25,11 +25,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   // List all the labels for a repository
   const allLabels = await listLabelsForRepo(context);
 
-  const incorrectPriceLabels = allLabels.filter(
-    (label) =>
-      label.name.startsWith("Price: ") &&
-      !priceLabels.some((o) => o.name === label.name && o.collaboratorOnly && label.description === COLLABORATOR_ONLY_DESCRIPTION)
-  );
+  const incorrectPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && !priceLabels.some((o) => o.name === label.name));
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
@@ -73,7 +69,14 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
   const incorrectDescriptionLabels = pricingLabels.filter((label) => {
     const item = allLabels.find((o) => o.name === label.name);
-    return !!(item && !!item.description !== label.collaboratorOnly);
+    // Either we should not have a collaborator only but there is a description, or there is a description when
+    // collaborator only is false, or the description doesn't match the current configuration, and it's not a Price
+    // label
+    return Boolean(
+      !!item &&
+        !label.name.startsWith("Price: ") &&
+        ((label.collaboratorOnly && (!item.description || item.description !== COLLABORATOR_ONLY_DESCRIPTION)) || (!label.collaboratorOnly && item.description))
+    );
   });
 
   // Update incorrect description labels
