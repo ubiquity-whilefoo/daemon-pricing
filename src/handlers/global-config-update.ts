@@ -54,9 +54,9 @@ export async function globalLabelUpdate(context: Context) {
   const rates = await getBaseRateChanges(context);
   const labels = await getLabelsChanges(context);
 
-  logger.info("Current list of labels", { labels });
-  if (rates.newBaseRate === null || labels.newLabels === null) {
-    logger.error("No new base rate found in the diff");
+  logger.info("Current list of labels", { labels, prevConf: config });
+  if (rates.newBaseRate === null && labels.newLabels === null) {
+    logger.error("No changes found in the diff, skipping.");
     return;
   }
 
