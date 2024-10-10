@@ -46478,50 +46478,72 @@
       const n = r(20801);
       const o = r(74273);
       const i = r(28813);
+      const a = "No owner found in the repository!";
       function syncPriceLabelsToConfig(e) {
         return s(this, void 0, void 0, function* () {
-          var t, r;
-          const { config: s, logger: a } = e;
-          const A = [];
-          for (const t of s.labels.time) {
-            for (const r of s.labels.priority) {
-              const n = (0, o.calculateTaskPrice)(e, (0, o.calculateLabelValue)(t.name), (0, o.calculateLabelValue)(r.name), s.basePriceMultiplier);
-              const i = `Price: ${n} USD`;
-              A.push({ name: i, collaboratorOnly: r.collaboratorOnly });
+          var t, r, s;
+          const { config: A, logger: l } = e;
+          const c = [];
+          for (const t of A.labels.time) {
+            for (const r of A.labels.priority) {
+              const s = (0, o.calculateTaskPrice)(e, (0, o.calculateLabelValue)(t.name), (0, o.calculateLabelValue)(r.name), A.basePriceMultiplier);
+              const n = `Price: ${s} USD`;
+              c.push({ name: n, collaboratorOnly: r.collaboratorOnly });
             }
           }
-          const l = [...A, ...s.labels.time, ...s.labels.priority];
-          const c = yield (0, n.listLabelsForRepo)(e);
-          const d = c.filter(
-            (e) =>
-              e.name.startsWith("Price: ") && !A.some((t) => t.name === e.name || (t.collaboratorOnly && e.description !== i.COLLABORATOR_ONLY_DESCRIPTION))
+          const d = [...c, ...A.labels.time, ...A.labels.priority];
+          const p = yield (0, n.listLabelsForRepo)(e);
+          const u = p.filter(
+            (e) => e.name.startsWith("Price: ") && !c.some((t) => t.name === e.name && t.collaboratorOnly && e.description === i.COLLABORATOR_ONLY_DESCRIPTION)
           );
-          if (d.length > 0 && s.globalConfigUpdate) {
-            a.info("Incorrect price labels found, removing them", { incorrectPriceLabels: d.map((e) => e.name) });
+          if (u.length > 0 && A.globalConfigUpdate) {
+            l.info("Incorrect price labels found, removing them", { incorrectPriceLabels: u.map((e) => e.name) });
             const r = (t = e.payload.repository.owner) === null || t === void 0 ? void 0 : t.login;
             if (!r) {
-              throw a.error("No owner found in the repository!");
+              throw l.error(a);
             }
-            yield Promise.allSettled(d.map((t) => e.octokit.rest.issues.deleteLabel({ owner: r, repo: e.payload.repository.name, name: t.name })));
-            a.info(`Removing incorrect price labels done`);
+            yield Promise.allSettled(u.map((t) => e.octokit.rest.issues.deleteLabel({ owner: r, repo: e.payload.repository.name, name: t.name })));
+            l.info(`Removing incorrect price labels done`);
           }
-          const p = c.filter((e) => e.name.startsWith("Price: ") && e.color !== n.COLORS.price);
-          if (p.length > 0) {
-            a.info("Incorrect color labels found, updating them", { incorrectColorPriceLabels: p.map((e) => e.name) });
+          const g = p.filter((e) => e.name.startsWith("Price: ") && e.color !== n.COLORS.price);
+          if (g.length > 0) {
+            l.info("Incorrect color labels found, updating them", { incorrectColorPriceLabels: g.map((e) => e.name) });
             const t = (r = e.payload.repository.owner) === null || r === void 0 ? void 0 : r.login;
             if (!t) {
-              throw a.error("No owner found in the repository!");
+              throw l.error(a);
             }
             yield Promise.allSettled(
-              p.map((r) => e.octokit.rest.issues.updateLabel({ owner: t, repo: e.payload.repository.name, name: r.name, color: n.COLORS.price }))
+              g.map((r) => e.octokit.rest.issues.updateLabel({ owner: t, repo: e.payload.repository.name, name: r.name, color: n.COLORS.price }))
             );
-            a.info(`Updating incorrect color labels done`);
+            l.info(`Updating incorrect color labels done`);
           }
-          const u = [...new Set(l.filter((e) => !c.map((e) => e.name).includes(e.name)))];
-          if (u.length > 0) {
-            a.info("Missing labels found, creating them", { missingLabels: u });
-            yield Promise.allSettled(u.map((t) => (0, n.createLabel)(e, t.name, "default", t.collaboratorOnly ? i.COLLABORATOR_ONLY_DESCRIPTION : undefined)));
-            a.info(`Creating missing labels done`);
+          const m = d.filter((e) => {
+            const t = p.find((t) => t.name === e.name);
+            return !!(t && !!t.description !== e.collaboratorOnly);
+          });
+          if (m.length > 0) {
+            l.info("Incorrect description labels found, updating them", { incorrectDescriptionLabels: m.map((e) => e.name) });
+            const t = (s = e.payload.repository.owner) === null || s === void 0 ? void 0 : s.login;
+            if (!t) {
+              throw l.error(a);
+            }
+            yield Promise.allSettled(
+              m.map((r) =>
+                e.octokit.rest.issues.updateLabel({
+                  owner: t,
+                  repo: e.payload.repository.name,
+                  name: r.name,
+                  description: r.collaboratorOnly ? i.COLLABORATOR_ONLY_DESCRIPTION : undefined,
+                })
+              )
+            );
+            l.info(`Updating incorrect description labels done`);
+          }
+          const h = [...new Set(d.filter((e) => !p.map((e) => e.name).includes(e.name)))];
+          if (h.length > 0) {
+            l.info("Missing labels found, creating them", { missingLabels: h });
+            yield Promise.allSettled(h.map((t) => (0, n.createLabel)(e, t.name, "default", t.collaboratorOnly ? i.COLLABORATOR_ONLY_DESCRIPTION : undefined)));
+            l.info(`Creating missing labels done`);
           }
         });
       }
