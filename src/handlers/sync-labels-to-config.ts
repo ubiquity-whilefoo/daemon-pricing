@@ -11,13 +11,13 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const priceLabels: string[] = [];
   for (const timeLabel of config.labels.time) {
     for (const priorityLabel of config.labels.priority) {
-      const targetPrice = calculateTaskPrice(context, calculateLabelValue(timeLabel), calculateLabelValue(priorityLabel), config.basePriceMultiplier);
+      const targetPrice = calculateTaskPrice(context, calculateLabelValue(timeLabel.value), calculateLabelValue(priorityLabel), config.basePriceMultiplier);
       const targetPriceLabel = `Price: ${targetPrice} USD`;
       priceLabels.push(targetPriceLabel);
     }
   }
 
-  const pricingLabels: string[] = [...priceLabels, ...config.labels.time, ...config.labels.priority];
+  const pricingLabels: string[] = [...priceLabels, ...config.labels.time.map((o) => o.value), ...config.labels.priority];
 
   // List all the labels for a repository
   const allLabels = await listLabelsForRepo(context);

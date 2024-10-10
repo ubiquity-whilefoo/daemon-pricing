@@ -10,7 +10,7 @@ import usersGet from "./__mocks__/users-get.json";
 import * as crypto from "crypto";
 import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
 import { Context } from "../src/types/context";
-import { AssistivePricingSettings, assistivePricingSettingsSchema } from "../src/types/plugin-input";
+import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input";
 import { Value } from "@sinclair/typebox/value";
 
 const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
@@ -46,8 +46,8 @@ describe("User tests", () => {
   });
 
   it("Should not include globalConfigUpdate in defaults if omitted", () => {
-    const settings = Value.Default(assistivePricingSettingsSchema, {}) as AssistivePricingSettings;
-    const decodedSettings = Value.Decode(assistivePricingSettingsSchema, settings);
+    const settings = Value.Default(pluginSettingsSchema, {}) as AssistivePricingSettings;
+    const decodedSettings = Value.Decode(pluginSettingsSchema, settings);
     expect(decodedSettings.globalConfigUpdate).toBeUndefined();
   });
 
@@ -197,7 +197,6 @@ describe("User tests", () => {
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
-        SUPABASE_KEY: "key",
       } as unknown as Env
     );
     expect(result.ok).toEqual(false);
@@ -206,7 +205,7 @@ describe("User tests", () => {
       errors: [
         {
           message: "Required property",
-          path: "/UBIQUIBOT_PUBLIC_KEY",
+          path: "/SUPABASE_KEY",
           schema: {
             type: "string",
           },
@@ -214,7 +213,7 @@ describe("User tests", () => {
         },
         {
           message: "Expected string",
-          path: "/UBIQUIBOT_PUBLIC_KEY",
+          path: "/SUPABASE_KEY",
           schema: {
             type: "string",
           },

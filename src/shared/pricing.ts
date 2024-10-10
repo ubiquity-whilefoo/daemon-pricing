@@ -14,13 +14,13 @@ export function getPrice(context: Context, timeLabel: Label, priorityLabel: Labe
 
   if (!timeLabel || !priorityLabel) throw logger.error("Time or priority label is not defined");
 
-  const recognizedTimeLabels = labels.time.find((configLabel) => configLabel === timeLabel.name);
+  const recognizedTimeLabels = labels.time.find((configLabel) => configLabel.value === timeLabel.name);
   if (!recognizedTimeLabels) throw logger.error("Time label is not recognized");
 
   const recognizedPriorityLabels = labels.priority.find((configLabel) => configLabel === priorityLabel.name);
   if (!recognizedPriorityLabels) throw logger.error("Priority label is not recognized");
 
-  const timeValue = calculateLabelValue(recognizedTimeLabels);
+  const timeValue = calculateLabelValue(recognizedTimeLabels.value);
   if (!timeValue) throw logger.error("Time value is not defined");
 
   const priorityValue = calculateLabelValue(recognizedPriorityLabels);

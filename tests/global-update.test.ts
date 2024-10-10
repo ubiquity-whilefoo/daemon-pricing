@@ -630,7 +630,10 @@ function createContext(
     config: {
       labels: {
         priority: PRIORITY_LABELS.map((label) => label.name),
-        time: TIME_LABELS.map((label) => label.name),
+        time: TIME_LABELS.map((label) => ({
+          value: label.name,
+          collaboratorOnly: false,
+        })),
       },
       publicAccessControl: {
         fundExternalClosedIssue: false,

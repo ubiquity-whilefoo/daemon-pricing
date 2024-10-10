@@ -98,7 +98,12 @@ function getRecognizedLabels(labels: Label[], settings: AssistivePricingSettings
     return (typeof label === "string" || typeof label === "object") && configLabels.some((configLabel) => configLabel === label.name);
   }
 
-  const recognizedTimeLabels: Label[] = labels.filter((label: Label) => isRecognizedLabel(label, settings.labels.time));
+  const recognizedTimeLabels: Label[] = labels.filter((label: Label) =>
+    isRecognizedLabel(
+      label,
+      settings.labels.time.map((o) => o.value)
+    )
+  );
 
   const recognizedPriorityLabels: Label[] = labels.filter((label: Label) => isRecognizedLabel(label, settings.labels.priority));
 
