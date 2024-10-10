@@ -50,7 +50,7 @@ export async function getLabelsChanges(
 
   logger.info("Last commit changes", { changes });
 
-  const newLabelsRegex = /\+\s*collaboratorOnly:\s*(\S+})/;
+  const newLabelsRegex = /\+\s*collaboratorOnly:\s*(\S+)/;
   const oldLabelsRegex = /-\s*collaboratorOnly:\s*(\S+)/;
 
   const newLabels = extractLabels(changes, newLabelsRegex);
