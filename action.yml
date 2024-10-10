@@ -1,5 +1,5 @@
 name: "Delegate Compute"
-description: "Ubiquity-os Delegated Compute Action"
+description: "UbiquityOS Delegated Compute Action"
 outputs:
   result:
     description: "The result of a event handler"
