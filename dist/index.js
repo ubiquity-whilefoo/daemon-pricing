@@ -46031,7 +46031,7 @@
           var t;
           if (!(0, n.isPushEvent)(e)) {
             e.logger.debug("Not a push event");
-            return { previousLabels: null, newLabels: null };
+            return false;
           }
           const {
             logger: r,
@@ -46056,7 +46056,6 @@
           }
           const l = a.data;
           const c = l.split("\n");
-          r.info("Last commit changes", { changes: c });
           const d = /\+\s*collaboratorOnly:\s*(\S+)/;
           const p = /-\s*collaboratorOnly:\s*(\S+)/;
           const u = extractLabels(c, d);
@@ -46064,7 +46063,7 @@
           if (!g && !u) {
             r.error("No label changes found in the diff");
           }
-          return { previousLabels: g ? JSON.parse(g) : null, newLabels: u ? JSON.parse(u) : null };
+          return !!(g === null || g === void 0 ? void 0 : g.length) || !!(u === null || u === void 0 ? void 0 : u.length);
         });
       }
       function extractLabels(e, t) {
@@ -46152,8 +46151,7 @@
           }
           const s = yield (0, o.getBaseRateChanges)(e);
           const A = yield (0, i.getLabelsChanges)(e);
-          t.info("Current list of labels ==>", { labels: A, prevConf: r });
-          if (s.newBaseRate === null && A.newLabels === null) {
+          if (s.newBaseRate === null && !A) {
             t.error("No changes found in the diff, skipping.");
             return;
           }
@@ -46576,14 +46574,12 @@
             for (const r of A.labels.priority) {
               const s = (0, o.calculateTaskPrice)(e, (0, o.calculateLabelValue)(t.name), (0, o.calculateLabelValue)(r.name), A.basePriceMultiplier);
               const n = `Price: ${s} USD`;
-              c.push({ name: n, collaboratorOnly: r.collaboratorOnly });
+              c.push({ name: n, collaboratorOnly: false });
             }
           }
           const d = [...c, ...A.labels.time, ...A.labels.priority];
           const p = yield (0, n.listLabelsForRepo)(e);
-          const u = p.filter(
-            (e) => e.name.startsWith("Price: ") && !c.some((t) => t.name === e.name && t.collaboratorOnly && e.description === i.COLLABORATOR_ONLY_DESCRIPTION)
-          );
+          const u = p.filter((e) => e.name.startsWith("Price: ") && !c.some((t) => t.name === e.name));
           if (u.length > 0 && A.globalConfigUpdate) {
             l.info("Incorrect price labels found, removing them", { incorrectPriceLabels: u.map((e) => e.name) });
             const r = (t = e.payload.repository.owner) === null || t === void 0 ? void 0 : t.login;
