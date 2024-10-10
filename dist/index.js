@@ -46519,6 +46519,7 @@
           }
           const m = d.filter((e) => {
             const t = p.find((t) => t.name === e.name);
+            l.info("checking label for update", { label: e, item: t });
             return !!(t && !!t.description !== e.collaboratorOnly);
           });
           if (m.length > 0) {
