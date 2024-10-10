@@ -46056,6 +46056,7 @@
           }
           const l = a.data;
           const c = l.split("\n");
+          r.info("Last commit changes", { changes: c });
           const d = /\+\s*"labels":\s*({[^}]*})/;
           const p = /-\s*"labels":\s*({[^}]*})/;
           const u = extractLabels(c, d);
