@@ -1,6 +1,7 @@
 import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
 import { Context } from "../types/context";
+import { getLabelsChanges } from "./get-label-changes";
 import { syncPriceLabelsToConfig } from "./sync-labels-to-config";
 import { setPriceLabel } from "./pricing-label";
 import { isPushEvent } from "../types/typeguards";
@@ -51,8 +52,10 @@ export async function globalLabelUpdate(context: Context) {
   }
 
   const rates = await getBaseRateChanges(context);
+  const labels = await getLabelsChanges(context);
 
-  if (rates.newBaseRate === null) {
+  logger.info("Current list of labels", { labels });
+  if (rates.newBaseRate === null || labels.newLabels === null) {
     logger.error("No new base rate found in the diff");
     return;
   }
