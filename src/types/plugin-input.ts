@@ -23,12 +23,18 @@ export const pluginSettingsSchema = T.Object(
       {
         time: T.Array(
           T.Object({
-            value: T.String(),
+            name: T.String(),
             collaboratorOnly: T.Boolean({ default: false }),
           }),
           { default: [] }
         ),
-        priority: T.Array(T.String(), { default: [] }),
+        priority: T.Array(
+          T.Object({
+            name: T.String(),
+            collaboratorOnly: T.Boolean({ default: false }),
+          }),
+          { default: [] }
+        ),
       },
       { default: {} }
     ),

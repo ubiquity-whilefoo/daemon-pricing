@@ -31,7 +31,12 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
   throw context.logger.error("Failed to fetch lists of labels", { status: 500 });
 }
 
-export async function createLabel(context: Context, name: string, labelType = "default" as keyof typeof COLORS): Promise<void> {
+export async function createLabel(
+  context: Context,
+  name: string,
+  labelType = "default" as keyof typeof COLORS,
+  description: string | undefined
+): Promise<void> {
   const payload = context.payload;
 
   const color = name.startsWith("Price: ") ? COLORS.price : COLORS[labelType];
@@ -46,6 +51,7 @@ export async function createLabel(context: Context, name: string, labelType = "d
       repo: payload.repository.name,
       name,
       color,
+      description,
     });
   } catch (err) {
     throw context.logger.error("Creating a label failed!", { err });

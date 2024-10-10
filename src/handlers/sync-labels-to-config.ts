@@ -5,24 +5,30 @@ import { Context } from "../types/context";
 // This just checks all the labels in the config have been set in gh issue
 // If there's something missing, they will be added
 
+const COLLABORATOR_ONLY_DESCRIPTION = "Collaborator only.";
+
 export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const { config, logger } = context;
 
-  const priceLabels: string[] = [];
+  const priceLabels: { name: string; collaboratorOnly: boolean }[] = [];
   for (const timeLabel of config.labels.time) {
     for (const priorityLabel of config.labels.priority) {
-      const targetPrice = calculateTaskPrice(context, calculateLabelValue(timeLabel.value), calculateLabelValue(priorityLabel), config.basePriceMultiplier);
+      const targetPrice = calculateTaskPrice(context, calculateLabelValue(timeLabel.name), calculateLabelValue(priorityLabel.name), config.basePriceMultiplier);
       const targetPriceLabel = `Price: ${targetPrice} USD`;
-      priceLabels.push(targetPriceLabel);
+      priceLabels.push({ name: targetPriceLabel, collaboratorOnly: priorityLabel.collaboratorOnly });
     }
   }
 
-  const pricingLabels: string[] = [...priceLabels, ...config.labels.time.map((o) => o.value), ...config.labels.priority];
+  const pricingLabels = [...priceLabels, ...config.labels.time, ...config.labels.priority];
 
   // List all the labels for a repository
   const allLabels = await listLabelsForRepo(context);
 
-  const incorrectPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && !priceLabels.includes(label.name));
+  const incorrectPriceLabels = allLabels.filter(
+    (label) =>
+      label.name.startsWith("Price: ") &&
+      !priceLabels.some((o) => o.name === label.name || (o.collaboratorOnly && label.description !== COLLABORATOR_ONLY_DESCRIPTION))
+  );
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
@@ -65,12 +71,14 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   }
 
   // Get the missing labels
-  const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label)))];
+  const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label.name)))];
 
   // Create missing labels
   if (missingLabels.length > 0) {
     logger.info("Missing labels found, creating them", { missingLabels });
-    await Promise.allSettled(missingLabels.map((label) => createLabel(context, label)));
+    await Promise.allSettled(
+      missingLabels.map((label) => createLabel(context, label.name, "default", label.collaboratorOnly ? COLLABORATOR_ONLY_DESCRIPTION : undefined))
+    );
     logger.info(`Creating missing labels done`);
   }
 }
