@@ -4,6 +4,7 @@ import { Value } from "@sinclair/typebox/value";
 import { envSchema } from "./types/env";
 import { assistivePricingSettingsSchema, PluginInputs } from "./types/plugin-input";
 import { run } from "./run";
+import { returnDataToKernel } from "./helpers/validator";
 
 /**
  * Run the plugin as a GitHub Action instance.
@@ -11,8 +12,7 @@ import { run } from "./run";
 async function actionRun() {
   const payloadEnv = {
     SUPABASE_KEY: process.env.SUPABASE_KEY,
-    SUPABASE_URL: process.env.SUPABASE_URL,
-    UBIQUIBOT_PUBLIC_KEY: process.env.UBIQUIBOT_PUBLIC_KEY || "temporarily-disabled",
+    SUPABASE_URL: process.env.SUPABASE_URL
   };
 
   const env = Value.Decode(envSchema, payloadEnv);
@@ -29,6 +29,8 @@ async function actionRun() {
     ref: webhookPayload.ref,
   };
   await run(inputs, env);
+
+  return await returnDataToKernel(inputs.authToken, inputs.stateId, {});
 }
 
 actionRun()
