@@ -37,6 +37,7 @@
     "@octokit/plugin-throttling": "^9.3.2",
     "@octokit/rest": "^20.0.2",
     "@octokit/webhooks": "^13.1.0",
+    "@octokit/webhooks-methods": "^5.1.0",
     "@sinclair/typebox": "^0.32.15",
     "@supabase/supabase-js": "2.43.1",
     "@ubiquity-os/ubiquity-os-kernel": "^2.3.0",

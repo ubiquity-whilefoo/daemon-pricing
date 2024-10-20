@@ -1960,7 +1960,7 @@
   dependencies:
     "@octokit/openapi-types" "^22.2.0"
 
-"@octokit/webhooks-methods@^5.0.0":
+"@octokit/webhooks-methods@^5.0.0", "@octokit/webhooks-methods@^5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-methods/-/webhooks-methods-5.1.0.tgz#13b6c08f89902c1ab0ddf31c6eeeec9c2772cfe6"
   integrity sha512-yFZa3UH11VIxYnnoOYCVoJ3q4ChuSOk2IVBBQ0O3xtKX4x9bmKb/1t+Mxixv2iUhzMdOl1qeWJqEhouXXzB3rQ==
