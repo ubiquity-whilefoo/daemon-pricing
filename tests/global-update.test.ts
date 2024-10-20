@@ -646,7 +646,6 @@ function createContext(
     env: {
       SUPABASE_KEY: "key",
       SUPABASE_URL: "url",
-      UBIQUIBOT_PUBLIC_KEY: "key",
     },
   };
 }
