@@ -4,7 +4,7 @@ import { Value } from "@sinclair/typebox/value";
 import { envSchema } from "./types/env";
 import { assistivePricingSettingsSchema, PluginInputs } from "./types/plugin-input";
 import { run } from "./run";
-import { returnDataToKernel } from "./helpers/validator";
+import { returnDataToKernel } from "./handlers/return-data-to-kernel";
 
 /**
  * Run the plugin as a GitHub Action instance.
