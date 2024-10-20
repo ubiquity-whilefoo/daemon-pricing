@@ -11,7 +11,7 @@ import * as crypto from "crypto";
 import { AssistivePricingSettings, assistivePricingSettingsSchema } from "../src/types/plugin-input";
 import { Value } from "@sinclair/typebox/value";
 
-const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+const { privateKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,
   publicKeyEncoding: {
     type: "spki",
@@ -105,6 +105,7 @@ describe("User tests", () => {
           signature,
         }),
         method: "POST",
+        url: "https://example.com",
       } as unknown as Request,
       {
         SUPABASE_URL: "url",

@@ -12,7 +12,7 @@ import { returnDataToKernel } from "./helpers/validator";
 async function actionRun() {
   const payloadEnv = {
     SUPABASE_KEY: process.env.SUPABASE_KEY,
-    SUPABASE_URL: process.env.SUPABASE_URL
+    SUPABASE_URL: process.env.SUPABASE_URL,
   };
 
   const env = Value.Decode(envSchema, payloadEnv);

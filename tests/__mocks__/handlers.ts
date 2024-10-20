@@ -20,7 +20,7 @@ export const handlers = [
       id: 1,
       body: "Hello, world!",
       user: {
-        login: "ubiquibot",
+        login: "ubiquity-os",
       },
     });
   }),
