@@ -182,13 +182,14 @@ describe("User tests", () => {
   });
 
   it("Should reject an invalid environment", async () => {
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     const result = await workerFetch.fetch(
       {
         method: "POST",
         headers: {
           get: () => "application/json",
         },
-        url,
+        url: undefined,
         json() {
           return { settings: {} };
         },
@@ -200,5 +201,6 @@ describe("User tests", () => {
     );
     expect(result.ok).toEqual(false);
     expect(result.status).toEqual(500);
+    expect(errorSpy).toHaveBeenCalled();
   });
 });
