@@ -2,7 +2,7 @@ import * as github from "@actions/github";
 import { Octokit } from "@octokit/rest";
 import { TransformDecodeCheckError, TransformDecodeError, Value, ValueError } from "@sinclair/typebox/value";
 import { Env, envConfigValidator, envSchema } from "../types/env";
-import { AssistivePricingSettings, assistivePricingSettingsSchema, pluginSettingsValidator } from "../types/plugin-input";
+import { AssistivePricingSettings, assistivePricingSettingsSchema, assistivePricingSchemaValidator } from "../types/plugin-input";
 
 export async function returnDataToKernel(repoToken: string, stateId: string, output: object, eventType = "return-data-to-ubiquity-os-kernel") {
   const octokit = new Octokit({ auth: repoToken });
@@ -29,8 +29,8 @@ export function validateAndDecodeSchemas(rawEnv: object, rawSettings: object) {
   }
 
   const settings = Value.Default(assistivePricingSettingsSchema, rawSettings) as AssistivePricingSettings;
-  if (!pluginSettingsValidator.test(settings)) {
-    for (const error of pluginSettingsValidator.errors(settings)) {
+  if (!assistivePricingSchemaValidator.test(settings)) {
+    for (const error of assistivePricingSchemaValidator.errors(settings)) {
       console.error(error);
       errors.push(error);
     }

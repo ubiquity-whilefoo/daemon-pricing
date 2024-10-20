@@ -10,7 +10,7 @@ import { Env } from "./types/env";
 import { PluginInputs } from "./types/plugin-input";
 import { globalLabelUpdate } from "./handlers/global-config-update";
 import { isIssueLabelEvent } from "./types/typeguards";
-import { Logs } from "@ubiquity-dao/ubiquibot-logger";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 
 export async function run(inputs: PluginInputs, env: Env) {
   const octokit = new Octokit({ auth: inputs.authToken });
