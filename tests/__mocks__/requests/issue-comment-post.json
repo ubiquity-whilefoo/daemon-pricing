@@ -4,12 +4,12 @@
   "eventPayload": {
     "action": "created",
     "issue": {
-      "url": "https://api.github.com/repos/ubiquity-os/assisitve-pricing/issues/1",
+      "url": "https://api.github.com/repos/ubiquity-os/daemon-pricing/issues/1",
       "repository_url": "https://api.github.com/repos/ubiquity-os/bot",
-      "labels_url": "https://api.github.com/repos/ubiquity-os/assisitve-pricing/issues/1/labels{/name}",
-      "comments_url": "https://api.github.com/repos/ubiquity-os/assisitve-pricing/issues/1/comments",
-      "events_url": "https://api.github.com/repos/ubiquity-os/assisitve-pricing/issues/1/events",
-      "html_url": "https://github.com/ubiquity-os/assisitve-pricing/issues/1",
+      "labels_url": "https://api.github.com/repos/ubiquity-os/daemon-pricing/issues/1/labels{/name}",
+      "comments_url": "https://api.github.com/repos/ubiquity-os/daemon-pricing/issues/1/comments",
+      "events_url": "https://api.github.com/repos/ubiquity-os/daemon-pricing/issues/1/events",
+      "html_url": "https://github.com/ubiquity-os/daemon-pricing/issues/1",
       "id": 2297627819,
       "node_id": "I_kwDOLy-Pv86I8wSr",
       "number": 5,
@@ -48,7 +48,7 @@
       "active_lock_reason": null,
       "body": "Another issue.",
       "reactions": {
-        "url": "https://api.github.com/repos/ubiquity-os/assisitve-pricing/issues/1/reactions",
+        "url": "https://api.github.com/repos/ubiquity-os/daemon-pricing/issues/1/reactions",
         "total_count": 0,
         "+1": 0,
         "-1": 0,
@@ -59,14 +59,14 @@
         "rocket": 0,
         "eyes": 0
       },
-      "timeline_url": "https://api.github.com/repos/ubiquity-os/assisitve-pricing/issues/1/timeline",
+      "timeline_url": "https://api.github.com/repos/ubiquity-os/daemon-pricing/issues/1/timeline",
       "performed_via_github_app": null,
       "state_reason": null
     },
     "comment": {
       "url": "https://api.github.com/repos/ubiquity-os/bot/issues/comments/2119208855",
-      "html_url": "https://github.com/ubiquity-os/assisitve-pricing/issues/1#issuecomment-2119208855",
-      "issue_url": "https://api.github.com/repos/ubiquity-os/assisitve-pricing/issues/1",
+      "html_url": "https://github.com/ubiquity-os/daemon-pricing/issues/1#issuecomment-2119208855",
+      "issue_url": "https://api.github.com/repos/ubiquity-os/daemon-pricing/issues/1",
       "id": 2119208855,
       "node_id": "IC_kwDOLy-Pv85-UI-X",
       "user": {

@@ -52,7 +52,7 @@ export async function handleComment(context: Context) {
     await addCommentToIssue(
       context,
       `\`\`\`
-assistive-pricing plugin failed to run.
+daemon-pricing plugin failed to run.
 ${e}
 
 ${commandParser.helpInformation()}
