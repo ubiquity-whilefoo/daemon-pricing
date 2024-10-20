@@ -7,13 +7,12 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
       const url = new URL(request.url);
-      if (url.pathname === "/manifest" && request.method === "GET") {
+      if (url.pathname === "/manifest.json" && request.method === "GET") {
         return new Response(JSON.stringify(manifest), {
           headers: { "content-type": "application/json" },
         });
-      } else if (url.pathname === "/manifest" && request.method === "POST") {
+      } else if (url.pathname === "/manifest.json" && request.method === "POST") {
         const webhookPayload = await request.json();
-
         validateAndDecodeSchemas(env, webhookPayload.settings);
         return new Response(JSON.stringify({ message: "Schema is valid" }), { status: 200, headers: { "content-type": "application/json" } });
       }

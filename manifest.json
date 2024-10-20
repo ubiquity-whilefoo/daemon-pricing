@@ -12,6 +12,20 @@
     "default": {},
     "type": "object",
     "properties": {
+      "globalConfigUpdate": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "excludeRepos": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["excludeRepos"]
+      },
       "labels": {
         "default": {},
         "type": "object",

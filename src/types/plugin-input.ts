@@ -19,7 +19,6 @@ export const assistivePricingSettingsSchema = T.Object(
         excludeRepos: T.Array(T.String()),
       })
     ),
-
     labels: T.Object(
       {
         time: T.Array(T.String(), { default: [] }),
