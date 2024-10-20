@@ -1,12 +1,7 @@
 {
   "name": "Assistive pricing",
   "description": "Handles assistive pricing, and allows for users to modify labels.",
-  "ubiquity:listeners": [
-    "issues.labeled",
-    "issues.unlabeled",
-    "label.edited",
-    "issue_comment.created"
-  ],
+  "ubiquity:listeners": ["repository.created", "issues.opened", "issues.labeled", "issues.unlabeled", "label.edited", "issue_comment.created"],
   "commands": {
     "allow": {
       "ubiquity:example": "/allow @user1 label",
@@ -36,10 +31,7 @@
             }
           }
         },
-        "required": [
-          "time",
-          "priority"
-        ]
+        "required": ["time", "priority"]
       },
       "basePriceMultiplier": {
         "default": 1,
@@ -58,16 +50,9 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "setLabel",
-          "fundExternalClosedIssue"
-        ]
+        "required": ["setLabel", "fundExternalClosedIssue"]
       }
     },
-    "required": [
-      "labels",
-      "basePriceMultiplier",
-      "publicAccessControl"
-    ]
+    "required": ["labels", "basePriceMultiplier", "publicAccessControl"]
   }
 }

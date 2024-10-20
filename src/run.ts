@@ -41,6 +41,10 @@ export async function run(inputs: PluginInputs, env: Env) {
 
   const eventName = inputs.eventName;
   switch (eventName) {
+    case "issues.opened":
+    case "repository.created":
+      await syncPriceLabelsToConfig(context);
+      break;
     case "issues.labeled":
     case "issues.unlabeled":
       await syncPriceLabelsToConfig(context);
