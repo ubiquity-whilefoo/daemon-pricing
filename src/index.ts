@@ -2,7 +2,7 @@ import * as github from "@actions/github";
 import * as core from "@actions/core";
 import { Value } from "@sinclair/typebox/value";
 import { envSchema } from "./types/env";
-import { pluginSettingsSchema, PluginInputs } from "./types/plugin-input";
+import { assistivePricingSettingsSchema, PluginInputs } from "./types/plugin-input";
 import { run } from "./run";
 import { returnDataToKernel } from "./helpers/validator";
 
@@ -18,7 +18,7 @@ async function actionRun() {
   const env = Value.Decode(envSchema, payloadEnv);
 
   const webhookPayload = github.context.payload.inputs;
-  const settings = Value.Decode(pluginSettingsSchema, Value.Default(pluginSettingsSchema, JSON.parse(webhookPayload.settings)));
+  const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
 
   const inputs: PluginInputs = {
     stateId: webhookPayload.stateId,
