@@ -1710,7 +1710,7 @@
   resolved "https://registry.yarnpkg.com/@octokit/auth-token/-/auth-token-5.1.1.tgz#3bbfe905111332a17f72d80bd0b51a3e2fa2cf07"
   integrity sha512-rh3G3wDO8J9wSjfI436JUKzHIxq8NaiL0tVeB2aXmG6p/9859aUOAjA9pmSPNGGZxfwmaJ9ozOJImuNVJdpvbA==
 
-"@octokit/core@6.1.2":
+"@octokit/core@6.1.2", "@octokit/core@^6.1.2":
   version "6.1.2"
   resolved "https://registry.yarnpkg.com/@octokit/core/-/core-6.1.2.tgz#20442d0a97c411612da206411e356014d1d1bd17"
   integrity sha512-hEb7Ma4cGJGEUNOAVmyfdB/3WirWMg5hDuNFVejGEDFqupeOysLc2sG6HJxY2etBp5YQu5Wtxwi020jS9xlUwg==
@@ -1819,6 +1819,13 @@
   dependencies:
     "@octokit/types" "^13.5.0"
 
+"@octokit/plugin-paginate-rest@^11.0.0":
+  version "11.3.5"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-11.3.5.tgz#a1929b3ba3dc7b63bc73bb6d3c7a3faf2a9c7649"
+  integrity sha512-cgwIRtKrpwhLoBi0CUNuY83DPGRMaWVjqVI/bGKsLJ4PzyWZNaEmhHroI2xlrVXkk6nFv0IsZpOp+ZWSWUS2AQ==
+  dependencies:
+    "@octokit/types" "^13.6.0"
+
 "@octokit/plugin-paginate-rest@^9.0.0":
   version "9.2.1"
   resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-9.2.1.tgz#2e2a2f0f52c9a4b1da1a3aa17dabe3c459b9e401"
@@ -1830,6 +1837,11 @@
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@octokit/plugin-request-log/-/plugin-request-log-4.0.1.tgz#98a3ca96e0b107380664708111864cb96551f958"
   integrity sha512-GihNqNpGHorUrO7Qa9JbAl0dbLnqJVrV8OXe2Zm5/Y4wFkZQDfTreBzVmiRfJVfE4mClXdihHnbpyyO9FSX4HA==
+
+"@octokit/plugin-request-log@^5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-request-log/-/plugin-request-log-5.3.1.tgz#ccb75d9705de769b2aa82bcd105cc96eb0c00f69"
+  integrity sha512-n/lNeCtq+9ofhC15xzmJCNKP2BWTv8Ih2TTy+jatNCCq/gQP/V7rK3fjIfuz0pDWDALO/o/4QY4hyOF6TQQFUw==
 
 "@octokit/plugin-rest-endpoint-methods@13.2.2":
   version "13.2.2"
@@ -1851,6 +1863,13 @@
   integrity sha512-xV1b+ceKV9KytQe3zCVqjg+8GTGfDYwaT1ATU5isiUyVtlVAO3HNdzpS4sr4GBx4hxQ46s7ITtZrAsxG22+rVg==
   dependencies:
     "@octokit/types" "^12.6.0"
+
+"@octokit/plugin-rest-endpoint-methods@^13.0.0":
+  version "13.2.6"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-13.2.6.tgz#b9d343dbe88a6cb70cc7fa16faa98f0a29ffe654"
+  integrity sha512-wMsdyHMjSfKjGINkdGKki06VEkgdEldIGstIEyGX0wbYHGByOwN/KiM+hAAlUwAtPkP3gvXtVQA9L3ITdV2tVw==
+  dependencies:
+    "@octokit/types" "^13.6.1"
 
 "@octokit/plugin-retry@7.1.1":
   version "7.1.1"
@@ -1939,12 +1958,15 @@
     "@octokit/plugin-request-log" "^4.0.0"
     "@octokit/plugin-rest-endpoint-methods" "13.2.2"
 
-"@octokit/types@13.5.0", "@octokit/types@^13.0.0", "@octokit/types@^13.1.0", "@octokit/types@^13.5.0":
-  version "13.5.0"
-  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-13.5.0.tgz#4796e56b7b267ebc7c921dcec262b3d5bfb18883"
-  integrity sha512-HdqWTf5Z3qwDVlzCrP8UJquMwunpDiMPt5er+QjGzL4hqr/vBVY/MauQgS1xWxCDT1oMx1EULyqxncdCY/NVSQ==
+"@octokit/rest@^21.0.2":
+  version "21.0.2"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-21.0.2.tgz#9b767dbc1098daea8310fd8b76bf7a97215d5972"
+  integrity sha512-+CiLisCoyWmYicH25y1cDfCrv41kRSvTq6pPWtRroRJzhsCZWZyCqGyI8foJT5LmScADSwRAnr/xo+eewL04wQ==
   dependencies:
-    "@octokit/openapi-types" "^22.2.0"
+    "@octokit/core" "^6.1.2"
+    "@octokit/plugin-paginate-rest" "^11.0.0"
+    "@octokit/plugin-request-log" "^5.3.1"
+    "@octokit/plugin-rest-endpoint-methods" "^13.0.0"
 
 "@octokit/types@^12.6.0":
   version "12.6.0"
@@ -1953,7 +1975,14 @@
   dependencies:
     "@octokit/openapi-types" "^20.0.0"
 
-"@octokit/types@^13.4.1":
+"@octokit/types@^13.0.0", "@octokit/types@^13.1.0", "@octokit/types@^13.5.0":
+  version "13.5.0"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-13.5.0.tgz#4796e56b7b267ebc7c921dcec262b3d5bfb18883"
+  integrity sha512-HdqWTf5Z3qwDVlzCrP8UJquMwunpDiMPt5er+QjGzL4hqr/vBVY/MauQgS1xWxCDT1oMx1EULyqxncdCY/NVSQ==
+  dependencies:
+    "@octokit/openapi-types" "^22.2.0"
+
+"@octokit/types@^13.4.1", "@octokit/types@^13.6.0", "@octokit/types@^13.6.1":
   version "13.6.1"
   resolved "https://registry.yarnpkg.com/@octokit/types/-/types-13.6.1.tgz#432fc6c0aaae54318e5b2d3e15c22ac97fc9b15f"
   integrity sha512-PHZE9Z+kWXb23Ndik8MKPirBPziOc0D2/3KH1P+6jK5nGWe96kadZuE4jev2/Jq7FvIfTlT2Ltg8Fv2x1v0a5g==
@@ -1970,15 +1999,14 @@
   resolved "https://registry.yarnpkg.com/@octokit/webhooks-types/-/webhooks-types-7.5.1.tgz#e05399ab6bbbef8b78eb6bfc1a2cb138ea861104"
   integrity sha512-1dozxWEP8lKGbtEu7HkRbK1F/nIPuJXNfT0gd96y6d3LcHZTtRtlf8xz3nicSJfesADxJyDh+mWBOsdLkqgzYw==
 
-"@octokit/webhooks@13.2.8":
-  version "13.2.8"
-  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.2.8.tgz#8d7134870c327e413809c83a11b46e1896a6f0fe"
-  integrity sha512-nQyf5UDEgIeZB65rXSvK9ep9PkYthbnmXu/VK9AJcMMOvH1UwzcvYNd9DN++HIr8HXwbqB1FAEv5CnNARQEsaQ==
+"@octokit/webhooks@13.3.0":
+  version "13.3.0"
+  resolved "https://registry.yarnpkg.com/@octokit/webhooks/-/webhooks-13.3.0.tgz#fd5d54d47c789c75d60a00eb04e982152d7c654a"
+  integrity sha512-TUkJLtI163Bz5+JK0O+zDkQpn4gKwN+BovclUvCj6pI/6RXrFqQvUMRS2M+Rt8Rv0qR3wjoMoOPmpJKeOh0nBg==
   dependencies:
     "@octokit/openapi-webhooks-types" "8.3.0"
     "@octokit/request-error" "^6.0.1"
     "@octokit/webhooks-methods" "^5.0.0"
-    aggregate-error "^5.0.0"
 
 "@octokit/webhooks@^13.1.0":
   version "13.2.7"
@@ -2505,10 +2533,10 @@
     "@typescript-eslint/types" "7.0.1"
     eslint-visitor-keys "^3.4.1"
 
-"@ubiquity-os/ubiquity-os-kernel@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/@ubiquity-os/ubiquity-os-kernel/-/ubiquity-os-kernel-2.3.0.tgz#1468474a3ab878f31e5ffd2041495ede22f71764"
-  integrity sha512-8Eg1TxgHUM6iKy1B0J00SfgU2XYXIv0q5/HY6tx+2b3rC9vdUWfPainq6ByYHt4fIF3HcZa4PXyZXVTbu4Cwzg==
+"@ubiquity-os/ubiquity-os-kernel@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@ubiquity-os/ubiquity-os-kernel/-/ubiquity-os-kernel-2.4.0.tgz#1bb74d4b02ef5ba6b0c1c01d509e3e0f58609904"
+  integrity sha512-KT8AwtMOHA99GoVUs43eAR2PZii9AHmY9NjOlBtvotB5tXbeEIyhjgHr0kgRncgiLJU1UFIe0QYMmpOvmXiQpg==
   dependencies:
     "@actions/core" "1.10.1"
     "@actions/github" "6.0.0"
@@ -2519,8 +2547,9 @@
     "@octokit/plugin-rest-endpoint-methods" "13.2.4"
     "@octokit/plugin-retry" "7.1.1"
     "@octokit/plugin-throttling" "9.3.1"
-    "@octokit/types" "13.5.0"
-    "@octokit/webhooks" "13.2.8"
+    "@octokit/rest" "^21.0.2"
+    "@octokit/types" "^13.5.0"
+    "@octokit/webhooks" "13.3.0"
     "@octokit/webhooks-types" "7.5.1"
     "@sinclair/typebox" "0.32.35"
     "@ubiquity-os/ubiquity-os-logger" "^1.3.2"
