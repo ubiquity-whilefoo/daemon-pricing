@@ -11,7 +11,7 @@ import { STRINGS } from "./__mocks__/strings";
 import { Label } from "../src/types/github";
 import { globalLabelUpdate } from "../src/handlers/global-config-update";
 import { setupTests, inMemoryCommits, createCommit } from "./__mocks__/helpers";
-import { Logs } from "@ubiquity-dao/ubiquibot-logger";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 dotenv.config();
 
 jest.requireActual("@octokit/rest");

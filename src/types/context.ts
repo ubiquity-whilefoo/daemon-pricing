@@ -2,7 +2,7 @@ import { EmitterWebhookEvent as WebhookEvent } from "@octokit/webhooks";
 import { Octokit } from "@octokit/rest";
 import { AssistivePricingSettings } from "./plugin-input";
 import { createAdapters } from "../adapters";
-import { Logs } from "@ubiquity-dao/ubiquibot-logger";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { Env } from "./env";
 
 export type SupportedEvents =
