@@ -45394,19 +45394,19 @@
         }
       }
     },
-    72322: (e, t, r) => {
+    90776: (e, t, r) => {
       "use strict";
       Object.defineProperty(t, "__esModule", { value: true });
       t.createAdapters = createAdapters;
-      const s = r(45007);
-      const n = r(28842);
-      const o = r(68251);
-      const i = r(39342);
+      const s = r(63561);
+      const n = r(55576);
+      const o = r(79029);
+      const i = r(78796);
       function createAdapters(e, t) {
         return { supabase: { access: new s.Access(e, t), user: new n.User(e, t), label: new o.Label(e, t), super: new i.Super(e, t) } };
       }
     },
-    45007: function (e, t, r) {
+    63561: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -45441,7 +45441,7 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.Access = void 0;
-      const n = r(39342);
+      const n = r(78796);
       class Access extends n.Super {
         constructor(e, t) {
           super(e, t);
@@ -45482,7 +45482,7 @@
       }
       t.Access = Access;
     },
-    68251: function (e, t, r) {
+    79029: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -45517,7 +45517,7 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.Label = void 0;
-      const n = r(39342);
+      const n = r(78796);
       class Label extends n.Super {
         constructor(e, t) {
           super(e, t);
@@ -45550,7 +45550,7 @@
       }
       t.Label = Label;
     },
-    39342: (e, t) => {
+    78796: (e, t) => {
       "use strict";
       Object.defineProperty(t, "__esModule", { value: true });
       t.Super = void 0;
@@ -45562,7 +45562,7 @@
       }
       t.Super = Super;
     },
-    28842: function (e, t, r) {
+    55576: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -45597,7 +45597,7 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.User = void 0;
-      const n = r(39342);
+      const n = r(78796);
       class User extends n.Super {
         constructor(e, t) {
           super(e, t);
@@ -45611,7 +45611,7 @@
       }
       t.User = User;
     },
-    5508: function (e, t, r) {
+    30166: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -45647,8 +45647,8 @@
       Object.defineProperty(t, "__esModule", { value: true });
       t.ZERO_SHA = void 0;
       t.isConfigModified = isConfigModified;
-      const n = r(36273);
-      const o = r(67393);
+      const n = r(47423);
+      const o = r(56687);
       t.ZERO_SHA = "0000000000000000000000000000000000000000";
       const i = [".github/ubiquibot-config.yml", ".github/.ubiquibot-config.yml"];
       function isConfigModified(e) {
@@ -45679,7 +45679,7 @@
         });
       }
     },
-    45396: function (e, t, r) {
+    52566: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__importDefault) ||
@@ -45725,7 +45725,7 @@
         .name(" ")
         .usage("/<command> @<username> [labels...]")
         .argument("<command>", "The command to execute, e.g. /allow", parseCommand)
-        .argument("<username>", "User name to allow rights to, e.g @ubiquibot", parseUser)
+        .argument("<username>", "User name to allow rights to, e.g @UbiquityOS", parseUser)
         .argument("[labels...]", "Labels to allow, e.g time priority")
         .exitOverride()
         .version(i.default.version);
@@ -45745,7 +45745,7 @@
       });
       t["default"] = A;
     },
-    90682: function (e, t, r) {
+    90032: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__createBinding) ||
@@ -45818,9 +45818,9 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.handleComment = handleComment;
-      const a = r(78416);
-      const A = r(36273);
-      const l = o(r(45396));
+      const a = r(4410);
+      const A = r(47423);
+      const l = o(r(52566));
       const c = {
         allow(e, t) {
           return i(this, arguments, void 0, function* (e, { username: t, labels: r }) {
@@ -45865,11 +45865,7 @@
             const t = parseComment(o);
             yield c[t.command](e, t);
           } catch (t) {
-            yield (0, a.addCommentToIssue)(
-              e,
-              `\`\`\`\nassistive-pricing plugin failed to run.\n${t}\n\n${l.default.helpInformation()}\n\`\`\``,
-              s.issue.number
-            );
+            yield (0, a.addCommentToIssue)(e, `\`\`\`\ndaemon-pricing plugin failed to run.\n${t}\n\n${l.default.helpInformation()}\n\`\`\``, s.issue.number);
           }
         });
       }
@@ -45886,7 +45882,7 @@
         return t;
       }
     },
-    22032: function (e, t, r) {
+    14186: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -45921,7 +45917,7 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.getBaseRateChanges = getBaseRateChanges;
-      const n = r(36273);
+      const n = r(47423);
       function getBaseRateChanges(e) {
         return s(this, void 0, void 0, function* () {
           var t;
@@ -45968,7 +45964,7 @@
         return s ? s[1] : undefined;
       }
     },
-    67393: (e, t) => {
+    56687: (e, t) => {
       "use strict";
       Object.defineProperty(t, "__esModule", { value: true });
       t.getCommitChanges = getCommitChanges;
@@ -45990,7 +45986,7 @@
         return s;
       }
     },
-    22880: function (e, t, r) {
+    23858: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -46025,7 +46021,7 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.getLabelsChanges = getLabelsChanges;
-      const n = r(36273);
+      const n = r(47423);
       function getLabelsChanges(e) {
         return s(this, void 0, void 0, function* () {
           var t;
@@ -46072,7 +46068,7 @@
         return s ? s[1] : undefined;
       }
     },
-    26109: function (e, t, r) {
+    1971: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -46107,13 +46103,13 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.globalLabelUpdate = globalLabelUpdate;
-      const n = r(5508);
-      const o = r(22032);
-      const i = r(22880);
-      const a = r(4045);
-      const A = r(74534);
-      const l = r(36273);
-      const c = r(78416);
+      const n = r(30166);
+      const o = r(14186);
+      const i = r(23858);
+      const a = r(51811);
+      const A = r(63924);
+      const l = r(47423);
+      const c = r(4410);
       function isAuthed(e) {
         return s(this, void 0, void 0, function* () {
           var t, r;
@@ -46185,7 +46181,7 @@
         });
       }
     },
-    76392: function (e, t, r) {
+    84746: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -46222,8 +46218,8 @@
       t.handleParentIssue = handleParentIssue;
       t.sortLabelsByValue = sortLabelsByValue;
       t.isParentIssue = isParentIssue;
-      const n = r(20801);
-      const o = r(74273);
+      const n = r(33119);
+      const o = r(32647);
       function handleParentIssue(e, t) {
         return s(this, void 0, void 0, function* () {
           const r = t.filter((e) => e.name.toString().startsWith("Price:"));
@@ -46241,7 +46237,7 @@
         return e.match(t);
       }
     },
-    52182: function (e, t, r) {
+    14500: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -46276,8 +46272,8 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.watchLabelChange = watchLabelChange;
-      const n = r(78416);
-      const o = r(36273);
+      const n = r(4410);
+      const o = r(47423);
       function watchLabelChange(e) {
         return s(this, void 0, void 0, function* () {
           var t;
@@ -46325,7 +46321,7 @@
         });
       }
     },
-    74534: function (e, t, r) {
+    63924: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -46361,13 +46357,13 @@
       Object.defineProperty(t, "__esModule", { value: true });
       t.onLabelChangeSetPricing = onLabelChangeSetPricing;
       t.setPriceLabel = setPriceLabel;
-      const n = r(20801);
-      const o = r(44643);
-      const i = r(89264);
-      const a = r(74273);
-      const A = r(76392);
-      const l = r(28813);
-      const c = r(36273);
+      const n = r(33119);
+      const o = r(30389);
+      const i = r(3234);
+      const a = r(32647);
+      const A = r(84746);
+      const l = r(31803);
+      const c = r(47423);
       function onLabelChangeSetPricing(e) {
         return s(this, void 0, void 0, function* () {
           var t, r;
@@ -46526,7 +46522,7 @@
         });
       }
     },
-    4045: function (e, t, r) {
+    51811: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -46561,9 +46557,9 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.syncPriceLabelsToConfig = syncPriceLabelsToConfig;
-      const n = r(20801);
-      const o = r(74273);
-      const i = r(28813);
+      const n = r(33119);
+      const o = r(32647);
+      const i = r(31803);
       const a = "No owner found in the repository!";
       function syncPriceLabelsToConfig(e) {
         return s(this, void 0, void 0, function* () {
@@ -46636,7 +46632,106 @@
         });
       }
     },
-    57696: function (e, t, r) {
+    79407: function (e, t, r) {
+      "use strict";
+      var s =
+        (this && this.__createBinding) ||
+        (Object.create
+          ? function (e, t, r, s) {
+              if (s === undefined) s = r;
+              var n = Object.getOwnPropertyDescriptor(t, r);
+              if (!n || ("get" in n ? !t.__esModule : n.writable || n.configurable)) {
+                n = {
+                  enumerable: true,
+                  get: function () {
+                    return t[r];
+                  },
+                };
+              }
+              Object.defineProperty(e, s, n);
+            }
+          : function (e, t, r, s) {
+              if (s === undefined) s = r;
+              e[s] = t[r];
+            });
+      var n =
+        (this && this.__setModuleDefault) ||
+        (Object.create
+          ? function (e, t) {
+              Object.defineProperty(e, "default", { enumerable: true, value: t });
+            }
+          : function (e, t) {
+              e["default"] = t;
+            });
+      var o =
+        (this && this.__importStar) ||
+        function (e) {
+          if (e && e.__esModule) return e;
+          var t = {};
+          if (e != null) for (var r in e) if (r !== "default" && Object.prototype.hasOwnProperty.call(e, r)) s(t, e, r);
+          n(t, e);
+          return t;
+        };
+      var i =
+        (this && this.__awaiter) ||
+        function (e, t, r, s) {
+          function adopt(e) {
+            return e instanceof r
+              ? e
+              : new r(function (t) {
+                  t(e);
+                });
+          }
+          return new (r || (r = Promise))(function (r, n) {
+            function fulfilled(e) {
+              try {
+                step(s.next(e));
+              } catch (e) {
+                n(e);
+              }
+            }
+            function rejected(e) {
+              try {
+                step(s["throw"](e));
+              } catch (e) {
+                n(e);
+              }
+            }
+            function step(e) {
+              e.done ? r(e.value) : adopt(e.value).then(fulfilled, rejected);
+            }
+            step((s = s.apply(e, t || [])).next());
+          });
+        };
+      Object.defineProperty(t, "__esModule", { value: true });
+      const a = o(r(93228));
+      const A = o(r(37484));
+      const l = r(45105);
+      const c = r(55962);
+      const d = r(31803);
+      const p = r(79786);
+      function actionRun() {
+        return i(this, void 0, void 0, function* () {
+          const e = {
+            SUPABASE_KEY: process.env.SUPABASE_KEY,
+            SUPABASE_URL: process.env.SUPABASE_URL,
+            UBIQUIBOT_PUBLIC_KEY: process.env.UBIQUIBOT_PUBLIC_KEY || "temporarily-disabled",
+          };
+          const t = l.Value.Decode(c.envSchema, e);
+          const r = a.context.payload.inputs;
+          const s = l.Value.Decode(d.pluginSettingsSchema, l.Value.Default(d.pluginSettingsSchema, JSON.parse(r.settings)));
+          const n = { stateId: r.stateId, eventName: r.eventName, eventPayload: JSON.parse(r.eventPayload), settings: s, authToken: r.authToken, ref: r.ref };
+          yield (0, p.run)(n, t);
+        });
+      }
+      actionRun()
+        .then((e) => A.setOutput("result", e))
+        .catch((e) => {
+          console.error(e);
+          A.setFailed(e);
+        });
+    },
+    79786: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -46673,37 +46768,41 @@
       t.run = run;
       const n = r(65772);
       const o = r(85036);
-      const i = r(72322);
-      const a = r(90682);
-      const A = r(52182);
-      const l = r(74534);
-      const c = r(4045);
-      const d = r(26109);
-      const p = r(36273);
-      const u = r(42629);
+      const i = r(26222);
+      const a = r(90776);
+      const A = r(90032);
+      const l = r(1971);
+      const c = r(14500);
+      const d = r(63924);
+      const p = r(51811);
+      const u = r(47423);
       function run(e, t) {
         return s(this, void 0, void 0, function* () {
           const r = new n.Octokit({ auth: e.authToken });
           const s = (0, o.createClient)(t.SUPABASE_URL, t.SUPABASE_KEY);
-          const g = { eventName: e.eventName, payload: e.eventPayload, config: e.settings, octokit: r, logger: new u.Logs("info"), adapters: {}, env: t };
-          g.adapters = (0, i.createAdapters)(s, g);
+          const g = { eventName: e.eventName, payload: e.eventPayload, config: e.settings, octokit: r, logger: new i.Logs("info"), adapters: {}, env: t };
+          g.adapters = (0, a.createAdapters)(s, g);
           const m = e.eventName;
           switch (m) {
+            case "issues.opened":
+            case "repository.created":
+              yield (0, p.syncPriceLabelsToConfig)(g);
+              break;
             case "issues.labeled":
             case "issues.unlabeled":
-              if ((0, p.isIssueLabelEvent)(g)) {
-                yield (0, c.syncPriceLabelsToConfig)(g);
-                yield (0, l.onLabelChangeSetPricing)(g);
+              if ((0, u.isIssueLabelEvent)(g)) {
+                yield (0, p.syncPriceLabelsToConfig)(g);
+                yield (0, d.onLabelChangeSetPricing)(g);
               }
               break;
             case "label.edited":
-              yield (0, A.watchLabelChange)(g);
+              yield (0, c.watchLabelChange)(g);
               break;
             case "issue_comment.created":
-              yield (0, a.handleComment)(g);
+              yield (0, A.handleComment)(g);
               break;
             case "push":
-              yield (0, d.globalLabelUpdate)(g);
+              yield (0, l.globalLabelUpdate)(g);
               break;
             default:
               g.logger.error(`Event ${m} is not supported`);
@@ -46711,7 +46810,7 @@
         });
       }
     },
-    78416: function (e, t) {
+    4410: function (e, t) {
       "use strict";
       var r =
         (this && this.__awaiter) ||
@@ -46820,7 +46919,7 @@
         });
       }
     },
-    20801: function (e, t) {
+    33119: function (e, t) {
       "use strict";
       var r =
         (this && this.__awaiter) ||
@@ -46940,7 +47039,7 @@
         });
       }
     },
-    44643: function (e, t, r) {
+    30389: function (e, t, r) {
       "use strict";
       var s =
         (this && this.__awaiter) ||
@@ -46975,10 +47074,10 @@
         };
       Object.defineProperty(t, "__esModule", { value: true });
       t.labelAccessPermissionsCheck = labelAccessPermissionsCheck;
-      const n = r(89264);
-      const o = r(36273);
-      const i = r(78416);
-      const a = r(20801);
+      const n = r(3234);
+      const o = r(47423);
+      const i = r(4410);
+      const a = r(33119);
       function labelAccessPermissionsCheck(e) {
         return s(this, void 0, void 0, function* () {
           var t, r, s, a, A;
@@ -47046,7 +47145,7 @@
         });
       }
     },
-    74273: (e, t, r) => {
+    32647: (e, t, r) => {
       "use strict";
       Object.defineProperty(t, "__esModule", { value: true });
       t.calculateTaskPrice = calculateTaskPrice;
@@ -47085,7 +47184,7 @@
         return 0;
       }
     },
-    50304: (e, t, r) => {
+    55962: (e, t, r) => {
       "use strict";
       Object.defineProperty(t, "__esModule", { value: true });
       t.envConfigValidator = t.envSchema = void 0;
@@ -47095,7 +47194,7 @@
       t.envSchema = s.Type.Object({ SUPABASE_URL: s.Type.String(), SUPABASE_KEY: s.Type.String(), UBIQUIBOT_PUBLIC_KEY: s.Type.Optional(s.Type.String()) });
       t.envConfigValidator = new n.StandardValidator(t.envSchema);
     },
-    89264: (e, t) => {
+    3234: (e, t) => {
       "use strict";
       Object.defineProperty(t, "__esModule", { value: true });
       t.UserType = void 0;
@@ -47105,7 +47204,7 @@
         e["Bot"] = "Bot";
       })(r || (t.UserType = r = {}));
     },
-    28813: (e, t, r) => {
+    31803: (e, t, r) => {
       "use strict";
       Object.defineProperty(t, "__esModule", { value: true });
       t.COLLABORATOR_ONLY_DESCRIPTION = t.assistivePricingSchemaValidator = t.pluginSettingsSchema = void 0;
@@ -47132,7 +47231,7 @@
       t.assistivePricingSchemaValidator = new s.StandardValidator(t.pluginSettingsSchema);
       t.COLLABORATOR_ONLY_DESCRIPTION = "⚠️ Collaborator only";
     },
-    36273: (e, t) => {
+    47423: (e, t) => {
       "use strict";
       Object.defineProperty(t, "__esModule", { value: true });
       t.isCommentEvent = isCommentEvent;
@@ -47151,105 +47250,6 @@
       function isLabelEditedEvent(e) {
         return e.eventName === "label.edited";
       }
-    },
-    79407: function (e, t, r) {
-      "use strict";
-      var s =
-        (this && this.__createBinding) ||
-        (Object.create
-          ? function (e, t, r, s) {
-              if (s === undefined) s = r;
-              var n = Object.getOwnPropertyDescriptor(t, r);
-              if (!n || ("get" in n ? !t.__esModule : n.writable || n.configurable)) {
-                n = {
-                  enumerable: true,
-                  get: function () {
-                    return t[r];
-                  },
-                };
-              }
-              Object.defineProperty(e, s, n);
-            }
-          : function (e, t, r, s) {
-              if (s === undefined) s = r;
-              e[s] = t[r];
-            });
-      var n =
-        (this && this.__setModuleDefault) ||
-        (Object.create
-          ? function (e, t) {
-              Object.defineProperty(e, "default", { enumerable: true, value: t });
-            }
-          : function (e, t) {
-              e["default"] = t;
-            });
-      var o =
-        (this && this.__importStar) ||
-        function (e) {
-          if (e && e.__esModule) return e;
-          var t = {};
-          if (e != null) for (var r in e) if (r !== "default" && Object.prototype.hasOwnProperty.call(e, r)) s(t, e, r);
-          n(t, e);
-          return t;
-        };
-      var i =
-        (this && this.__awaiter) ||
-        function (e, t, r, s) {
-          function adopt(e) {
-            return e instanceof r
-              ? e
-              : new r(function (t) {
-                  t(e);
-                });
-          }
-          return new (r || (r = Promise))(function (r, n) {
-            function fulfilled(e) {
-              try {
-                step(s.next(e));
-              } catch (e) {
-                n(e);
-              }
-            }
-            function rejected(e) {
-              try {
-                step(s["throw"](e));
-              } catch (e) {
-                n(e);
-              }
-            }
-            function step(e) {
-              e.done ? r(e.value) : adopt(e.value).then(fulfilled, rejected);
-            }
-            step((s = s.apply(e, t || [])).next());
-          });
-        };
-      Object.defineProperty(t, "__esModule", { value: true });
-      const a = o(r(93228));
-      const A = o(r(37484));
-      const l = r(45105);
-      const c = r(50304);
-      const d = r(28813);
-      const p = r(57696);
-      function actionRun() {
-        return i(this, void 0, void 0, function* () {
-          const e = {
-            SUPABASE_KEY: process.env.SUPABASE_KEY,
-            SUPABASE_URL: process.env.SUPABASE_URL,
-            UBIQUIBOT_PUBLIC_KEY: process.env.UBIQUIBOT_PUBLIC_KEY || "temporarily-disabled",
-          };
-          const t = l.Value.Decode(c.envSchema, e);
-          const r = a.context.payload.inputs;
-          const s = l.Value.Decode(d.pluginSettingsSchema, l.Value.Default(d.pluginSettingsSchema, JSON.parse(r.settings)));
-          const n = { stateId: r.stateId, eventName: r.eventName, eventPayload: JSON.parse(r.eventPayload), settings: s, authToken: r.authToken, ref: r.ref };
-          yield (0, p.run)(n, t);
-        });
-      }
-      actionRun()
-        .then((e) => A.setOutput("result", e))
-        .catch((e) => {
-          console.error(e);
-          A.setFailed(e);
-        });
     },
     18327: (module) => {
       module.exports = eval("require")("bufferutil");
@@ -50903,7 +50903,7 @@
       }
       t.suggestSimilar = suggestSimilar;
     },
-    42629: (e) => {
+    26222: (e) => {
       "use strict";
       var t = Object.defineProperty;
       var r = Object.getOwnPropertyDescriptor;
@@ -51218,7 +51218,7 @@
     8330: (e) => {
       "use strict";
       e.exports = JSON.parse(
-        '{"name":"@ubiquibot/assistive-pricing","version":"1.0.0","description":"Helps set pricing for GitHub Issues and their rewards.","main":"build/index.ts","author":"Ubiquity DAO","license":"MIT","engines":{"node":">=20.10.0"},"scripts":{"worker":"wrangler dev --env dev --port 4000","start":"tsx src/index.ts","format":"run-s format:lint format:prettier format:cspell","format:lint":"eslint --fix .","format:prettier":"prettier --write .","format:cspell":"cspell **/*","knip":"knip --config .github/knip.ts","knip-ci":"knip --no-exit-code --reporter json --config .github/knip.ts","prepare":"husky install","test":"jest --setupFiles dotenv/config --coverage","supabase:generate:local":"supabase gen types typescript --local > src/adapters/supabase/types/database.ts","supabase:generate:remote":"dotenv -- cross-env-shell supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > src/adapters/supabase/types/database.ts"},"keywords":["typescript","template","dao","ubiquity","open-source"],"dependencies":{"@actions/core":"^1.10.1","@actions/github":"^6.0.0","@commander-js/extra-typings":"12.0.1","@octokit/rest":"^20.0.2","@octokit/webhooks":"^13.1.0","@sinclair/typebox":"^0.32.15","@supabase/supabase-js":"2.43.1","@ubiquity-dao/ubiquibot-logger":"^1.3.1","commander":"12.0.0","decimal.js":"^10.4.3","dotenv":"^16.4.5","typebox-validators":"0.3.5"},"devDependencies":{"@commitlint/cli":"^18.6.1","@commitlint/config-conventional":"^18.6.2","@cspell/dict-node":"^4.0.3","@cspell/dict-software-terms":"^3.3.18","@cspell/dict-typescript":"^3.1.2","@jest/globals":"29.7.0","@mswjs/data":"0.16.1","@types/jest":"29.5.12","@types/node":"^20.11.19","@typescript-eslint/eslint-plugin":"^7.0.1","@typescript-eslint/parser":"^7.0.1","@vercel/ncc":"0.38.2","cross-env":"7.0.3","cspell":"^8.4.0","dotenv-cli":"7.4.2","eslint":"^8.56.0","eslint-plugin-sonarjs":"^0.24.0","husky":"^9.0.11","jest":"29.7.0","jest-junit":"16.0.0","jest-md-dashboard":"0.8.0","knip":"^5.0.1","lint-staged":"^15.2.2","npm-run-all":"^4.1.5","prettier":"^3.2.5","supabase":"1.165.0","ts-jest":"29.1.2","ts-node":"10.9.2","tsx":"^4.7.1","typescript":"5.6.2","wrangler":"3.79.0"},"lint-staged":{"*.ts":["yarn prettier --write","eslint --fix"],"src/**.{ts,json}":["cspell"]},"commitlint":{"extends":["@commitlint/config-conventional"]},"packageManager":"yarn@1.22.22"}'
+        '{"name":"@ubiquity-os/daemon-pricing","version":"1.0.0","description":"Helps set pricing for GitHub Issues and their rewards.","main":"build/index.ts","author":"Ubiquity DAO","license":"MIT","engines":{"node":">=20.10.0"},"scripts":{"worker":"wrangler dev --env dev --port 4000","start":"tsx src/index.ts","format":"run-s format:lint format:prettier format:cspell","format:lint":"eslint --fix .","format:prettier":"prettier --write .","format:cspell":"cspell **/*","knip":"knip --config .github/knip.ts","knip-ci":"knip --no-exit-code --reporter json --config .github/knip.ts","prepare":"husky install","test":"jest --setupFiles dotenv/config --coverage","supabase:generate:local":"supabase gen types typescript --local > src/adapters/supabase/types/database.ts","supabase:generate:remote":"dotenv -- cross-env-shell supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > src/adapters/supabase/types/database.ts"},"keywords":["typescript","template","dao","ubiquity","open-source"],"dependencies":{"@actions/core":"^1.10.1","@actions/github":"^6.0.0","@commander-js/extra-typings":"12.0.1","@octokit/rest":"^20.0.2","@octokit/webhooks":"^13.1.0","@sinclair/typebox":"^0.32.15","@supabase/supabase-js":"2.43.1","@ubiquity-os/ubiquity-os-logger":"^1.3.2","commander":"12.0.0","decimal.js":"^10.4.3","dotenv":"^16.4.5","typebox-validators":"0.3.5"},"devDependencies":{"@commitlint/cli":"^18.6.1","@commitlint/config-conventional":"^18.6.2","@cspell/dict-node":"^4.0.3","@cspell/dict-software-terms":"^3.3.18","@cspell/dict-typescript":"^3.1.2","@jest/globals":"29.7.0","@mswjs/data":"0.16.1","@types/jest":"29.5.12","@types/node":"^20.11.19","@typescript-eslint/eslint-plugin":"^7.0.1","@typescript-eslint/parser":"^7.0.1","@vercel/ncc":"0.38.2","cross-env":"7.0.3","cspell":"^8.4.0","dotenv-cli":"7.4.2","eslint":"^8.56.0","eslint-plugin-sonarjs":"^0.24.0","husky":"^9.0.11","jest":"29.7.0","jest-junit":"16.0.0","jest-md-dashboard":"0.8.0","knip":"^5.0.1","lint-staged":"^15.2.2","npm-run-all":"^4.1.5","prettier":"^3.2.5","supabase":"1.165.0","ts-jest":"29.1.2","ts-node":"10.9.2","tsx":"^4.7.1","typescript":"5.6.2","wrangler":"3.79.0"},"lint-staged":{"*.ts":["yarn prettier --write","eslint --fix"],"src/**.{ts,json}":["cspell"]},"commitlint":{"extends":["@commitlint/config-conventional"]},"packageManager":"yarn@1.22.22"}'
       );
     },
   };
