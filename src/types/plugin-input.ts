@@ -12,7 +12,7 @@ export interface PluginInputs<T extends WebhookEventName = SupportedEvents> {
   ref: string;
 }
 
-export const assistivePricingSettingsSchema = T.Object(
+export const pluginSettingsSchema = T.Object(
   {
     globalConfigUpdate: T.Optional(
       T.Object({
@@ -38,9 +38,9 @@ export const assistivePricingSettingsSchema = T.Object(
   { default: {} }
 );
 
-export const assistivePricingSchemaValidator = new StandardValidator(assistivePricingSettingsSchema);
+export const assistivePricingSchemaValidator = new StandardValidator(pluginSettingsSchema);
 
-export type AssistivePricingSettings = StaticDecode<typeof assistivePricingSettingsSchema>;
+export type AssistivePricingSettings = StaticDecode<typeof pluginSettingsSchema>;
 export type Rates = {
   previousBaseRate: number | null;
   newBaseRate: number | null;

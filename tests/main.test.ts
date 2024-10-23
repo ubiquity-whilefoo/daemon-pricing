@@ -8,7 +8,7 @@ import { server } from "./__mocks__/node";
 import issueCommented from "./__mocks__/requests/issue-comment-post.json";
 import usersGet from "./__mocks__/users-get.json";
 import * as crypto from "crypto";
-import { AssistivePricingSettings, assistivePricingSettingsSchema } from "../src/types/plugin-input";
+import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input";
 import { Value } from "@sinclair/typebox/value";
 import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
 import { Context } from "../src/types/context";
@@ -46,8 +46,8 @@ describe("User tests", () => {
   });
 
   it("Should not include globalConfigUpdate in defaults if omitted", () => {
-    const settings = Value.Default(assistivePricingSettingsSchema, {}) as AssistivePricingSettings;
-    const decodedSettings = Value.Decode(assistivePricingSettingsSchema, settings);
+    const settings = Value.Default(pluginSettingsSchema, {}) as AssistivePricingSettings;
+    const decodedSettings = Value.Decode(pluginSettingsSchema, settings);
     expect(decodedSettings.globalConfigUpdate).toBeUndefined();
   });
 
