@@ -61845,7 +61845,7 @@ var __webpack_modules__ = {
         const r = e.strict ?? true;
         delete e.strict;
         Object.assign(this, e);
-        this.getPath = r ? (e.getPath ?? p.getPath) : p.getPathNoStrict;
+        this.getPath = r ? e.getPath ?? p.getPath : p.getPathNoStrict;
       }
       clone() {
         const e = new Hono({ router: this.router, getPath: this.getPath });
@@ -61957,7 +61957,7 @@ var __webpack_modules__ = {
           }
           return e instanceof Promise
             ? e.then((e) => e || (i.finalized ? i.res : this.notFoundHandler(i))).catch((e) => this.handleError(e, i))
-            : (e ?? this.notFoundHandler(i));
+            : e ?? this.notFoundHandler(i);
         }
         const a = (0, c.compose)(o[0], this.errorHandler, this.notFoundHandler);
         return (async () => {
@@ -62850,7 +62850,7 @@ var __webpack_modules__ = {
             a.params = Object.create(null);
             a.possibleKeys.forEach((e) => {
               const t = l[a.name];
-              a.params[e] = n[e] && !t ? n[e] : (r[e] ?? n[e]);
+              a.params[e] = n[e] && !t ? n[e] : r[e] ?? n[e];
               l[a.name] = true;
             });
             s.push(a);

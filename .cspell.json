@@ -1,7 +1,17 @@
 {
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "version": "0.2",
-  "ignorePaths": ["**/*.json", "**/*.css", "node_modules", "**/*.log", "**/*.toml", "**/*.http", "src/adapters/supabase/types/database.ts", "bun.lockb"],
+  "ignorePaths": [
+    "**/*.json",
+    "**/*.css",
+    "node_modules",
+    "**/*.log",
+    "**/*.toml",
+    "**/*.http",
+    "src/adapters/supabase/types/database.ts",
+    "bun.lockb",
+    "dist"
+  ],
   "useGitignore": true,
   "language": "en",
   "words": [
