@@ -1,6 +1,6 @@
 import { Context } from "../types/context";
 
-import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo } from "../shared/label";
+import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo, removeLabelFromIssue } from "../shared/label";
 import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { setPrice } from "../shared/pricing";
 import { Label, UserType } from "../types/github";
@@ -78,6 +78,18 @@ async function setPriceLabel(context: Context, issueLabels: Label[], config: Ass
   if (!minLabels.time || !minLabels.priority) {
     logger.error("No label to calculate price");
     return;
+  }
+
+  for (const timeLabel of recognizedLabels.time) {
+    if (timeLabel.name !== minLabels.time?.name) {
+      await removeLabelFromIssue(context, timeLabel.name);
+    }
+  }
+
+  for (const priorityLabel of recognizedLabels.priority) {
+    if (priorityLabel.name !== minLabels.time?.name) {
+      await removeLabelFromIssue(context, priorityLabel.name);
+    }
   }
 
   const targetPriceLabel = setPrice(context, minLabels.time, minLabels.priority);
