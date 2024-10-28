@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { createPlugin } from "@ubiquity-os/ubiquity-os-kernel";
-import type { ExecutionContext } from "hono/dist/types/context";
+import type { ExecutionContext } from "hono";
 import { createAdapters } from "./adapters";
 import { run } from "./run";
 import { SupportedEvents } from "./types/context";
