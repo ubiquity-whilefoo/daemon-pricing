@@ -194,6 +194,7 @@ export const handlers = [
     });
     return HttpResponse.json(labels);
   }),
+  http.post("http://localhost:65432/rest/v1/access", () => HttpResponse.json()),
 ];
 
 async function getLabel(body: ReadableStream<Uint8Array> | null) {

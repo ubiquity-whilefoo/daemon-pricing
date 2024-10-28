@@ -1,14 +1,12 @@
-import { Context } from "../types/context";
-
 import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo, removeLabelFromIssue } from "../shared/label";
 import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { Label, UserType } from "../types/github";
 import { getPrice } from "../shared/pricing";
 import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
-import { AssistivePricingSettings } from "../types/plugin-input";
+import { AssistivePricingSettings, ContextPlugin } from "../types/plugin-input";
 import { isIssueLabelEvent } from "../types/typeguards";
 
-export async function onLabelChangeSetPricing(context: Context): Promise<void> {
+export async function onLabelChangeSetPricing(context: ContextPlugin): Promise<void> {
   if (!isIssueLabelEvent(context)) {
     context.logger.debug("Not an issue event");
     return;
@@ -50,7 +48,7 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
     const smallestPriceLabelName = smallestPriceLabel?.name;
     if (smallestPriceLabelName) {
       for (const label of sortedPriceLabels) {
-        await context.octokit.issues.removeLabel({
+        await context.octokit.rest.issues.removeLabel({
           owner,
           repo: payload.repository.name,
           issue_number: payload.issue.number,
@@ -65,7 +63,7 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
   await setPriceLabel(context, labels, config);
 }
 
-export async function setPriceLabel(context: Context, issueLabels: Label[], config: AssistivePricingSettings) {
+export async function setPriceLabel(context: ContextPlugin, issueLabels: Label[], config: AssistivePricingSettings) {
   const logger = context.logger;
   const labelNames = issueLabels.map((i) => i.name);
 
@@ -121,7 +119,7 @@ function getMinLabels(recognizedLabels: { time: Label[]; priority: Label[] }) {
   return { time: minTimeLabel, priority: minPriorityLabel };
 }
 
-async function handleTargetPriceLabel(context: Context, targetPriceLabel: string, labelNames: string[]) {
+async function handleTargetPriceLabel(context: ContextPlugin, targetPriceLabel: string, labelNames: string[]) {
   const { repository } = context.payload;
   if (repository.name === "devpool-directory") {
     targetPriceLabel = targetPriceLabel.replace("Price: ", "Pricing: ");
@@ -139,7 +137,7 @@ async function handleTargetPriceLabel(context: Context, targetPriceLabel: string
   }
 }
 
-async function handleExistingPriceLabel(context: Context, targetPriceLabel: string) {
+async function handleExistingPriceLabel(context: ContextPlugin, targetPriceLabel: string) {
   const logger = context.logger;
   let labeledEvents = await getAllLabeledEvents(context);
   if (!labeledEvents) return logger.error("No labeled events found");
@@ -154,25 +152,25 @@ async function handleExistingPriceLabel(context: Context, targetPriceLabel: stri
   }
 }
 
-async function addPriceLabelToIssue(context: Context, targetPriceLabel: string) {
+async function addPriceLabelToIssue(context: ContextPlugin, targetPriceLabel: string) {
   await clearAllPriceLabelsOnIssue(context);
   await addLabelToIssue(context, targetPriceLabel);
 }
 
-async function getAllLabeledEvents(context: Context) {
+async function getAllLabeledEvents(context: ContextPlugin) {
   const events = await getAllIssueEvents(context);
   if (!events) return null;
   return events.filter((event) => event.event === "labeled");
 }
 
-async function getAllIssueEvents(context: Context) {
+async function getAllIssueEvents(context: ContextPlugin) {
   if (!("issue" in context.payload) || !context.payload.issue) {
     context.logger.debug("Not an issue event");
     return;
   }
 
   try {
-    return await context.octokit.paginate(context.octokit.issues.listEvents, {
+    return await context.octokit.paginate(context.octokit.rest.issues.listEvents, {
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
       issue_number: context.payload.issue.number,

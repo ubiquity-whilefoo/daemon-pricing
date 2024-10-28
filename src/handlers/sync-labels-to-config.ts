@@ -1,13 +1,13 @@
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { COLORS, createLabel, listLabelsForRepo } from "../shared/label";
 import { calculateLabelValue, calculateTaskPrice } from "../shared/pricing";
-import { Context } from "../types/context";
+import { ContextPlugin } from "../types/plugin-input";
 import { Label } from "../types/github";
 
 // This just checks all the labels in the config have been set in gh issue
 // If there's something missing, they will be added
 
-export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
+export async function syncPriceLabelsToConfig(context: ContextPlugin): Promise<void> {
   const { config, logger } = context;
 
   const priceLabels: string[] = [];
@@ -63,7 +63,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   }
 }
 
-async function handleGlobalUpdate(context: Context, logger: Logs, incorrectPriceLabels: Label[]) {
+async function handleGlobalUpdate(context: ContextPlugin, logger: Logs, incorrectPriceLabels: Label[]) {
   logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
   const owner = context.payload.repository.owner?.login;
   if (!owner) {
