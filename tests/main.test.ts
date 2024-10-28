@@ -171,15 +171,15 @@ describe("User tests", () => {
     const result = await workerFetch.fetch(
       {
         method: "GET",
-        url,
+        url: `${url}/manifest.json`,
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
         SUPABASE_KEY: "key",
       }
     );
-    expect(result.ok).toEqual(false);
-    expect(result.status).toEqual(405);
+    expect(result.ok).toEqual(true);
+    expect(result.status).toEqual(200);
   });
 
   it("Should reject an invalid environment", async () => {
