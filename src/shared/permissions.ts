@@ -57,10 +57,10 @@ export async function labelAccessPermissionsCheck(context: ContextPlugin) {
 }
 
 async function handleInsufficientPrivileges(
-  context: Context,
+  context: ContextPlugin,
   labelType: string,
   sender: string,
-  repo: Context["payload"]["repository"],
+  repo: ContextPlugin["payload"]["repository"],
   action: string,
   labelName: string,
   eventName: string

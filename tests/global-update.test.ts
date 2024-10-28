@@ -1,5 +1,6 @@
 import { drop } from "@mswjs/data";
 import { Context } from "../src/types/context";
+import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
 import { it, describe, beforeAll, beforeEach, afterAll, expect, afterEach, jest } from "@jest/globals";
@@ -553,7 +554,7 @@ function createContext(
   globalConfigUpdate?: {
     excludeRepos: string[];
   }
-): Context {
+): ContextPlugin {
   return {
     adapters: {} as never,
     payload: {
@@ -614,6 +615,7 @@ function createContext(
       },
       basePriceMultiplier: 2,
     },
+    // @ts-expect-error ESM makes types incompatible.
     octokit: octokit,
     eventName: "push",
     env: {

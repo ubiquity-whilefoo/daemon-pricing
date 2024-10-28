@@ -16,7 +16,7 @@ export function isIssueLabelEvent(context: ContextPlugin): context is ContextPlu
   return context.eventName === "issues.labeled" || context.eventName === "issues.unlabeled";
 }
 
-export function isPushEvent(context: Context): context is Context & { payload: Context<"push">["payload"] } {
+export function isPushEvent(context: ContextPlugin): context is ContextPlugin & { payload: Context<"push">["payload"] } {
   return context.eventName === "push";
 }
 

@@ -2158,10 +2158,10 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
 
-"@sinclair/typebox@^0.32.15":
-  version "0.32.29"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.32.29.tgz#35a31aac1078f14b722bd08086cea44fa73b206a"
-  integrity sha512-GWKskKPGQV0vVYizqCu0E1YLwGthvlkDqpRxB3iBuqxJ8dN/9n1cnDRSQHF59GMoxDJwzSgmxpU617SidtUnMw==
+"@sinclair/typebox@^0.33.17":
+  version "0.33.17"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.33.17.tgz#603475bb1fb343deb82a4ce85e6adf177a65739b"
+  integrity sha512-75232GRx3wp3P7NP+yc4nRK3XUAnaQShxTAzapgmQrgs0QvSq0/mOJGoZXRpH15cFCKyys+4laCPbBselqJ5Ag==
 
 "@sinonjs/commons@^3.0.0":
   version "3.0.1"
@@ -2533,10 +2533,10 @@
     "@typescript-eslint/types" "7.0.1"
     eslint-visitor-keys "^3.4.1"
 
-"@ubiquity-os/ubiquity-os-kernel@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@ubiquity-os/ubiquity-os-kernel/-/ubiquity-os-kernel-2.4.0.tgz#1bb74d4b02ef5ba6b0c1c01d509e3e0f58609904"
-  integrity sha512-KT8AwtMOHA99GoVUs43eAR2PZii9AHmY9NjOlBtvotB5tXbeEIyhjgHr0kgRncgiLJU1UFIe0QYMmpOvmXiQpg==
+"@ubiquity-os/ubiquity-os-kernel@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@ubiquity-os/ubiquity-os-kernel/-/ubiquity-os-kernel-2.5.1.tgz#13cc77146837deeb7a6e6346511a686be78a832b"
+  integrity sha512-G+gL/NmZTP7QiijB1CcHXBj78iKW7RYdRC80ETWxzojIR3fZYPxTSb3rWEJOim9iAfQ7qGawJQJGL1yrPuMRBQ==
   dependencies:
     "@actions/core" "1.10.1"
     "@actions/github" "6.0.0"
@@ -4520,10 +4520,10 @@ hono@4.4.13:
   resolved "https://registry.yarnpkg.com/hono/-/hono-4.4.13.tgz#954e8f6e4bab14f3f9d7bac4eef4c56d23e7f900"
   integrity sha512-c6qqenclmQ6wpXzqiElMa2jt423PVCmgBreDfC5s2lPPpGk7d0lOymd8QTzFZyYC5mSSs6imiTMPip+gLwuW/g==
 
-hono@^4.6.5:
-  version "4.6.5"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.6.5.tgz#9d5a1ada5b40dc865e2d28c0bcc5d24cc755b9f1"
-  integrity sha512-qsmN3V5fgtwdKARGLgwwHvcdLKursMd+YOt69eGpl1dUCJb8mCd7hZfyZnBYjxCegBG7qkJRQRUy2oO25yHcyQ==
+hono@^4.6.7:
+  version "4.6.7"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.6.7.tgz#5389be797be4e049991d29ad7aea499e70d28085"
+  integrity sha512-wX4ZbOnzfNO61hUjuQbJ7OPGs1fWXXVVJ8VTPDb2Ls/x9HjCbVTm80Je6VTHMz5n5RGDtBgV9d9ZFZxBqx56ng==
 
 hosted-git-info@^2.1.4:
   version "2.8.9"

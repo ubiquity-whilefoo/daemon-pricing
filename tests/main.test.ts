@@ -1,6 +1,5 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import * as crypto from "crypto";
 import commandParser, { CommandArguments } from "../src/handlers/command-parser";
 import { Env } from "../src/types/env";
 import { ContextPlugin } from "../src/types/plugin-input";
@@ -9,12 +8,12 @@ import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
 import issueCommented from "./__mocks__/requests/issue-comment-post.json";
 import usersGet from "./__mocks__/users-get.json";
-import * as crypto from "crypto";
+import * as crypto from "node:crypto";
 import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input";
 import { Value } from "@sinclair/typebox/value";
 import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
 
-const { privateKey } = crypto.generateKeyPairSync("rsa", {
+const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,
   publicKeyEncoding: {
     type: "spki",
@@ -193,7 +192,7 @@ describe("User tests", () => {
         headers: {
           get: () => "application/json",
         },
-        url: undefined,
+        url,
         json: () => ({
           ...data,
           signature,

@@ -63,7 +63,7 @@ export async function syncPriceLabelsToConfig(context: ContextPlugin): Promise<v
   }
 }
 
-async function handleGlobalUpdate(context: Context, logger: Logs, incorrectPriceLabels: Label[]) {
+async function handleGlobalUpdate(context: ContextPlugin, logger: Logs, incorrectPriceLabels: Label[]) {
   logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
   const owner = context.payload.repository.owner?.login;
   if (!owner) {
