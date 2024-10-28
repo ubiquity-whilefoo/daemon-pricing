@@ -1,5 +1,5 @@
 {
-  "stateId": "",
+  "stateId": "1234",
   "eventName": "issue_comment.created",
   "eventPayload": {
     "action": "created",
@@ -15,6 +15,7 @@
       "number": 5,
       "title": "New issue",
       "user": {
+        "login": "gentlementlegen",
         "login": "gentlementlegen",
         "id": 9807008,
         "node_id": "MDQ6VXNlcjk4MDcwMDg=",
