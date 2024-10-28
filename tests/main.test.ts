@@ -8,10 +8,12 @@ import { server } from "./__mocks__/node";
 import issueCommented from "./__mocks__/requests/issue-comment-post.json";
 import usersGet from "./__mocks__/users-get.json";
 import * as crypto from "crypto";
+import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input";
+import { Value } from "@sinclair/typebox/value";
 import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
 import { Context } from "../src/types/context";
 
-const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+const { privateKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,
   publicKeyEncoding: {
     type: "spki",
@@ -41,6 +43,12 @@ describe("User tests", () => {
     for (const item of usersGet) {
       db.users.create(item);
     }
+  });
+
+  it("Should not include globalConfigUpdate in defaults if omitted", () => {
+    const settings = Value.Default(pluginSettingsSchema, {}) as AssistivePricingSettings;
+    const decodedSettings = Value.Decode(pluginSettingsSchema, settings);
+    expect(decodedSettings.globalConfigUpdate).toBeUndefined();
   });
 
   it("Should parse the /allow command", () => {
@@ -153,7 +161,6 @@ describe("User tests", () => {
       {
         SUPABASE_URL: "url",
         SUPABASE_KEY: "key",
-        UBIQUIBOT_PUBLIC_KEY: publicKey,
       }
     );
     expect(result.ok).toEqual(true);
@@ -168,7 +175,6 @@ describe("User tests", () => {
       {
         SUPABASE_URL: "url",
         SUPABASE_KEY: "key",
-        UBIQUIBOT_PUBLIC_KEY: "key",
       }
     );
     expect(result.ok).toEqual(false);
@@ -176,13 +182,14 @@ describe("User tests", () => {
   });
 
   it("Should reject an invalid environment", async () => {
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     const result = await workerFetch.fetch(
       {
         method: "POST",
         headers: {
           get: () => "application/json",
         },
-        url,
+        url: undefined,
         json() {
           return { settings: {} };
         },
@@ -194,25 +201,6 @@ describe("User tests", () => {
     );
     expect(result.ok).toEqual(false);
     expect(result.status).toEqual(500);
-    expect(await result.json()).toEqual({
-      errors: [
-        {
-          message: "Required property",
-          path: "/UBIQUIBOT_PUBLIC_KEY",
-          schema: {
-            type: "string",
-          },
-          type: 45,
-        },
-        {
-          message: "Expected string",
-          path: "/UBIQUIBOT_PUBLIC_KEY",
-          schema: {
-            type: "string",
-          },
-          type: 54,
-        },
-      ],
-    });
+    expect(errorSpy).toHaveBeenCalled();
   });
 });

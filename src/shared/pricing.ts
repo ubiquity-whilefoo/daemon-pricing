@@ -8,7 +8,7 @@ export function calculateTaskPrice(context: Context, timeValue: number, priority
   return new Decimal(base).mul(1000).mul(timeValue).mul(priority).toDecimalPlaces(2).toString();
 }
 
-export function setPrice(context: Context, timeLabel: Label, priorityLabel: Label) {
+export function getPrice(context: Context, timeLabel: Label, priorityLabel: Label) {
   const logger = context.logger;
   const { labels } = context.config;
 
