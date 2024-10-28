@@ -40,7 +40,8 @@
     "@ubiquity-os/ubiquity-os-logger": "^1.3.2",
     "commander": "12.0.0",
     "decimal.js": "^10.4.3",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "hono": "^4.6.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.6.1",
