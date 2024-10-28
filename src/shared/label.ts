@@ -1,11 +1,11 @@
-import { Context } from "../types/context";
 import { Label } from "../types/github";
+import { ContextPlugin } from "../types/plugin-input";
 
 // cspell:disable
 const COLORS = { default: "ededed", price: "1f883d" };
 // cspell:enable
 
-export async function listLabelsForRepo(context: Context): Promise<Label[]> {
+export async function listLabelsForRepo(context: ContextPlugin): Promise<Label[]> {
   const payload = context.payload;
 
   const res = await context.octokit.rest.issues.listLabelsForRepo({
@@ -21,7 +21,7 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
 
   throw context.logger.error("Failed to fetch lists of labels", { status: res.status });
 }
-export async function createLabel(context: Context, name: string, labelType = "default" as keyof typeof COLORS): Promise<void> {
+export async function createLabel(context: ContextPlugin, name: string, labelType = "default" as keyof typeof COLORS): Promise<void> {
   const payload = context.payload;
 
   const color = name.startsWith("Price: ") ? COLORS.price : COLORS[labelType];
@@ -34,7 +34,7 @@ export async function createLabel(context: Context, name: string, labelType = "d
   });
 }
 
-export async function clearAllPriceLabelsOnIssue(context: Context) {
+export async function clearAllPriceLabelsOnIssue(context: ContextPlugin) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;
@@ -47,25 +47,25 @@ export async function clearAllPriceLabelsOnIssue(context: Context) {
 
   for (const label of issuePriceLabels) {
     try {
-      await context.octokit.issues.removeLabel({
+      await context.octokit.rest.issues.removeLabel({
         owner: payload.repository.owner.login,
         repo: payload.repository.name,
         issue_number: payload.issue.number,
         name: label.name,
       });
     } catch (e: unknown) {
-      context.logger.error("Clearing all price labels failed!", e);
+      context.logger.error("Clearing all price labels failed!", { e });
     }
   }
 }
-export async function addLabelToIssue(context: Context, labelName: string) {
+export async function addLabelToIssue(context: ContextPlugin, labelName: string) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;
   }
 
   try {
-    await context.octokit.issues.addLabels({
+    await context.octokit.rest.issues.addLabels({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
       issue_number: payload.issue.number,
@@ -77,29 +77,29 @@ export async function addLabelToIssue(context: Context, labelName: string) {
       await updateLabelColor(context, labelName, COLORS.price);
     }
   } catch (e: unknown) {
-    context.logger.error("Adding a label to issue failed!", e);
+    context.logger.error("Adding a label to issue failed!", { e });
   }
 }
 
-export async function removeLabelFromIssue(context: Context, labelName: string) {
+export async function removeLabelFromIssue(context: ContextPlugin, labelName: string) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;
   }
 
   try {
-    await context.octokit.issues.removeLabel({
+    await context.octokit.rest.issues.removeLabel({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
       issue_number: payload.issue.number,
       name: labelName,
     });
   } catch (e: unknown) {
-    context.logger.error("Adding a label to issue failed!", e);
+    context.logger.error("Adding a label to issue failed!", { e });
   }
 }
 
-async function updateLabelColor(context: Context, labelName: string, color: string) {
+async function updateLabelColor(context: ContextPlugin, labelName: string, color: string) {
   const payload = context.payload;
   try {
     await context.octokit.rest.issues.updateLabel({
@@ -109,6 +109,6 @@ async function updateLabelColor(context: Context, labelName: string, color: stri
       color,
     });
   } catch (e: unknown) {
-    context.logger.error("Updating label color failed!", e);
+    context.logger.error("Updating label color failed!", { e });
   }
 }

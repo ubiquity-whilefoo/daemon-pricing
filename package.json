@@ -35,12 +35,12 @@
     "@commander-js/extra-typings": "12.0.1",
     "@octokit/rest": "^20.0.2",
     "@octokit/webhooks": "^13.1.0",
-    "@sinclair/typebox": "^0.32.15",
+    "@sinclair/typebox": "^0.33.17",
     "@supabase/supabase-js": "2.43.1",
+    "@ubiquity-os/ubiquity-os-kernel": "^2.5.1",
     "commander": "12.0.0",
     "decimal.js": "^10.4.3",
-    "dotenv": "^16.4.5",
-    "typebox-validators": "0.3.5"
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.6.1",

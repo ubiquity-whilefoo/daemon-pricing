@@ -1,13 +1,14 @@
 import { addCommentToIssue, isUserAdminOrBillingManager } from "../shared/issue";
-import { Context } from "../types/context";
+import { ContextPlugin } from "../types/plugin-input";
 import { isCommentEvent } from "../types/typeguards";
 import commandParser, { AllowedCommand, CommandArguments, isValidCommand } from "./command-parser";
 
-const commandHandlers: { [k in AllowedCommand]: (context: Context, commandArguments: CommandArguments) => Promise<void> } = {
+const commandHandlers: { [k in AllowedCommand]: (context: ContextPlugin, commandArguments: CommandArguments) => Promise<void> } = {
   async allow(context, { username, labels }: CommandArguments) {
     const logger = context.logger;
     if (!isCommentEvent(context)) {
-      return logger.debug("Not an comment event");
+      logger.debug("Not an comment event");
+      return;
     }
     const payload = context.payload;
     const sender = payload.sender.login;
@@ -24,7 +25,7 @@ const commandHandlers: { [k in AllowedCommand]: (context: Context, commandArgume
   },
 };
 
-export async function handleComment(context: Context) {
+export async function handleComment(context: ContextPlugin) {
   const logger = context.logger;
   if (!isCommentEvent(context)) {
     return logger.debug("Not an comment event");

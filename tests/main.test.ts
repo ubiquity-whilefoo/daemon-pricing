@@ -1,15 +1,15 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
 import { drop } from "@mswjs/data";
+import * as crypto from "crypto";
 import commandParser, { CommandArguments } from "../src/handlers/command-parser";
+import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
 import { Env } from "../src/types/env";
+import { ContextPlugin } from "../src/types/plugin-input";
 import workerFetch from "../src/worker";
 import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
 import issueCommented from "./__mocks__/requests/issue-comment-post.json";
 import usersGet from "./__mocks__/users-get.json";
-import * as crypto from "crypto";
-import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
-import { Context } from "../src/types/context";
 
 const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -123,7 +123,7 @@ describe("User tests", () => {
       },
     ];
     for (const testCase of testCases) {
-      const price = calculateTaskPrice(context as unknown as Context, testCase.timeValue, testCase.priorityValue);
+      const price = calculateTaskPrice(context as unknown as ContextPlugin, testCase.timeValue, testCase.priorityValue);
       expect(price).toEqual(testCase.expectedPrice);
     }
   });
