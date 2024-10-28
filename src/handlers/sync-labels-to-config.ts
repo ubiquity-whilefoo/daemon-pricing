@@ -1,13 +1,13 @@
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { COLORS, createLabel, listLabelsForRepo } from "../shared/label";
 import { calculateLabelValue, calculateTaskPrice } from "../shared/pricing";
-import { Context } from "../types/context";
+import { ContextPlugin } from "../types/plugin-input";
 import { Label } from "../types/github";
 
 // This just checks all the labels in the config have been set in gh issue
 // If there's something missing, they will be added
 
-export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
+export async function syncPriceLabelsToConfig(context: ContextPlugin): Promise<void> {
   const { config, logger } = context;
 
   const priceLabels: string[] = [];
