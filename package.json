@@ -9,6 +9,7 @@
   "engines": {
     "node": ">=20.10.0"
   },
+  "type": "module",
   "scripts": {
     "worker": "wrangler dev --env dev --port 4000",
     "start": "tsx src/index.ts",
