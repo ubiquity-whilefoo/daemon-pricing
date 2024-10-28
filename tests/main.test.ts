@@ -129,10 +129,7 @@ describe("User tests", () => {
   });
 
   it("Should handle the comment", async () => {
-    const data = {
-      ...issueCommented,
-      authToken: process.env.GITHUB_TOKEN,
-    };
+    const data = issueCommented;
     const sign = crypto.createSign("SHA256");
     sign.update(JSON.stringify(data));
     sign.end();
@@ -163,7 +160,7 @@ describe("User tests", () => {
     const result = await workerFetch.fetch(
       {
         method: "GET",
-        url: `${url}/manifest.json`,
+        url,
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -171,11 +168,16 @@ describe("User tests", () => {
         UBIQUIBOT_PUBLIC_KEY: "key",
       }
     );
-    expect(result.ok).toEqual(true);
-    expect(result.status).toEqual(200);
+    expect(result.ok).toEqual(false);
+    expect(result.status).toEqual(404);
   });
 
   it("Should reject an invalid environment", async () => {
+    const data = issueCommented;
+    const sign = crypto.createSign("SHA256");
+    sign.update(JSON.stringify(data));
+    sign.end();
+    const signature = sign.sign(privateKey, "base64");
     const result = await workerFetch.fetch(
       {
         method: "POST",
@@ -183,9 +185,10 @@ describe("User tests", () => {
           get: () => "application/json",
         },
         url,
-        json() {
-          return { settings: {} };
-        },
+        json: () => ({
+          ...data,
+          signature,
+        }),
       } as unknown as Request,
       {
         SUPABASE_URL: "url",
@@ -193,7 +196,7 @@ describe("User tests", () => {
       } as unknown as Env
     );
     expect(result.ok).toEqual(false);
-    expect(result.status).toEqual(500);
+    expect(result.status).toEqual(400);
     expect(await result.json()).toEqual({
       errors: [
         {
