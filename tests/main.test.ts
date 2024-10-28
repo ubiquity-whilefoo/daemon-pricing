@@ -157,8 +157,9 @@ describe("User tests", () => {
         url,
       } as unknown as Request,
       {
-        SUPABASE_URL: "url",
+        SUPABASE_URL: "http://localhost:65432",
         SUPABASE_KEY: "key",
+        KERNEL_PUBLIC_KEY: publicKey,
       }
     );
     expect(result.ok).toEqual(true);
@@ -173,6 +174,7 @@ describe("User tests", () => {
       {
         SUPABASE_URL: "url",
         SUPABASE_KEY: "key",
+        KERNEL_PUBLIC_KEY: "key",
       }
     );
     expect(result.ok).toEqual(false);
@@ -198,12 +200,12 @@ describe("User tests", () => {
         }),
       } as unknown as Request,
       {
-        SUPABASE_URL: "url",
-        SUPABASE_KEY: "key",
+        SUPABASE_URL: "http://localhost:65432",
+        KERNEL_PUBLIC_KEY: publicKey,
       } as unknown as Env
     );
     expect(result.ok).toEqual(false);
-    expect(result.status).toEqual(400);
-    expect(errorSpy).toHaveBeenCalled();
+    expect(result.status).toEqual(500);
+    expect(await result.text()).toEqual("Internal Server Error");
   });
 });
