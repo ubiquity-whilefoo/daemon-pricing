@@ -1,5 +1,6 @@
 import { Context } from "../types/context";
-import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo } from "../shared/label";
+
+import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo, removeLabelFromIssue } from "../shared/label";
 import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { Label, UserType } from "../types/github";
 import { getPrice } from "../shared/pricing";
@@ -83,11 +84,19 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
     return;
   }
 
+  for (const timeLabel of recognizedLabels.time) {
+  }
+
+  for (const priorityLabel of recognizedLabels.priority) {
+    if (priorityLabel.name !== minLabels.time?.name) {
+      await removeLabelFromIssue(context, priorityLabel.name);
+    }
+  }
+
   const targetPriceLabel = getPrice(context, minLabels.time, minLabels.priority);
 
   if (targetPriceLabel) {
     await handleTargetPriceLabel(context, targetPriceLabel, labelNames);
-  } else {
     await clearAllPriceLabelsOnIssue(context);
     logger.info(`Skipping action...`);
   }
