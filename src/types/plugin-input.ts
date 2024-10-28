@@ -1,19 +1,8 @@
-import { EmitterWebhookEvent as WebhookEvent, EmitterWebhookEventName as WebhookEventName } from "@octokit/webhooks";
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { Context } from "@ubiquity-os/ubiquity-os-kernel";
-import { StandardValidator } from "typebox-validators";
 import { createAdapters } from "../adapters";
 import { SupportedEvents } from "./context";
 import { Env } from "./env";
-
-export interface PluginInputs<T extends WebhookEventName = SupportedEvents> {
-  stateId: string;
-  eventName: T;
-  eventPayload: WebhookEvent<T>["payload"];
-  settings: AssistivePricingSettings;
-  authToken: string;
-  ref: string;
-}
 
 export const pluginSettingsSchema = T.Object(
   {
@@ -35,8 +24,6 @@ export const pluginSettingsSchema = T.Object(
   },
   { default: {} }
 );
-
-export const assistivePricingSchemaValidator = new StandardValidator(pluginSettingsSchema);
 
 export type AssistivePricingSettings = StaticDecode<typeof pluginSettingsSchema>;
 

@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import * as crypto from "crypto";
 import commandParser, { CommandArguments } from "../src/handlers/command-parser";
@@ -23,7 +23,7 @@ const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
   },
 });
 
-const url = "http://localhost:4000";
+const url = "/";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
