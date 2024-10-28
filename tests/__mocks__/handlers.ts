@@ -9,4 +9,5 @@ export const handlers = [
   http.post("https://api.github.com/repos/:org/:repo/issues/:id/comments", () => HttpResponse.json()),
   http.get("https://api.github.com/users/:user", () => HttpResponse.json()),
   http.get("https://api.github.com/orgs/:org/memberships/:user", () => HttpResponse.json()),
+  http.post("http://localhost:65432/rest/v1/access", () => HttpResponse.json()),
 ];
