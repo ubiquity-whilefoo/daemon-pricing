@@ -117,7 +117,7 @@ describe("syncPriceLabelsToConfig function", () => {
       owner: "owner",
       repo: "repo",
       name: "Label3",
-      description: undefined,
+      description: "",
     });
   });
 
@@ -125,7 +125,7 @@ describe("syncPriceLabelsToConfig function", () => {
     const allLabels: Label[] = [
       { name: "Label1", description: COLLABORATOR_ONLY_DESCRIPTION },
       { name: "Label2", description: COLLABORATOR_ONLY_DESCRIPTION },
-      { name: "Label3", description: undefined },
+      { name: "Label3", description: "" },
     ];
 
     const pricingLabels = [
