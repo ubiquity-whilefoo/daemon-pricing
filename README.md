@@ -10,27 +10,28 @@ Example of valid configuration:
 - plugin: https://ubiquity-os-daemon-pricing.ubq.fi
   with:
     labels:
-      - name: "Time: <1 Hour"
-        collaboratorOnly: false
-      - name: "Time: <2 Hours"
-        collaboratorOnly: false
-      - name: "Time: <4 Hours"
-        collaboratorOnly: false
-      - name: "Time: <1 Day"
-        collaboratorOnly: false
-      - name: "Time: <1 Week"
-        collaboratorOnly: false
-    priority:
-      - name: "Priority: 1 (Normal)"
-        collaboratorOnly: false
-      - name: "Priority: 2 (Medium)"
-        collaboratorOnly: true
-      - name: "Priority: 3 (High)"
-        collaboratorOnly: false
-      - name: "Priority: 4 (Urgent)"
-        collaboratorOnly: false
-      - name: "Priority: 5 (Emergency)"
-        collaboratorOnly: false
+      time:
+        - name: "Time: <1 Hour"
+          collaboratorOnly: false
+        - name: "Time: <2 Hours"
+          collaboratorOnly: false
+        - name: "Time: <4 Hours"
+          collaboratorOnly: false
+        - name: "Time: <1 Day"
+          collaboratorOnly: false
+        - name: "Time: <1 Week"
+          collaboratorOnly: false
+      priority:
+        - name: "Priority: 1 (Normal)"
+          collaboratorOnly: false
+        - name: "Priority: 2 (Medium)"
+          collaboratorOnly: true
+        - name: "Priority: 3 (High)"
+          collaboratorOnly: false
+        - name: "Priority: 4 (Urgent)"
+          collaboratorOnly: false
+        - name: "Priority: 5 (Emergency)"
+          collaboratorOnly: false
     basePriceMultiplier: 1
     publicAccessControl:
       setLabel: true
