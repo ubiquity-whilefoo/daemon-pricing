@@ -35,10 +35,12 @@
               "type": "object",
               "properties": {
                 "name": {
+                  "description": "The display name of the label",
                   "type": "string"
                 },
                 "collaboratorOnly": {
                   "default": false,
+                  "description": "Whether the label is only available to collaborators",
                   "type": "boolean"
                 }
               },
