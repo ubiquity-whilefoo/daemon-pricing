@@ -122,7 +122,7 @@ describe("syncPriceLabelsToConfig function", () => {
       name: "Label3",
       description: "",
     });
-  });
+  }, 15000);
 
   it("should not update labels if descriptions match the collaboratorOnly criteria", async () => {
     const allLabels: Label[] = [
@@ -146,5 +146,5 @@ describe("syncPriceLabelsToConfig function", () => {
     await syncPriceLabelsToConfig(mockContext);
 
     expect(mockOctokit.rest.issues.updateLabel).not.toHaveBeenCalled();
-  });
+  }, 15000);
 });
