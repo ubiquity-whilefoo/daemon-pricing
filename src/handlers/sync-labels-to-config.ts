@@ -82,7 +82,7 @@ export async function syncPriceLabelsToConfig(context: ContextPlugin): Promise<v
           owner,
           repo: context.payload.repository.name,
           name: label.name,
-          description: label.collaboratorOnly ? COLLABORATOR_ONLY_DESCRIPTION : undefined,
+          description: label.collaboratorOnly ? COLLABORATOR_ONLY_DESCRIPTION : "",
         })
       )
     );
