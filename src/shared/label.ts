@@ -77,8 +77,14 @@ export async function clearAllPriceLabelsOnIssue(context: ContextPlugin) {
         issue_number: payload.issue.number,
         name: label.name,
       });
-    } catch (err: unknown) {
-      throw context.logger.error("Clearing all price labels failed!", { err });
+    } catch (err) {
+      // Sometimes labels are out of sync or the price was manually added, which is safe to ignore since we are
+      // updating all the labels.
+      if (err && typeof err === "object" && "status" in err && err.status === 404) {
+        context.logger.error(`Label ${label.name} not found on issue ${payload.issue.html_url}, ignoring.`);
+      } else {
+        throw context.logger.error(`Removing label on issue ${payload.issue.html_url} failed!`, { label, err });
+      }
     }
   }
 }
