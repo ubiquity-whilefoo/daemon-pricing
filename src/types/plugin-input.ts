@@ -15,8 +15,8 @@ export const pluginSettingsSchema = T.Object(
       {
         time: T.Array(
           T.Object({
-            name: T.String(),
-            collaboratorOnly: T.Boolean({ default: false }),
+            name: T.String({ description: "The display name of the label" }),
+            collaboratorOnly: T.Boolean({ default: false, description: "Whether the label is only available to collaborators" }),
           }),
           { default: [] }
         ),
