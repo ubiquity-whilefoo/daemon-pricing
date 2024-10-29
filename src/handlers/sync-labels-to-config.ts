@@ -1,6 +1,8 @@
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { COLORS, createLabel, listLabelsForRepo } from "../shared/label";
 import { calculateLabelValue, calculateTaskPrice } from "../shared/pricing";
-import { Context } from "../types/context";
+import { ContextPlugin } from "../types/plugin-input";
+import { Label } from "../types/github";
 import { COLLABORATOR_ONLY_DESCRIPTION } from "../types/plugin-input";
 
 // This just checks all the labels in the config have been set in gh issue
@@ -8,7 +10,7 @@ import { COLLABORATOR_ONLY_DESCRIPTION } from "../types/plugin-input";
 
 const NO_OWNER_FOUND = "No owner found in the repository!";
 
-export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
+export async function syncPriceLabelsToConfig(context: ContextPlugin): Promise<void> {
   const { config, logger } = context;
 
   const priceLabels: { name: string; collaboratorOnly: boolean }[] = [];
@@ -28,21 +30,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const incorrectPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && !priceLabels.some((o) => o.name === label.name));
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
-    logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
-    const owner = context.payload.repository.owner?.login;
-    if (!owner) {
-      throw logger.error(NO_OWNER_FOUND);
-    }
-    await Promise.allSettled(
-      incorrectPriceLabels.map((label) =>
-        context.octokit.rest.issues.deleteLabel({
-          owner,
-          repo: context.payload.repository.name,
-          name: label.name,
-        })
-      )
-    );
-    logger.info(`Removing incorrect price labels done`);
+    await handleGlobalUpdate(context, logger, incorrectPriceLabels);
   }
 
   const incorrectColorPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && label.color !== COLORS.price);
@@ -112,4 +100,26 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
     );
     logger.info(`Creating missing labels done`);
   }
+}
+
+async function handleGlobalUpdate(context: ContextPlugin, logger: Logs, incorrectPriceLabels: Label[]) {
+  logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
+  const owner = context.payload.repository.owner?.login;
+  if (!owner) {
+    throw logger.error("No owner found in the repository!");
+  }
+
+  for (const label of incorrectPriceLabels) {
+    logger.info(`Removing incorrect price label ${label.name}`);
+    try {
+      await context.octokit.rest.issues.deleteLabel({
+        owner,
+        repo: context.payload.repository.name,
+        name: label.name,
+      });
+    } catch (er) {
+      logger.error("Error deleting label", { er });
+    }
+  }
+  logger.info(`Removing incorrect price labels done`);
 }

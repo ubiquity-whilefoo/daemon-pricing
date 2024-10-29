@@ -1,4 +1,4 @@
-# `@ubiquibot/assistive-pricing`
+# `@ubiquity-os/daemon-pricing`
 
 Helps settings prices and adds label to the issues accordingly.
 
@@ -7,7 +7,8 @@ Helps settings prices and adds label to the issues accordingly.
 Example of valid configuration:
 
 ```yml
-- plugin: https://ubiquibot-assistive-pricing.ubq.fi
+- plugin: https://ubiquity-os-daemon-pricing.ubq.fi
+  type: github
   with:
     labels:
       time:
@@ -26,8 +27,6 @@ Example of valid configuration:
     publicAccessControl:
       setLabel: true
       fundExternalClosedIssue: false
-    globalConfigUpdate:
-      excludeRepos: ["devpool-directory", "devpool-directory-private"]
 ```
 
 ## Running locally

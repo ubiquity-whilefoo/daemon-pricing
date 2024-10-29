@@ -1,10 +1,10 @@
-import { Context } from "../types/context";
 import { UserType } from "../types/github";
+import { ContextPlugin } from "../types/plugin-input";
 import { isIssueLabelEvent } from "../types/typeguards";
 import { addCommentToIssue, isUserAdminOrBillingManager } from "./issue";
 import { addLabelToIssue, removeLabelFromIssue } from "./label";
 
-export async function labelAccessPermissionsCheck(context: Context) {
+export async function labelAccessPermissionsCheck(context: ContextPlugin) {
   if (!isIssueLabelEvent(context)) {
     context.logger.debug("Not an issue event");
     return;
@@ -57,10 +57,10 @@ export async function labelAccessPermissionsCheck(context: Context) {
 }
 
 async function handleInsufficientPrivileges(
-  context: Context,
+  context: ContextPlugin,
   labelType: string,
   sender: string,
-  repo: Context["payload"]["repository"],
+  repo: ContextPlugin["payload"]["repository"],
   action: string,
   labelName: string,
   eventName: string

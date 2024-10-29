@@ -1,11 +1,13 @@
+import { CONFIG_FULL_PATH } from "@ubiquity-os/ubiquity-os-kernel";
+
 export const STRINGS = {
-  CONFIG_PATH: ".github/ubiquibot-config.yml",
+  CONFIG_PATH: CONFIG_FULL_PATH,
   UBIQUITY: "ubiquity",
   USER_2: "user2",
   TEST_REPO: "test-repo",
   SHA_1: "1234",
   EMAIL: "ubiquity@dao",
-  CONFIG_CHANGED_IN_COMMIT: ".github/ubiquibot-config.yml was modified or added in the commits",
+  CONFIG_CHANGED_IN_COMMIT: `${CONFIG_FULL_PATH} was modified or added in the commits`,
   CREATED_NEW_LABEL: "Created new price label",
   UPDATING_ISSUE_1_IN_TEST_REPO: "Updating issue 1 in test-repo",
   UPDATING_ISSUE_2_IN_TEST_REPO: "Updating issue 2 in test-repo",
