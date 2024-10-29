@@ -1,5 +1,4 @@
-import { Context } from "../types/context";
-import { Rates } from "../types/plugin-input";
+import { ContextPlugin, Rates } from "../types/plugin-input";
 import { isPushEvent } from "../types/typeguards";
 
 /**
@@ -7,7 +6,7 @@ import { isPushEvent } from "../types/typeguards";
  *
  * This will capture changes to either the plugin's config or the global basePriceMultiplier.
  */
-export async function getBaseRateChanges(context: Context): Promise<Rates> {
+export async function getBaseRateChanges(context: ContextPlugin): Promise<Rates> {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return {
@@ -32,7 +31,7 @@ export async function getBaseRateChanges(context: Context): Promise<Rates> {
   }
 
   try {
-    commitData = await context.octokit.repos.getCommit({
+    commitData = await context.octokit.rest.repos.getCommit({
       owner,
       repo: repository.name,
       ref: commitSha,

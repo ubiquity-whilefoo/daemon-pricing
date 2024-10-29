@@ -1,6 +1,6 @@
-import { Context } from "../types/context";
+import { ContextPlugin } from "../types/plugin-input";
 
-async function checkIfIsAdmin(context: Context, username: string) {
+async function checkIfIsAdmin(context: ContextPlugin, username: string) {
   const owner = context.payload.repository.owner?.login;
   if (!owner) throw context.logger.error("No owner found in the repository!");
   const response = await context.octokit.rest.repos.getCollaboratorPermissionLevel({
@@ -11,7 +11,7 @@ async function checkIfIsAdmin(context: Context, username: string) {
   return response.data.permission === "admin";
 }
 
-async function checkIfIsBillingManager(context: Context, username: string) {
+async function checkIfIsBillingManager(context: ContextPlugin, username: string) {
   if (!context.payload.organization) throw context.logger.error(`No organization found in payload!`);
 
   try {
@@ -30,7 +30,7 @@ async function checkIfIsBillingManager(context: Context, username: string) {
   return membership.role === "billing_manager";
 }
 
-export async function isUserAdminOrBillingManager(context: Context, username?: string): Promise<"admin" | "billing_manager" | false> {
+export async function isUserAdminOrBillingManager(context: ContextPlugin, username?: string): Promise<"admin" | "billing_manager" | false> {
   if (!username) return false;
   const isAdmin = await checkIfIsAdmin(context, username);
   if (isAdmin) return "admin";
@@ -41,13 +41,13 @@ export async function isUserAdminOrBillingManager(context: Context, username?: s
   return false;
 }
 
-export async function addCommentToIssue(context: Context, message: string, issueNumber: number, repoOwner?: string, repo?: string) {
+export async function addCommentToIssue(context: ContextPlugin, message: string, issueNumber: number, repoOwner?: string, repo?: string) {
   const payload = context.payload;
   const owner = repoOwner || payload.repository.owner?.login;
   if (!owner) throw context.logger.error("No owner found in the repository!");
 
   try {
-    await context.octokit.issues.createComment({
+    await context.octokit.rest.issues.createComment({
       owner,
       repo: repo ?? payload.repository.name,
       issue_number: issueNumber,
@@ -58,7 +58,7 @@ export async function addCommentToIssue(context: Context, message: string, issue
   }
 }
 
-export async function listOrgRepos(context: Context) {
+export async function listOrgRepos(context: ContextPlugin) {
   const org = context.payload.organization?.login;
   if (!org) throw context.logger.error("No organization found in payload!");
 
@@ -72,7 +72,7 @@ export async function listOrgRepos(context: Context) {
   }
 }
 
-export async function listRepoIssues(context: Context, owner: string, repo: string) {
+export async function listRepoIssues(context: ContextPlugin, owner: string, repo: string) {
   try {
     const response = await context.octokit.rest.issues.listForRepo({
       owner,

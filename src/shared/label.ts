@@ -1,5 +1,5 @@
-import { Context } from "../types/context";
 import { Label } from "../types/github";
+import { ContextPlugin } from "../types/plugin-input";
 
 // cspell:disable
 export const COLORS = { default: "ededed", price: "1f883d" };
@@ -7,7 +7,7 @@ export const COLORS = { default: "ededed", price: "1f883d" };
 
 const NO_REPO_OWNER = "No owner found in the repository!";
 
-export async function listLabelsForRepo(context: Context): Promise<Label[]> {
+export async function listLabelsForRepo(context: ContextPlugin): Promise<Label[]> {
   const { payload, octokit } = context;
 
   const owner = payload.repository.owner?.login;
@@ -32,7 +32,7 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
 }
 
 export async function createLabel(
-  context: Context,
+  context: ContextPlugin,
   name: string,
   labelType = "default" as keyof typeof COLORS,
   description: string | undefined
@@ -58,7 +58,7 @@ export async function createLabel(
   }
 }
 
-export async function clearAllPriceLabelsOnIssue(context: Context) {
+export async function clearAllPriceLabelsOnIssue(context: ContextPlugin) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;
@@ -71,7 +71,7 @@ export async function clearAllPriceLabelsOnIssue(context: Context) {
 
   for (const label of issuePriceLabels) {
     try {
-      await context.octokit.issues.removeLabel({
+      await context.octokit.rest.issues.removeLabel({
         owner: payload.repository.owner.login,
         repo: payload.repository.name,
         issue_number: payload.issue.number,
@@ -82,14 +82,14 @@ export async function clearAllPriceLabelsOnIssue(context: Context) {
     }
   }
 }
-export async function addLabelToIssue(context: Context, labelName: string) {
+export async function addLabelToIssue(context: ContextPlugin, labelName: string) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;
   }
 
   try {
-    await context.octokit.issues.addLabels({
+    await context.octokit.rest.issues.addLabels({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
       issue_number: payload.issue.number,
@@ -100,14 +100,14 @@ export async function addLabelToIssue(context: Context, labelName: string) {
   }
 }
 
-export async function removeLabelFromIssue(context: Context, labelName: string) {
+export async function removeLabelFromIssue(context: ContextPlugin, labelName: string) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;
   }
 
   try {
-    await context.octokit.issues.removeLabel({
+    await context.octokit.rest.issues.removeLabel({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
       issue_number: payload.issue.number,

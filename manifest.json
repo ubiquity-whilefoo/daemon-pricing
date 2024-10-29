@@ -32,34 +32,14 @@
             "default": [],
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "collaboratorOnly": {
-                  "default": false,
-                  "type": "boolean"
-                }
-              },
-              "required": ["name"]
+              "type": "string"
             }
           },
           "priority": {
             "default": [],
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "collaboratorOnly": {
-                  "default": false,
-                  "type": "boolean"
-                }
-              },
-              "required": ["name"]
+              "type": "string"
             }
           }
         }

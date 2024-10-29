@@ -1,7 +1,7 @@
-import { Context } from "../types/context";
+import { ContextPlugin } from "../types/plugin-input";
 import { isPushEvent } from "../types/typeguards";
 
-export async function getLabelsChanges(context: Context) {
+export async function getLabelsChanges(context: ContextPlugin) {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return false;
@@ -23,7 +23,7 @@ export async function getLabelsChanges(context: Context) {
   }
 
   try {
-    commitData = await context.octokit.repos.getCommit({
+    commitData = await context.octokit.rest.repos.getCommit({
       owner,
       repo: repository.name,
       ref: commitSha,

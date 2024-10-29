@@ -1,14 +1,14 @@
+import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
+import { Label } from "../types/github";
+import { ContextPlugin } from "../types/plugin-input";
+import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
-import { Context } from "../types/context";
 import { getLabelsChanges } from "./get-label-changes";
 import { syncPriceLabelsToConfig } from "./sync-labels-to-config";
 import { setPriceLabel } from "./pricing-label";
-import { isPushEvent } from "../types/typeguards";
-import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
-import { Label } from "../types/github";
 
-async function isAuthed(context: Context): Promise<boolean> {
+async function isAuthed(context: ContextPlugin): Promise<boolean> {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return false;
@@ -34,7 +34,7 @@ async function isAuthed(context: Context): Promise<boolean> {
   return !!(isPusherAuthed && isSenderAuthed);
 }
 
-export async function globalLabelUpdate(context: Context) {
+export async function globalLabelUpdate(context: ContextPlugin) {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return;
@@ -72,7 +72,7 @@ export async function globalLabelUpdate(context: Context) {
       payload: {
         repository: repo,
       },
-    } as Context;
+    } as ContextPlugin;
 
     // this should create labels on the repos that are missing
     await syncPriceLabelsToConfig(ctx);
@@ -84,7 +84,7 @@ export async function globalLabelUpdate(context: Context) {
   }
 }
 
-async function updateAllIssuePriceLabels(context: Context) {
+async function updateAllIssuePriceLabels(context: ContextPlugin) {
   const { logger, config } = context;
   const repos = await listOrgRepos(context);
 
@@ -101,7 +101,7 @@ async function updateAllIssuePriceLabels(context: Context) {
             repository: repo,
             issue,
           },
-        } as Context,
+        } as ContextPlugin,
         issue.labels as Label[],
         config
       );

@@ -1,8 +1,7 @@
 import { jest } from "@jest/globals";
 import { syncPriceLabelsToConfig } from "../src/handlers/sync-labels-to-config";
 import { listLabelsForRepo } from "../src/shared/label";
-import { Context } from "../src/types/context";
-import { COLLABORATOR_ONLY_DESCRIPTION } from "../src/types/plugin-input";
+import { COLLABORATOR_ONLY_DESCRIPTION, ContextPlugin } from "../src/types/plugin-input";
 
 interface Label {
   name: string;
@@ -26,7 +25,7 @@ const mockOctokit = {
   },
 };
 
-const mockContext: Context = {
+const mockContext: ContextPlugin = {
   config: {
     labels: {
       time: [],
@@ -43,7 +42,7 @@ const mockContext: Context = {
     },
   },
   octokit: mockOctokit,
-} as unknown as Context;
+} as unknown as ContextPlugin;
 
 describe("syncPriceLabelsToConfig function", () => {
   beforeEach(() => {
@@ -75,7 +74,7 @@ describe("syncPriceLabelsToConfig function", () => {
       { name: "Label2", collaboratorOnly: true },
       { name: "Label3", collaboratorOnly: false },
     ];
-    const mockContext: Context = {
+    const mockContext: ContextPlugin = {
       config: {
         labels: {
           time: [],
@@ -92,7 +91,7 @@ describe("syncPriceLabelsToConfig function", () => {
         },
       },
       octokit: mockOctokit,
-    } as unknown as Context;
+    } as unknown as ContextPlugin;
 
     (listLabelsForRepo as unknown as jest.Mock<() => Promise<typeof allLabels>>).mockResolvedValue(allLabels);
     mockContext.config.labels.time = [];

@@ -7,10 +7,10 @@ import usersGet from "./users-get.json";
 
 export function getBaseRateChanges(changeAmt: number, withChanges = true, withPlugin = false) {
   return `
-  diff--git a /.github /.ubiquibot - config.yml b /.github /.ubiquibot - config.yml
+  diff--git a /.github /.ubiquity-os - config.yml b /.github /.ubiquity-os - config.yml
   index f7f8053..cad1340 100644
-  --- a /.github /.ubiquibot - config.yml
-  +++ b /.github /.ubiquibot - config.yml
+  --- a /.github /.ubiquity-os - config.yml
+  +++ b /.github /.ubiquity-os - config.yml
   @@ - 7, 7 + 7, 7 @@features:
           setLabel: true
        fundExternalClosedIssue: true
