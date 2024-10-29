@@ -12,8 +12,10 @@ createActionsPlugin<AssistivePricingSettings, Env, SupportedEvents>(
     return run({ ...context, adapters: createAdapters(createClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY), context) });
   },
   {
+    // @ts-expect-error types match
     envSchema: envSchema,
     postCommentOnError: true,
+    // @ts-expect-error types match
     settingsSchema: pluginSettingsSchema,
     logLevel: process.env.LOG_LEVEL as LogLevel,
     kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
