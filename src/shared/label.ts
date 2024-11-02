@@ -31,12 +31,7 @@ export async function listLabelsForRepo(context: ContextPlugin): Promise<Label[]
   throw context.logger.error("Failed to fetch lists of labels", { status: 500 });
 }
 
-export async function createLabel(
-  context: ContextPlugin,
-  name: string,
-  labelType = "default" as keyof typeof COLORS,
-  description: string | undefined
-): Promise<void> {
+export async function createLabel(context: ContextPlugin, name: string, labelType = "default" as keyof typeof COLORS, description?: string): Promise<void> {
   const payload = context.payload;
 
   const color = name.startsWith("Price: ") ? COLORS.price : COLORS[labelType];
