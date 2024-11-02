@@ -10,8 +10,8 @@ import issueCommented from "./__mocks__/requests/issue-comment-post.json";
 import usersGet from "./__mocks__/users-get.json";
 import * as crypto from "node:crypto";
 import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input";
-import { Value } from "@sinclair/typebox/value";
 import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
+import { Value } from "@sinclair/typebox/value";
 
 const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,

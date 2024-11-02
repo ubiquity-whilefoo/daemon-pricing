@@ -10,16 +10,16 @@
     "**/*.http",
     "src/adapters/supabase/types/database.ts",
     "bun.lockb",
-    "dist"
+    "dist/**"
   ],
   "useGitignore": true,
   "language": "en",
   "words": [
-    "gentlementlegen",
-    "AUTHED",
     "UNAUTHED",
+    "gentlementlegen",
     "Authed",
     "Tand",
+    "typeguard",
     "dataurl",
     "devpool",
     "outdir",

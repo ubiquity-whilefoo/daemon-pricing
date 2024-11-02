@@ -32,14 +32,36 @@
             "default": [],
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "The display name of the label",
+                  "type": "string"
+                },
+                "collaboratorOnly": {
+                  "default": false,
+                  "description": "Whether the label is only available to collaborators",
+                  "type": "boolean"
+                }
+              },
+              "required": ["name"]
             }
           },
           "priority": {
             "default": [],
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "collaboratorOnly": {
+                  "default": false,
+                  "type": "boolean"
+                }
+              },
+              "required": ["name"]
             }
           }
         }

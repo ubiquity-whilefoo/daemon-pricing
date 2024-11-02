@@ -9,7 +9,6 @@
   "engines": {
     "node": ">=20.10.0"
   },
-  "type": "module",
   "scripts": {
     "worker": "wrangler dev --env dev --port 4000",
     "start": "tsx src/index.ts",
@@ -71,11 +70,11 @@
     "lint-staged": "^15.2.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.2.5",
-    "supabase": "1.165.0",
+    "supabase": "^1.207.9",
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
     "tsx": "^4.7.1",
-    "typescript": "5.6.2",
+    "typescript": "5.5.4",
     "wrangler": "^3.83.0"
   },
   "lint-staged": {

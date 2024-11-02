@@ -8,25 +8,36 @@ Example of valid configuration:
 
 ```yml
 - plugin: https://ubiquity-os-daemon-pricing.ubq.fi
-  type: github
   with:
     labels:
       time:
-        - "Time: <1 Hour"
-        - "Time: <2 Hours"
-        - "Time: <4 Hours"
-        - "Time: <1 Day"
-        - "Time: <1 Week"
+        - name: "Time: <1 Hour"
+          collaboratorOnly: false
+        - name: "Time: <2 Hours"
+          collaboratorOnly: false
+        - name: "Time: <4 Hours"
+          collaboratorOnly: false
+        - name: "Time: <1 Day"
+          collaboratorOnly: false
+        - name: "Time: <1 Week"
+          collaboratorOnly: false
       priority:
-        - "Priority: 1 (Normal)"
-        - "Priority: 2 (Medium)"
-        - "Priority: 3 (High)"
-        - "Priority: 4 (Urgent)"
-        - "Priority: 5 (Emergency)"
+        - name: "Priority: 1 (Normal)"
+          collaboratorOnly: false
+        - name: "Priority: 2 (Medium)"
+          collaboratorOnly: true
+        - name: "Priority: 3 (High)"
+          collaboratorOnly: false
+        - name: "Priority: 4 (Urgent)"
+          collaboratorOnly: false
+        - name: "Priority: 5 (Emergency)"
+          collaboratorOnly: false
     basePriceMultiplier: 1
     publicAccessControl:
       setLabel: true
       fundExternalClosedIssue: false
+    globalConfigUpdate:
+      excludeRepos: ["devpool-directory", "devpool-directory-private"]
 ```
 
 ## Running locally

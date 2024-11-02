@@ -1,9 +1,9 @@
 import { handleComment } from "./handlers/comment";
+import { globalLabelUpdate } from "./handlers/global-config-update";
 import { watchLabelChange } from "./handlers/label-change";
 import { onLabelChangeSetPricing } from "./handlers/pricing-label";
 import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
 import { ContextPlugin } from "./types/plugin-input";
-import { globalLabelUpdate } from "./handlers/global-config-update";
 import { isIssueLabelEvent } from "./types/typeguards";
 
 export async function run(context: ContextPlugin) {

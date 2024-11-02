@@ -3,7 +3,7 @@ import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { Label, UserType } from "../types/github";
 import { getPrice } from "../shared/pricing";
 import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
-import { AssistivePricingSettings, ContextPlugin } from "../types/plugin-input";
+import { AssistivePricingSettings, ContextPlugin, COLLABORATOR_ONLY_DESCRIPTION } from "../types/plugin-input";
 import { isIssueLabelEvent } from "../types/typeguards";
 
 export async function onLabelChangeSetPricing(context: ContextPlugin): Promise<void> {
@@ -82,9 +82,6 @@ export async function setPriceLabel(context: ContextPlugin, issueLabels: Label[]
     return;
   }
 
-  for (const timeLabel of recognizedLabels.time) {
-  }
-
   for (const priorityLabel of recognizedLabels.priority) {
     if (priorityLabel.name !== minLabels.time?.name) {
       await removeLabelFromIssue(context, priorityLabel.name);
@@ -94,7 +91,7 @@ export async function setPriceLabel(context: ContextPlugin, issueLabels: Label[]
   const targetPriceLabel = getPrice(context, minLabels.time, minLabels.priority);
 
   if (targetPriceLabel) {
-    await handleTargetPriceLabel(context, targetPriceLabel, labelNames);
+    await handleTargetPriceLabel(context, { name: targetPriceLabel, description: null }, labelNames);
     await clearAllPriceLabelsOnIssue(context);
     logger.info(`Skipping action...`);
   }
@@ -105,9 +102,19 @@ function getRecognizedLabels(labels: Label[], settings: AssistivePricingSettings
     return (typeof label === "string" || typeof label === "object") && configLabels.some((configLabel) => configLabel === label.name);
   }
 
-  const recognizedTimeLabels: Label[] = labels.filter((label: Label) => isRecognizedLabel(label, settings.labels.time));
+  const recognizedTimeLabels: Label[] = labels.filter((label: Label) =>
+    isRecognizedLabel(
+      label,
+      settings.labels.time.map((o) => o.name)
+    )
+  );
 
-  const recognizedPriorityLabels: Label[] = labels.filter((label: Label) => isRecognizedLabel(label, settings.labels.priority));
+  const recognizedPriorityLabels: Label[] = labels.filter((label: Label) =>
+    isRecognizedLabel(
+      label,
+      settings.labels.priority.map((o) => o.name)
+    )
+  );
 
   return { time: recognizedTimeLabels, priority: recognizedPriorityLabels };
 }
@@ -119,21 +126,21 @@ function getMinLabels(recognizedLabels: { time: Label[]; priority: Label[] }) {
   return { time: minTimeLabel, priority: minPriorityLabel };
 }
 
-async function handleTargetPriceLabel(context: ContextPlugin, targetPriceLabel: string, labelNames: string[]) {
+async function handleTargetPriceLabel(context: ContextPlugin, targetPriceLabel: Pick<Label, "name" | "description">, labelNames: string[]) {
   const { repository } = context.payload;
   if (repository.name === "devpool-directory") {
-    targetPriceLabel = targetPriceLabel.replace("Price: ", "Pricing: ");
+    targetPriceLabel.name = targetPriceLabel.name.replace("Price: ", "Pricing: ");
   }
-  const _targetPriceLabel = labelNames.find((name) => name.includes(targetPriceLabel));
+  const _targetPriceLabel = labelNames.find((name) => name.includes(targetPriceLabel.name));
 
   if (_targetPriceLabel) {
-    await handleExistingPriceLabel(context, targetPriceLabel);
+    await handleExistingPriceLabel(context, targetPriceLabel.name);
   } else {
     const allLabels = await listLabelsForRepo(context);
-    if (allLabels.filter((i) => i.name.includes(targetPriceLabel)).length === 0) {
-      await createLabel(context, targetPriceLabel, "price");
+    if (allLabels.filter((i) => i.name.includes(targetPriceLabel.name)).length === 0) {
+      await createLabel(context, targetPriceLabel.name, "price", targetPriceLabel.description ? COLLABORATOR_ONLY_DESCRIPTION : undefined);
     }
-    await addPriceLabelToIssue(context, targetPriceLabel);
+    await addPriceLabelToIssue(context, targetPriceLabel.name);
   }
 }
 

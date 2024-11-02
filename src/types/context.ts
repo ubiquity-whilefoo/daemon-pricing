@@ -2,8 +2,8 @@ import { EmitterWebhookEvent as WebhookEvent } from "@octokit/webhooks";
 import { Octokit } from "@octokit/rest";
 import { AssistivePricingSettings } from "./plugin-input";
 import { createAdapters } from "../adapters";
-import { Env } from "./env";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { Env } from "./env";
 
 export type SupportedEvents =
   | "repository.created"

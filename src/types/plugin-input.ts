@@ -13,8 +13,20 @@ export const pluginSettingsSchema = T.Object(
     ),
     labels: T.Object(
       {
-        time: T.Array(T.String(), { default: [] }),
-        priority: T.Array(T.String(), { default: [] }),
+        time: T.Array(
+          T.Object({
+            name: T.String({ description: "The display name of the label" }),
+            collaboratorOnly: T.Boolean({ default: false, description: "Whether the label is only available to collaborators" }),
+          }),
+          { default: [] }
+        ),
+        priority: T.Array(
+          T.Object({
+            name: T.String(),
+            collaboratorOnly: T.Boolean({ default: false }),
+          }),
+          { default: [] }
+        ),
       },
       { default: {} }
     ),
@@ -37,3 +49,5 @@ export type Rates = {
 };
 
 export type ContextPlugin = Context<AssistivePricingSettings, Env, SupportedEvents> & { adapters: ReturnType<typeof createAdapters> };
+
+export const COLLABORATOR_ONLY_DESCRIPTION = "⚠️ Collaborator only";

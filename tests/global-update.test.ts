@@ -68,7 +68,7 @@ describe("Label Base Rate Changes", () => {
       const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
       const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-      expect(updatedRepo?.labels).toHaveLength(27);
+      expect(updatedRepo?.labels).toHaveLength(28);
       expect(updatedIssue?.labels).toHaveLength(3);
       expect(updatedIssue2?.labels).toHaveLength(3);
 
@@ -189,7 +189,7 @@ describe("Label Base Rate Changes", () => {
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
 
-      expect(updatedRepo?.labels).toHaveLength(27);
+      expect(updatedRepo?.labels).toHaveLength(35);
       expect(updatedIssue?.labels).toHaveLength(3);
       expect(updatedIssue2?.labels).toHaveLength(3);
 
@@ -239,7 +239,7 @@ describe("Label Base Rate Changes", () => {
       const updatedIssue = db.issue.findFirst({ where: { id: { equals: 1 } } });
       const updatedIssue2 = db.issue.findFirst({ where: { id: { equals: 3 } } });
 
-      expect(updatedRepo?.labels).toHaveLength(27);
+      expect(updatedRepo?.labels).toHaveLength(35);
       expect(updatedIssue?.labels).toHaveLength(3);
       expect(updatedIssue2?.labels).toHaveLength(3);
 
@@ -286,7 +286,7 @@ describe("Label Base Rate Changes", () => {
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
       expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
       expect(infoSpy).toHaveBeenCalledTimes(2);
-      expect(errorSpy).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledTimes(1);
     },
     THIRTY_SECONDS
   );
@@ -603,8 +603,14 @@ function createContext(
     logger: new Logs("debug"),
     config: {
       labels: {
-        priority: PRIORITY_LABELS.map((label) => label.name),
-        time: TIME_LABELS.map((label) => label.name),
+        priority: PRIORITY_LABELS.map((label) => ({
+          name: label.name,
+          collaboratorOnly: false,
+        })),
+        time: TIME_LABELS.map((label) => ({
+          name: label.name,
+          collaboratorOnly: false,
+        })),
       },
       publicAccessControl: {
         fundExternalClosedIssue: false,
