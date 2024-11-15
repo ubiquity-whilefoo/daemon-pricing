@@ -5,7 +5,18 @@ const config: KnipConfig = {
   project: ["src/**/*.ts"],
   ignore: ["src/types/config.ts", "src/adapters/supabase/types/database.ts"],
   ignoreExportsUsedInFile: true,
-  ignoreDependencies: ["ts-node", "@types/jest", "@octokit/plugin-retry", "@octokit/plugin-throttling", "hono"],
+  ignoreDependencies: [
+    "ts-node",
+    "@types/jest",
+    "hono",
+    "typescript-eslint",
+    "eslint-plugin-sonarjs",
+    "eslint-plugin-prettier",
+    "eslint-plugin-check-file",
+    "eslint-config-prettier",
+    "@typescript-eslint/parser",
+    "@typescript-eslint/eslint-plugin",
+  ],
 };
 
 export default config;
