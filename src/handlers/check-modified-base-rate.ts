@@ -1,4 +1,4 @@
-import { CONFIG_FULL_PATH, DEV_CONFIG_FULL_PATH } from "@ubiquity-os/ubiquity-os-kernel";
+import { CONFIG_FULL_PATH, DEV_CONFIG_FULL_PATH } from "@ubiquity-os/plugin-sdk/constants";
 import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { getCommitChanges } from "./get-commit-changes";

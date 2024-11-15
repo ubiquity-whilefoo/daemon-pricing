@@ -8,7 +8,7 @@ export default tsEslint.config({
     "@typescript-eslint": tsEslint.plugin,
     "check-file": checkFile,
   },
-  ignores: [".github/knip.ts", "src/types/database.ts", "dist/**", "coverage/**"],
+  ignores: [".github/knip.ts", "src/adapters/supabase/types/database.ts", ".wrangler/**", "dist/**", "coverage/**"],
   extends: [eslint.configs.recommended, ...tsEslint.configs.recommended, sonarjs.configs.recommended],
   languageOptions: {
     parser: tsEslint.parser,

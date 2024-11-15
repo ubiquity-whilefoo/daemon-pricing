@@ -143,6 +143,12 @@ describe("User tests", () => {
     sign.end();
     const signature = sign.sign(privateKey, "base64");
 
+    process.env = {
+      SUPABASE_URL: "http://localhost:65432",
+      SUPABASE_KEY: "key",
+      KERNEL_PUBLIC_KEY: publicKey,
+    };
+
     const result = await workerFetch.fetch(
       {
         headers: {
@@ -155,11 +161,7 @@ describe("User tests", () => {
         method: "POST",
         url,
       } as unknown as Request,
-      {
-        SUPABASE_URL: "http://localhost:65432",
-        SUPABASE_KEY: "key",
-        KERNEL_PUBLIC_KEY: publicKey,
-      }
+      {} as Env
     );
     expect(result.ok).toEqual(true);
   });
@@ -186,6 +188,12 @@ describe("User tests", () => {
     sign.update(JSON.stringify(data));
     sign.end();
     const signature = sign.sign(privateKey, "base64");
+
+    process.env = {
+      SUPABASE_URL: "http://localhost:65432",
+      KERNEL_PUBLIC_KEY: publicKey,
+    };
+
     const result = await workerFetch.fetch(
       {
         method: "POST",
@@ -198,10 +206,7 @@ describe("User tests", () => {
           signature,
         }),
       } as unknown as Request,
-      {
-        SUPABASE_URL: "http://localhost:65432",
-        KERNEL_PUBLIC_KEY: publicKey,
-      } as unknown as Env
+      {} as Env
     );
     expect(result.ok).toEqual(false);
     expect(result.status).toEqual(500);

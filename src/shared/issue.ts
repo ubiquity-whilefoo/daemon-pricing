@@ -19,7 +19,7 @@ async function checkIfIsBillingManager(context: Context, username: string) {
       org: context.payload.organization.login,
       username,
     });
-  } catch (e: unknown) {
+  } catch (_: unknown) {
     return false;
   }
 

@@ -251,5 +251,6 @@
     "testing": true
   },
   "authToken": "[REDACTED]",
-  "ref": ""
+  "ref": "",
+  "command": null
 }
