@@ -1,9 +1,8 @@
-import { EmitterWebhookEvent as WebhookEvent } from "@octokit/webhooks";
-import { Octokit } from "@octokit/rest";
+import { Context as PluginContext } from "@ubiquity-os/plugin-sdk";
 import { AssistivePricingSettings } from "./plugin-input";
 import { createAdapters } from "../adapters";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { Env } from "./env";
+import { Command } from "./command";
 
 export type SupportedEvents =
   | "repository.created"
@@ -14,12 +13,6 @@ export type SupportedEvents =
   | "issue_comment.created"
   | "push";
 
-export interface Context<T extends SupportedEvents | "issue_comment" = SupportedEvents> {
-  eventName: T;
-  payload: WebhookEvent<T>["payload"];
-  octokit: InstanceType<typeof Octokit>;
+export type Context<T extends SupportedEvents = SupportedEvents> = PluginContext<AssistivePricingSettings, Env, Command, T> & {
   adapters: ReturnType<typeof createAdapters>;
-  config: AssistivePricingSettings;
-  logger: Logs;
-  env: Env;
-}
+};

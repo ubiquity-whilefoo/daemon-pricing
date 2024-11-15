@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest 
 import { drop } from "@mswjs/data";
 import commandParser, { CommandArguments } from "../src/handlers/command-parser";
 import { Env } from "../src/types/env";
-import { ContextPlugin } from "../src/types/plugin-input";
+import { Context } from "../src/types/context";
 import workerFetch from "../src/worker";
 import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
@@ -131,7 +131,7 @@ describe("User tests", () => {
       },
     ];
     for (const testCase of testCases) {
-      const price = calculateTaskPrice(context as unknown as ContextPlugin, testCase.timeValue, testCase.priorityValue);
+      const price = calculateTaskPrice(context as unknown as Context, testCase.timeValue, testCase.priorityValue);
       expect(price).toEqual(testCase.expectedPrice);
     }
   });

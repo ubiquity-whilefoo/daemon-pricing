@@ -1,6 +1,6 @@
 import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
 import { Label } from "../types/github";
-import { ContextPlugin } from "../types/plugin-input";
+import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
@@ -8,7 +8,7 @@ import { getLabelsChanges } from "./get-label-changes";
 import { syncPriceLabelsToConfig } from "./sync-labels-to-config";
 import { setPriceLabel } from "./pricing-label";
 
-async function isAuthed(context: ContextPlugin): Promise<boolean> {
+async function isAuthed(context: Context): Promise<boolean> {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return false;
@@ -34,7 +34,7 @@ async function isAuthed(context: ContextPlugin): Promise<boolean> {
   return !!(isPusherAuthed && isSenderAuthed);
 }
 
-export async function globalLabelUpdate(context: ContextPlugin) {
+export async function globalLabelUpdate(context: Context) {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return;
@@ -72,7 +72,7 @@ export async function globalLabelUpdate(context: ContextPlugin) {
       payload: {
         repository: repo,
       },
-    } as ContextPlugin;
+    } as Context;
 
     // this should create labels on the repos that are missing
     await syncPriceLabelsToConfig(ctx);
@@ -84,7 +84,7 @@ export async function globalLabelUpdate(context: ContextPlugin) {
   }
 }
 
-async function updateAllIssuePriceLabels(context: ContextPlugin) {
+async function updateAllIssuePriceLabels(context: Context) {
   const { logger, config } = context;
   const repos = await listOrgRepos(context);
 
@@ -101,7 +101,7 @@ async function updateAllIssuePriceLabels(context: ContextPlugin) {
             repository: repo,
             issue,
           },
-        } as ContextPlugin,
+        } as Context,
         issue.labels as Label[],
         config
       );

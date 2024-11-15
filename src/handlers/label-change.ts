@@ -1,8 +1,8 @@
 import { isUserAdminOrBillingManager } from "../shared/issue";
-import { ContextPlugin } from "../types/plugin-input";
+import { Context } from "../types/context";
 import { isLabelEditedEvent } from "../types/typeguards";
 
-export async function watchLabelChange(context: ContextPlugin) {
+export async function watchLabelChange(context: Context) {
   const logger = context.logger;
   if (!isLabelEditedEvent(context)) {
     logger.debug("Not a label event");
@@ -44,7 +44,7 @@ export async function watchLabelChange(context: ContextPlugin) {
   return logger.debug("label name change saved to db");
 }
 
-async function hasLabelEditPermission(context: ContextPlugin, label: string, caller: string) {
+async function hasLabelEditPermission(context: Context, label: string, caller: string) {
   const sufficientPrivileges = await isUserAdminOrBillingManager(context, caller);
 
   // get text before :

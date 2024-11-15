@@ -1,5 +1,5 @@
 import { Label } from "../types/github";
-import { ContextPlugin } from "../types/plugin-input";
+import { Context } from "../types/context";
 
 // cspell:disable
 export const COLORS = { default: "ededed", price: "1f883d" };
@@ -7,7 +7,7 @@ export const COLORS = { default: "ededed", price: "1f883d" };
 
 const NO_REPO_OWNER = "No owner found in the repository!";
 
-export async function listLabelsForRepo(context: ContextPlugin): Promise<Label[]> {
+export async function listLabelsForRepo(context: Context): Promise<Label[]> {
   const { payload, octokit } = context;
 
   const owner = payload.repository.owner?.login;
@@ -31,7 +31,7 @@ export async function listLabelsForRepo(context: ContextPlugin): Promise<Label[]
   throw context.logger.error("Failed to fetch lists of labels", { status: 500 });
 }
 
-export async function createLabel(context: ContextPlugin, name: string, labelType = "default" as keyof typeof COLORS, description?: string): Promise<void> {
+export async function createLabel(context: Context, name: string, labelType = "default" as keyof typeof COLORS, description?: string): Promise<void> {
   const payload = context.payload;
 
   const color = name.startsWith("Price: ") ? COLORS.price : COLORS[labelType];
@@ -53,7 +53,7 @@ export async function createLabel(context: ContextPlugin, name: string, labelTyp
   }
 }
 
-export async function clearAllPriceLabelsOnIssue(context: ContextPlugin) {
+export async function clearAllPriceLabelsOnIssue(context: Context) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;
@@ -83,7 +83,7 @@ export async function clearAllPriceLabelsOnIssue(context: ContextPlugin) {
     }
   }
 }
-export async function addLabelToIssue(context: ContextPlugin, labelName: string) {
+export async function addLabelToIssue(context: Context, labelName: string) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;
@@ -101,7 +101,7 @@ export async function addLabelToIssue(context: ContextPlugin, labelName: string)
   }
 }
 
-export async function removeLabelFromIssue(context: ContextPlugin, labelName: string) {
+export async function removeLabelFromIssue(context: Context, labelName: string) {
   const payload = context.payload;
   if (!("issue" in payload) || !payload.issue) {
     return;

@@ -3,10 +3,12 @@ import { labelAccessPermissionsCheck } from "../shared/permissions";
 import { Label, UserType } from "../types/github";
 import { getPrice } from "../shared/pricing";
 import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
-import { AssistivePricingSettings, ContextPlugin, COLLABORATOR_ONLY_DESCRIPTION } from "../types/plugin-input";
+import { AssistivePricingSettings } from "../types/plugin-input";
 import { isIssueLabelEvent } from "../types/typeguards";
+import { Context } from "../types/context";
+import { COLLABORATOR_ONLY_DESCRIPTION } from "../types/constants";
 
-export async function onLabelChangeSetPricing(context: ContextPlugin): Promise<void> {
+export async function onLabelChangeSetPricing(context: Context): Promise<void> {
   if (!isIssueLabelEvent(context)) {
     context.logger.debug("Not an issue event");
     return;
@@ -63,7 +65,7 @@ export async function onLabelChangeSetPricing(context: ContextPlugin): Promise<v
   await setPriceLabel(context, labels, config);
 }
 
-export async function setPriceLabel(context: ContextPlugin, issueLabels: Label[], config: AssistivePricingSettings) {
+export async function setPriceLabel(context: Context, issueLabels: Label[], config: AssistivePricingSettings) {
   const logger = context.logger;
   const labelNames = issueLabels.map((i) => i.name);
 
@@ -126,7 +128,7 @@ function getMinLabels(recognizedLabels: { time: Label[]; priority: Label[] }) {
   return { time: minTimeLabel, priority: minPriorityLabel };
 }
 
-async function handleTargetPriceLabel(context: ContextPlugin, targetPriceLabel: Pick<Label, "name" | "description">, labelNames: string[]) {
+async function handleTargetPriceLabel(context: Context, targetPriceLabel: Pick<Label, "name" | "description">, labelNames: string[]) {
   const { repository } = context.payload;
   if (repository.name === "devpool-directory") {
     targetPriceLabel.name = targetPriceLabel.name.replace("Price: ", "Pricing: ");
@@ -144,7 +146,7 @@ async function handleTargetPriceLabel(context: ContextPlugin, targetPriceLabel: 
   }
 }
 
-async function handleExistingPriceLabel(context: ContextPlugin, targetPriceLabel: string) {
+async function handleExistingPriceLabel(context: Context, targetPriceLabel: string) {
   const logger = context.logger;
   let labeledEvents = await getAllLabeledEvents(context);
   if (!labeledEvents) return logger.error("No labeled events found");
@@ -159,18 +161,18 @@ async function handleExistingPriceLabel(context: ContextPlugin, targetPriceLabel
   }
 }
 
-async function addPriceLabelToIssue(context: ContextPlugin, targetPriceLabel: string) {
+async function addPriceLabelToIssue(context: Context, targetPriceLabel: string) {
   await clearAllPriceLabelsOnIssue(context);
   await addLabelToIssue(context, targetPriceLabel);
 }
 
-async function getAllLabeledEvents(context: ContextPlugin) {
+async function getAllLabeledEvents(context: Context) {
   const events = await getAllIssueEvents(context);
   if (!events) return null;
   return events.filter((event) => event.event === "labeled");
 }
 
-async function getAllIssueEvents(context: ContextPlugin) {
+async function getAllIssueEvents(context: Context) {
   if (!("issue" in context.payload) || !context.payload.issue) {
     context.logger.debug("Not an issue event");
     return;
