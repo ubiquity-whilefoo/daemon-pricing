@@ -8,6 +8,7 @@ import { Env, envSchema } from "./types/env";
 import { AssistivePricingSettings, pluginSettingsSchema } from "./types/plugin-input";
 import manifest from "../manifest.json";
 import { Command } from "./types/command";
+import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 
 export default {
   async fetch(request: Request, env: Env, executionCtx?: ExecutionContext) {
@@ -18,8 +19,7 @@ export default {
           adapters: createAdapters(createClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY), context as Context),
         });
       },
-      //@ts-expect-error types are ok
-      manifest,
+      manifest as Manifest,
       {
         envSchema: envSchema,
         postCommentOnError: true,

@@ -31,7 +31,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-jest.mock("@supabase/supabase-js", () => {
+jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(),
   };
@@ -146,7 +146,6 @@ describe("User tests", () => {
     process.env = {
       SUPABASE_URL: "http://localhost:65432",
       SUPABASE_KEY: "key",
-      KERNEL_PUBLIC_KEY: publicKey,
     };
 
     const result = await workerFetch.fetch(
@@ -161,7 +160,9 @@ describe("User tests", () => {
         method: "POST",
         url,
       } as unknown as Request,
-      {} as Env
+      {
+        KERNEL_PUBLIC_KEY: publicKey,
+      } as Env
     );
     expect(result.ok).toEqual(true);
   });
@@ -191,7 +192,6 @@ describe("User tests", () => {
 
     process.env = {
       SUPABASE_URL: "http://localhost:65432",
-      KERNEL_PUBLIC_KEY: publicKey,
     };
 
     const result = await workerFetch.fetch(
@@ -206,7 +206,9 @@ describe("User tests", () => {
           signature,
         }),
       } as unknown as Request,
-      {} as Env
+      {
+        KERNEL_PUBLIC_KEY: publicKey,
+      } as Env
     );
     expect(result.ok).toEqual(false);
     expect(result.status).toEqual(500);

@@ -2,9 +2,8 @@
   "name": "Assistive pricing",
   "description": "Handles assistive pricing, and allows for users to modify labels.",
   "ubiquity:listeners": ["repository.created", "issues.opened", "issues.labeled", "issues.unlabeled", "label.edited", "issue_comment.created", "push"],
-  "commands": [
-    {
-      "name": "allow",
+  "commands": {
+    "allow": {
       "ubiquity:example": "/allow @user1 label",
       "description": "Allows the user to modify the given label type.",
       "parameters": {
@@ -25,7 +24,7 @@
         }
       }
     }
-  ],
+  },
   "configuration": {
     "default": {},
     "type": "object",
