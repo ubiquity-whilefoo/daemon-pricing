@@ -1,6 +1,5 @@
 import { drop } from "@mswjs/data";
 import { Context } from "../src/types/context";
-import { ContextPlugin } from "../src/types/plugin-input";
 import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
 import { it, describe, beforeAll, beforeEach, afterAll, expect, afterEach, jest } from "@jest/globals";
@@ -554,7 +553,7 @@ function createContext(
   globalConfigUpdate?: {
     excludeRepos: string[];
   }
-): ContextPlugin {
+): Context {
   return {
     adapters: {} as never,
     payload: {

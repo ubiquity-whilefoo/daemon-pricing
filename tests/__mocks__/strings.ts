@@ -1,4 +1,4 @@
-import { CONFIG_FULL_PATH } from "@ubiquity-os/ubiquity-os-kernel";
+import { CONFIG_FULL_PATH } from "@ubiquity-os/plugin-sdk/constants";
 
 export const STRINGS = {
   CONFIG_PATH: CONFIG_FULL_PATH,

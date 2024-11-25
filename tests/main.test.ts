@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest 
 import { drop } from "@mswjs/data";
 import commandParser, { CommandArguments } from "../src/handlers/command-parser";
 import { Env } from "../src/types/env";
-import { ContextPlugin } from "../src/types/plugin-input";
+import { Context } from "../src/types/context";
 import workerFetch from "../src/worker";
 import { db } from "./__mocks__/db";
 import { server } from "./__mocks__/node";
@@ -31,7 +31,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-jest.mock("@supabase/supabase-js", () => {
+jest.unstable_mockModule("@supabase/supabase-js", () => {
   return {
     createClient: jest.fn(),
   };
@@ -131,7 +131,7 @@ describe("User tests", () => {
       },
     ];
     for (const testCase of testCases) {
-      const price = calculateTaskPrice(context as unknown as ContextPlugin, testCase.timeValue, testCase.priorityValue);
+      const price = calculateTaskPrice(context as unknown as Context, testCase.timeValue, testCase.priorityValue);
       expect(price).toEqual(testCase.expectedPrice);
     }
   });
@@ -142,6 +142,11 @@ describe("User tests", () => {
     sign.update(JSON.stringify(data));
     sign.end();
     const signature = sign.sign(privateKey, "base64");
+
+    process.env = {
+      SUPABASE_URL: "http://localhost:65432",
+      SUPABASE_KEY: "key",
+    };
 
     const result = await workerFetch.fetch(
       {
@@ -156,10 +161,8 @@ describe("User tests", () => {
         url,
       } as unknown as Request,
       {
-        SUPABASE_URL: "http://localhost:65432",
-        SUPABASE_KEY: "key",
         KERNEL_PUBLIC_KEY: publicKey,
-      }
+      } as Env
     );
     expect(result.ok).toEqual(true);
   });
@@ -186,6 +189,11 @@ describe("User tests", () => {
     sign.update(JSON.stringify(data));
     sign.end();
     const signature = sign.sign(privateKey, "base64");
+
+    process.env = {
+      SUPABASE_URL: "http://localhost:65432",
+    };
+
     const result = await workerFetch.fetch(
       {
         method: "POST",
@@ -199,9 +207,8 @@ describe("User tests", () => {
         }),
       } as unknown as Request,
       {
-        SUPABASE_URL: "http://localhost:65432",
         KERNEL_PUBLIC_KEY: publicKey,
-      } as unknown as Env
+      } as Env
     );
     expect(result.ok).toEqual(false);
     expect(result.status).toEqual(500);

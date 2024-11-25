@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import { db } from "./db";
 import issueTemplate from "./issue-template";
 import { Label } from "../../src/types/github";
+import { ReadableStream } from "node:stream/web";
 
 const REPO_LABELS = "https://api.github.com/repos/:owner/:repo/labels";
 const REPO_LABELS_NAME = "https://api.github.com/repos/:owner/:repo/labels/:name";

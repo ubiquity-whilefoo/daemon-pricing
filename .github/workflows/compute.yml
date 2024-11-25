@@ -17,6 +17,8 @@ on:
         required: true
       signature:
         required: true
+      command:
+        required: true
 
 jobs:
   run:

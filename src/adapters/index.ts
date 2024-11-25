@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Context } from "@ubiquity-os/ubiquity-os-kernel";
+import { Context } from "../types/context";
 import { Access } from "./supabase/helpers/tables/access";
 import { Label } from "./supabase/helpers/tables/label";
 import { Super } from "./supabase/helpers/tables/super";

@@ -1,7 +1,7 @@
-import { ContextPlugin } from "../types/plugin-input";
+import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 
-export async function getLabelsChanges(context: ContextPlugin) {
+export async function getLabelsChanges(context: Context) {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return false;

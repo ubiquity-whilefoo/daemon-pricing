@@ -1,12 +1,17 @@
-import { ContextPlugin, Rates } from "../types/plugin-input";
+import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
+
+export type Rates = {
+  previousBaseRate: number | null;
+  newBaseRate: number | null;
+};
 
 /**
  * Parses the diff of changes to the org config file to find the old and new base rates.
  *
  * This will capture changes to either the plugin's config or the global basePriceMultiplier.
  */
-export async function getBaseRateChanges(context: ContextPlugin): Promise<Rates> {
+export async function getBaseRateChanges(context: Context): Promise<Rates> {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return {

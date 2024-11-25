@@ -1,12 +1,12 @@
-import { CONFIG_FULL_PATH, DEV_CONFIG_FULL_PATH } from "@ubiquity-os/ubiquity-os-kernel";
-import { ContextPlugin } from "../types/plugin-input";
+import { CONFIG_FULL_PATH, DEV_CONFIG_FULL_PATH } from "@ubiquity-os/plugin-sdk/constants";
+import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { getCommitChanges } from "./get-commit-changes";
 
 export const ZERO_SHA = "0000000000000000000000000000000000000000";
 const BASE_RATE_FILES = [DEV_CONFIG_FULL_PATH, CONFIG_FULL_PATH];
 
-export async function isConfigModified(context: ContextPlugin): Promise<boolean> {
+export async function isConfigModified(context: Context): Promise<boolean> {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
     return false;

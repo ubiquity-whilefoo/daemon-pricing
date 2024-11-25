@@ -1,15 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
-import { createActionsPlugin } from "@ubiquity-os/ubiquity-os-kernel";
+import { createActionsPlugin } from "@ubiquity-os/plugin-sdk";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { createAdapters } from "./adapters";
 import { run } from "./run";
-import { SupportedEvents } from "./types/context";
+import { Context, SupportedEvents } from "./types/context";
 import { Env, envSchema } from "./types/env";
 import { AssistivePricingSettings, pluginSettingsSchema } from "./types/plugin-input";
+import { Command } from "./types/command";
 
-createActionsPlugin<AssistivePricingSettings, Env, SupportedEvents>(
+createActionsPlugin<AssistivePricingSettings, Env, Command, SupportedEvents>(
   (context) => {
-    return run({ ...context, adapters: createAdapters(createClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY), context) });
+    return run({ ...context, adapters: createAdapters(createClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY), context as Context) });
   },
   {
     // @ts-expect-error types match
