@@ -1,4 +1,3 @@
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { COLORS, createLabel, listLabelsForRepo } from "../shared/label";
 import { calculateLabelValue, calculateTaskPrice } from "../shared/pricing";
 import { Context } from "../types/context";
@@ -102,7 +101,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   }
 }
 
-async function handleGlobalUpdate(context: Context, logger: Logs, incorrectPriceLabels: Label[]) {
+async function handleGlobalUpdate(context: Context, logger: Context["logger"], incorrectPriceLabels: Label[]) {
   logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
   const owner = context.payload.repository.owner?.login;
   if (!owner) {
