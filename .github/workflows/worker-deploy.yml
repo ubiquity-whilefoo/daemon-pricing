@@ -8,6 +8,8 @@ jobs:
   deploy-to-cloudflare:
     runs-on: ubuntu-latest
     name: Automatic Cloudflare Deploy
+    environment: ${{ github.ref == 'refs/heads/main' && 'main' || 'development' }}
+
     steps:
       - name: Setup Node
         uses: actions/setup-node@v4
