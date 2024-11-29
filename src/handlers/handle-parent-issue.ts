@@ -1,7 +1,7 @@
 import { clearAllPriceLabelsOnIssue } from "../shared/label";
 import { calculateLabelValue } from "../shared/pricing";
-import { Context } from "../types/context";
 import { Label } from "../types/github";
+import { Context } from "../types/context";
 
 export async function handleParentIssue(context: Context, labels: Label[]) {
   const issuePrices = labels.filter((label) => label.name.toString().startsWith("Price:"));

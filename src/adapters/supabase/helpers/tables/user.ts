@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Super } from "./super";
 import { Context } from "../../../../types/context";
+import { Super } from "./super";
 
 export class User extends Super {
   constructor(supabase: SupabaseClient, context: Context) {

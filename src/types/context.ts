@@ -1,21 +1,18 @@
-import { EmitterWebhookEvent as WebhookEvent, EmitterWebhookEventName as WebhookEventName } from "@octokit/webhooks";
-import { Octokit } from "@octokit/rest";
+import { Context as PluginContext } from "@ubiquity-os/plugin-sdk";
 import { AssistivePricingSettings } from "./plugin-input";
 import { createAdapters } from "../adapters";
+import { Env } from "./env";
+import { Command } from "./command";
 
-export type SupportedEvents = "issues.labeled" | "issues.unlabeled" | "label.edited" | "issue_comment.created";
+export type SupportedEvents =
+  | "repository.created"
+  | "issues.labeled"
+  | "issues.unlabeled"
+  | "issues.opened"
+  | "label.edited"
+  | "issue_comment.created"
+  | "push";
 
-export interface Context<T extends WebhookEventName = SupportedEvents> {
-  eventName: T;
-  payload: WebhookEvent<T>["payload"];
-  octokit: InstanceType<typeof Octokit>;
+export type Context<T extends SupportedEvents = SupportedEvents> = PluginContext<AssistivePricingSettings, Env, Command, T> & {
   adapters: ReturnType<typeof createAdapters>;
-  config: AssistivePricingSettings;
-  logger: {
-    fatal: (message: unknown, ...optionalParams: unknown[]) => void;
-    error: (message: unknown, ...optionalParams: unknown[]) => void;
-    warn: (message: unknown, ...optionalParams: unknown[]) => void;
-    info: (message: unknown, ...optionalParams: unknown[]) => void;
-    debug: (message: unknown, ...optionalParams: unknown[]) => void;
-  };
-}
+};

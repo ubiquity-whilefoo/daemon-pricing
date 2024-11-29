@@ -1,7 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { Context } from "../../../../types/context";
 import { Database } from "../../types/database";
 import { Super } from "./super";
-import { Context } from "../../../../types/context";
 
 type AccessRow = Database["public"]["Tables"]["access"]["Row"];
 
@@ -20,7 +20,7 @@ export class Access extends Super {
       .maybeSingle();
 
     if (error) {
-      this.context.logger.fatal(error.message, error);
+      this.context.logger.error(error.message, error);
       throw new Error(error.message);
     }
     return data;

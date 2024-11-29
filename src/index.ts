@@ -1,33 +1,22 @@
-import * as github from "@actions/github";
-import * as core from "@actions/core";
-import { Value } from "@sinclair/typebox/value";
-import { envSchema } from "./types/env";
-import { assistivePricingSettingsSchema, PluginInputs } from "./types/plugin-input";
+import { createClient } from "@supabase/supabase-js";
+import { createActionsPlugin } from "@ubiquity-os/plugin-sdk";
+import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
+import { createAdapters } from "./adapters";
 import { run } from "./run";
+import { Context, SupportedEvents } from "./types/context";
+import { Env, envSchema } from "./types/env";
+import { AssistivePricingSettings, pluginSettingsSchema } from "./types/plugin-input";
+import { Command } from "./types/command";
 
-/**
- * Run the plugin as a GitHub Action instance.
- */
-async function actionRun() {
-  const env = Value.Decode(envSchema, process.env);
-
-  const webhookPayload = github.context.payload.inputs;
-  const settings = Value.Decode(assistivePricingSettingsSchema, Value.Default(assistivePricingSettingsSchema, JSON.parse(webhookPayload.settings)));
-
-  const inputs: PluginInputs = {
-    stateId: webhookPayload.stateId,
-    eventName: webhookPayload.eventName,
-    eventPayload: JSON.parse(webhookPayload.eventPayload),
-    settings: settings,
-    authToken: webhookPayload.authToken,
-    ref: webhookPayload.ref,
-  };
-  await run(inputs, env);
-}
-
-actionRun()
-  .then((result) => core.setOutput("result", result))
-  .catch((error) => {
-    console.error(error);
-    core.setFailed(error);
-  });
+createActionsPlugin<AssistivePricingSettings, Env, Command, SupportedEvents>(
+  (context) => {
+    return run({ ...context, adapters: createAdapters(createClient(context.env.SUPABASE_URL, context.env.SUPABASE_KEY), context as Context) });
+  },
+  {
+    envSchema: envSchema,
+    postCommentOnError: true,
+    settingsSchema: pluginSettingsSchema,
+    logLevel: process.env.LOG_LEVEL as LogLevel,
+    kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
+  }
+).catch(console.error);
