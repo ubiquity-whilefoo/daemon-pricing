@@ -98,6 +98,14 @@
           "fundExternalClosedIssue": {
             "default": false,
             "type": "boolean"
+          },
+          "protectLabels": {
+            "default": ["priority", "price", "time"],
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
