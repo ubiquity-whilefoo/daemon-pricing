@@ -18,5 +18,6 @@ createActionsPlugin<AssistivePricingSettings, Env, Command, SupportedEvents>(
     settingsSchema: pluginSettingsSchema,
     logLevel: process.env.LOG_LEVEL as LogLevel,
     kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
+    bypassSignatureVerification: process.env.NODE_ENV === "local",
   }
 ).catch(console.error);
