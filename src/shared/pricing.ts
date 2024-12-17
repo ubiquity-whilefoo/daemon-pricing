@@ -35,7 +35,8 @@ export function getPrice(context: Context, timeLabel: Label, priorityLabel: Labe
  */
 export function calculateLabelValue(label: string): number | null {
   const matches = label.match(/\d+/);
-  const number = matches && matches.length > 0 ? parseInt(matches[0]) || 0 : 0;
+  if (!matches?.length) return null;
+  const number = parseInt(matches[0]);
   if (label.toLowerCase().includes("priority")) return number;
   if (label.toLowerCase().includes("minute")) return number * 0.002;
   if (label.toLowerCase().includes("hour")) return number * 0.125;
