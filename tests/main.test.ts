@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { Value } from "@sinclair/typebox/value";
 import * as crypto from "node:crypto";
@@ -29,12 +29,6 @@ const url = "/";
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
-
-jest.unstable_mockModule("@supabase/supabase-js", () => {
-  return {
-    createClient: jest.fn(),
-  };
-});
 
 describe("User tests", () => {
   beforeEach(() => {
@@ -104,8 +98,6 @@ describe("User tests", () => {
         url,
       } as unknown as Request,
       {
-        SUPABASE_URL: "url",
-        SUPABASE_KEY: "key",
         KERNEL_PUBLIC_KEY: "key",
       }
     );
