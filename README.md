@@ -59,7 +59,7 @@ supabase start
 Start the Worker by running
 
 ```shell
-yarn worker
+bun run worker
 ```
 
 ### Make requests
@@ -87,5 +87,5 @@ For convenience you can find an `.http` file with a valid request [here](/tests/
 To start Jest tests, run
 
 ```shell
-yarn test
+bun run test
 ```
