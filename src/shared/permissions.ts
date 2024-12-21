@@ -3,6 +3,7 @@ import { Context } from "../types/context";
 import { UserType } from "../types/github";
 import { isIssueLabelEvent } from "../types/typeguards";
 import { isUserAdminOrBillingManager } from "./issue";
+import { addLabelToIssue, removeLabelFromIssue } from "./label";
 
 export async function labelAccessPermissionsCheck(context: Context) {
   if (!isIssueLabelEvent(context)) {
@@ -38,6 +39,14 @@ export async function labelAccessPermissionsCheck(context: Context) {
   if (match.length <= 1) return false;
   const labelType = match[0].toLowerCase();
 
+  // event in plain english
+  let action;
+  if ("action" in payload) {
+    action = payload.action;
+  } else {
+    throw new Error("No action found in payload");
+  }
+
   if (sufficientPrivileges) {
     logger.info("Admin and billing managers have full control over all labels", {
       repo: repo.full_name,
@@ -46,11 +55,18 @@ export async function labelAccessPermissionsCheck(context: Context) {
     });
     return true;
   } else {
-    return handleInsufficientPrivileges(context, labelType, sender, repo, labelName);
+    return handleInsufficientPrivileges(context, labelType, sender, repo, action, labelName);
   }
 }
 
-async function handleInsufficientPrivileges(context: Context, labelType: string, sender: string, repo: Context["payload"]["repository"], labelName: string) {
+async function handleInsufficientPrivileges(
+  context: Context,
+  labelType: string,
+  sender: string,
+  repo: Context["payload"]["repository"],
+  action: string,
+  labelName: string
+) {
   const { logger, config } = context;
   logger.info("Checking access for labels", { repo: repo.full_name, user: sender, labelType });
 
@@ -62,6 +78,11 @@ async function handleInsufficientPrivileges(context: Context, labelType: string,
         { sender, label: labelName }
       )
     );
+    if (action === "labeled") {
+      await removeLabelFromIssue(context, labelName);
+    } else if (action === "unlabeled") {
+      await addLabelToIssue(context, labelName);
+    }
     return false;
   }
 

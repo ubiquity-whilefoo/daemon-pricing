@@ -121,7 +121,7 @@ describe("User tests", () => {
     const signature = sign.sign(privateKey, "base64");
 
     process.env = {
-      SUPABASE_URL: "http://localhost:65432",
+      LOG_LEVEL: "1234",
     };
 
     const result = await workerFetch.fetch(
