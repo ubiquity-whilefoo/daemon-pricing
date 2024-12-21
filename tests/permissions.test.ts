@@ -28,6 +28,7 @@ describe("Permission tests for labels", () => {
           name: "daemon-pricing",
           full_name: "ubiquity-os-marketplace/daemon-pricing",
         },
+        action: "labeled",
       },
       config: {
         publicAccessControl: {
