@@ -73,10 +73,10 @@ async function handleInsufficientPrivileges(
   if (config.publicAccessControl.protectLabels.some((protectedLabel) => protectedLabel.toLowerCase() === labelType.toLowerCase())) {
     await postComment(
       context,
-      logger.error(
-        `@${sender}, you do not have permissions to adjust ${config.publicAccessControl.protectLabels.map((label) => `\`${label}\``).join(", ")} labels.`,
-        { sender, label: labelName }
-      )
+      logger.error(`You do not have permissions to adjust ${config.publicAccessControl.protectLabels.map((label) => `\`${label}\``).join(", ")} labels.`, {
+        sender,
+        label: labelName,
+      })
     );
     if (action === "labeled") {
       await removeLabelFromIssue(context, labelName);
