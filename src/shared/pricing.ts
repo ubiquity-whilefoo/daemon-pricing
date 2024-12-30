@@ -21,23 +21,27 @@ export function getPrice(context: Context, timeLabel: Label, priorityLabel: Labe
   if (!recognizedPriorityLabels) throw logger.error("Priority label is not recognized");
 
   const timeValue = calculateLabelValue(recognizedTimeLabels.name);
-  if (!timeValue) throw logger.error("Time value is not defined");
+  if (timeValue === null) throw logger.error("Time value is not defined");
 
   const priorityValue = calculateLabelValue(recognizedPriorityLabels.name);
-  if (!priorityValue) throw logger.error("Priority value is not defined");
+  if (priorityValue === null) throw logger.error("Priority value is not defined");
 
   const taskPrice = calculateTaskPrice(context, timeValue, priorityValue);
   return `Price: ${taskPrice} USD`;
 }
 
-export function calculateLabelValue(label: string): number {
+/*
+ * Gets the value associated to the label. Returns null if the value of the label couldn't be extracted.
+ */
+export function calculateLabelValue(label: string): number | null {
   const matches = label.match(/\d+/);
-  const number = matches && matches.length > 0 ? parseInt(matches[0]) || 0 : 0;
+  if (!matches?.length) return null;
+  const number = parseInt(matches[0]);
   if (label.toLowerCase().includes("priority")) return number;
   if (label.toLowerCase().includes("minute")) return number * 0.002;
   if (label.toLowerCase().includes("hour")) return number * 0.125;
   if (label.toLowerCase().includes("day")) return 1 + (number - 1) * 0.25;
   if (label.toLowerCase().includes("week")) return number + 1;
   if (label.toLowerCase().includes("month")) return 5 + (number - 1) * 8;
-  return 0;
+  return null;
 }

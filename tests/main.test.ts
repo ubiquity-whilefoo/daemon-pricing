@@ -131,7 +131,7 @@ describe("User tests", () => {
       },
     ];
     for (const testCase of testCases) {
-      const price = calculateTaskPrice(context as unknown as Context, testCase.timeValue, testCase.priorityValue);
+      const price = calculateTaskPrice(context as unknown as Context, testCase.timeValue as number, testCase.priorityValue as number);
       expect(price).toEqual(testCase.expectedPrice);
     }
   });

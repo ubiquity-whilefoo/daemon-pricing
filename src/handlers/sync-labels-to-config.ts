@@ -15,7 +15,13 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const priceLabels: { name: string; collaboratorOnly: boolean }[] = [];
   for (const timeLabel of config.labels.time) {
     for (const priorityLabel of config.labels.priority) {
-      const targetPrice = calculateTaskPrice(context, calculateLabelValue(timeLabel.name), calculateLabelValue(priorityLabel.name), config.basePriceMultiplier);
+      const timeValue = calculateLabelValue(timeLabel.name);
+      const priorityValue = calculateLabelValue(priorityLabel.name);
+      if (timeValue === null || priorityValue === null) {
+        logger.info("Time or Priority label is not defined, skipping.", { timeLabel, priorityLabel });
+        continue;
+      }
+      const targetPrice = calculateTaskPrice(context, timeValue, priorityValue, config.basePriceMultiplier);
       const targetPriceLabel = `Price: ${targetPrice} USD`;
       priceLabels.push({ name: targetPriceLabel, collaboratorOnly: false });
     }
