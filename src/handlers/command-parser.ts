@@ -16,7 +16,7 @@ export interface CommandArguments {
  * contained within the list of allowed commands.
  */
 export function isValidCommand(command: string) {
-  const match = command.match(/^\/\S+/);
+  const match = RegExp(/^\/\S+/).exec(command);
 
   if (!match) {
     return false;

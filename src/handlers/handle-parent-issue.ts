@@ -16,6 +16,6 @@ export function sortLabelsByValue(labels: Label[]) {
 }
 
 export function isParentIssue(body: string) {
-  const parentPattern = /-\s+\[( |x)\]\s+#\d+/;
-  return body.match(parentPattern);
+  const parentPattern = /-\s+\[([ x])]\s+#\d+/;
+  return RegExp(parentPattern).exec(body);
 }
