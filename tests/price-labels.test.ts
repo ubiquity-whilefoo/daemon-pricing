@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import { syncPriceLabelsToConfig } from "../src/handlers/sync-labels-to-config";
-// import { listLabelsForRepo } from "../src/shared/label";
+import { calculateLabelValue } from "../src/shared/pricing";
 import { Context } from "../src/types/context";
 import { COLLABORATOR_ONLY_DESCRIPTION } from "../src/types/constants";
 
@@ -148,4 +148,15 @@ describe("syncPriceLabelsToConfig function", () => {
 
     expect(mockOctokit.rest.issues.updateLabel).not.toHaveBeenCalled();
   }, 15000);
+
+  it("Should properly handled 0 priority label", () => {
+    let labelValue = calculateLabelValue("Priority: 0 (Regression)");
+    expect(labelValue).toEqual(0);
+    labelValue = calculateLabelValue("Priority: - (Regression)");
+    expect(labelValue).toEqual(null);
+    labelValue = calculateLabelValue("Time: 0 Hours");
+    expect(labelValue).toEqual(0);
+    labelValue = calculateLabelValue("Time: some Hours");
+    expect(labelValue).toEqual(null);
+  });
 });

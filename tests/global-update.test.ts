@@ -5,20 +5,16 @@ import { server } from "./__mocks__/node";
 import { it, describe, beforeAll, beforeEach, afterAll, expect, afterEach, jest } from "@jest/globals";
 import { ZERO_SHA } from "../src/handlers/check-modified-base-rate";
 import dotenv from "dotenv";
-import { Octokit } from "@octokit/rest";
 import { priceMap, PRIORITY_LABELS, TIME_LABELS } from "./__mocks__/constants";
 import { STRINGS } from "./__mocks__/strings";
 import { Label } from "../src/types/github";
 import { globalLabelUpdate } from "../src/handlers/global-config-update";
 import { setupTests, inMemoryCommits, createCommit } from "./__mocks__/helpers";
 import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
 dotenv.config();
 
-jest.requireActual("@octokit/rest");
-
-const octokit = new Octokit();
-
-const THIRTY_SECONDS = 30 * 1000;
+const TEST_TIMEOUT = 30 * 1000;
 
 type CreateCommitParams = {
   owner: string;
@@ -83,7 +79,7 @@ describe("Label Base Rate Changes", () => {
       const noTandP = db.issue.findFirst({ where: { id: { equals: 2 } } });
       expect(noTandP?.labels).toHaveLength(0);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -118,7 +114,7 @@ describe("Label Base Rate Changes", () => {
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -154,7 +150,7 @@ describe("Label Base Rate Changes", () => {
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
       expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -206,7 +202,7 @@ describe("Label Base Rate Changes", () => {
       expect(pusher?.name).toBe("billing");
       expect(sender_?.login).toBe("billing");
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -251,7 +247,7 @@ describe("Label Base Rate Changes", () => {
       expect(priceLabels?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
       expect(priceLabels2?.map((label) => (label as Label).name)).toContain(`Price: ${priceMap[1] * 8.5} USD`);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -287,7 +283,7 @@ describe("Label Base Rate Changes", () => {
       expect(infoSpy).toHaveBeenCalledTimes(2);
       expect(errorSpy).toHaveBeenCalledTimes(1);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -320,7 +316,7 @@ describe("Label Base Rate Changes", () => {
       expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
       expect(infoSpy).toHaveBeenNthCalledWith(4, STRINGS.CREATING_MISSING_LABELS);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -350,7 +346,7 @@ describe("Label Base Rate Changes", () => {
       expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
       expect(errorSpy).toHaveBeenNthCalledWith(2, STRINGS.SENDER_NOT_AUTHED);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -379,7 +375,7 @@ describe("Label Base Rate Changes", () => {
       await globalLabelUpdate(context);
       expect(infoSpy).toHaveBeenCalledWith("No files were changed in the commits, so no action is required.");
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -410,7 +406,7 @@ describe("Label Base Rate Changes", () => {
       expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
       expect(infoSpy).not.toHaveBeenCalled();
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -440,7 +436,7 @@ describe("Label Base Rate Changes", () => {
       expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
       expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -470,7 +466,7 @@ describe("Label Base Rate Changes", () => {
       expect(errorSpy).toHaveBeenCalledWith(STRINGS.SENDER_NOT_AUTHED);
       expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 
   it(
@@ -502,7 +498,7 @@ describe("Label Base Rate Changes", () => {
 
       expect(errorSpy).not.toHaveBeenCalled();
     },
-    THIRTY_SECONDS
+    TEST_TIMEOUT
   );
 });
 
@@ -553,7 +549,7 @@ function createContext(
   globalConfigUpdate?: {
     excludeRepos: string[];
   }
-): Context {
+) {
   return {
     adapters: {} as never,
     payload: {
@@ -598,7 +594,7 @@ function createContext(
         date: new Date().toISOString(),
         username: pusher?.login ?? sender?.login,
       },
-    } as Context<"push">["payload"],
+    },
     logger: new Logs("debug"),
     config: {
       labels: {
@@ -620,12 +616,10 @@ function createContext(
       },
       basePriceMultiplier: 2,
     },
-    // @ts-expect-error ESM makes types incompatible.
-    octokit: octokit,
+    octokit: new Octokit({
+      throttle: { enabled: false },
+    }),
     eventName: "push",
-    env: {
-      SUPABASE_KEY: "key",
-      SUPABASE_URL: "url",
-    },
-  };
+    command: null,
+  } as unknown as Context<"push">;
 }
