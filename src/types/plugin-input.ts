@@ -41,6 +41,7 @@ export const pluginSettingsSchema = T.Object(
         setLabel: T.Boolean({ default: false, description: "Whether to allow anyone to set labels, false to perform permission validation" }),
         fundExternalClosedIssue: T.Boolean({ default: false, description: "Whether to allow funding external closed issues" }),
         protectLabels: T.Array(T.String(), { default: ["priority", "price", "time"], uniqueItems: true }),
+        protectLabels: T.Array(T.String(), { default: ["priority", "price", "time"], uniqueItems: true }),
       },
       { default: {} }
     ),
