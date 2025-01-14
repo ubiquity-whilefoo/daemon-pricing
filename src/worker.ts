@@ -1,4 +1,5 @@
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
+import { signPayload } from "@ubiquity-os/plugin-sdk/dist/signature";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import type { ExecutionContext } from "hono";
@@ -31,11 +32,15 @@ async function startAction(context: Context, inputs: unknown) {
 
   inputs.eventPayload = JSON.stringify(inputs.eventPayload);
   inputs.settings = JSON.stringify(inputs.settings);
+  delete inputs.settings;
   logger.info("Will attempt to start an Action using dispatch", {
     owner,
     repo,
     ref,
-    inputs: inputs,
+    inputs: {
+      ...inputs,
+      signature: await signPayload(JSON.stringify(inputs, env.APP_PRIVATE_KEY)),
+    },
   });
   // sign payload again...
   await octokit.rest.actions.createWorkflowDispatch({
