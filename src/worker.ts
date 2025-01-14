@@ -8,7 +8,7 @@ import { Context, SupportedEvents } from "./types/context";
 import { Env, envSchema } from "./types/env";
 import { AssistivePricingSettings, pluginSettingsSchema } from "./types/plugin-input";
 
-async function startAction(context: Context, inputs: Record<string, unknown>) {
+async function startAction(context: Context, inputs: unknown) {
   const { octokit, payload, logger, env } = context;
 
   if (!payload.repository.owner) {
@@ -29,26 +29,19 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
 
   const [, owner, repo, ref] = match;
 
-  const i = {
-    stateId: inputs.stateId,
-    eventName: inputs.eventName,
-    eventPayload: JSON.stringify(inputs.eventPayload),
-    settings: JSON.stringify(inputs.settings),
-    authToken: inputs.authToken,
-    ref: inputs.ref,
-    command: JSON.stringify(inputs.command),
-    signature: inputs.signature,
-  };
+  inputs.eventPayload = JSON.stringify(inputs.eventPayload);
+  inputs.settings = JSON.stringify(inputs.settings);
   logger.info("Will attempt to start an Action using dispatch", {
     owner,
     repo,
     ref,
-    inputs: JSON.stringify(i),
+    inputs: inputs,
   });
+  // sign payload again...
   await octokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
-    inputs: i,
+    inputs: inputs,
     ref,
     workflow_id: "compute.yml",
   });
@@ -62,9 +55,9 @@ export default {
     return createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
       async (context) => {
         if (context.eventName === "push") {
-          const text = await responseClone.text();
-          console.log(text);
-          return startAction(context, JSON.parse(text));
+          const text = await responseClone.json();
+          console.log("txt()", text);
+          return startAction(context, text);
         }
         return run(context);
       },
