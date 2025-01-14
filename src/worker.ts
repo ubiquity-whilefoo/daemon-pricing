@@ -35,8 +35,6 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
     ref,
     inputs,
   });
-  inputs.eventPayload = JSON.stringify(inputs.eventPayload);
-  inputs.settings = JSON.stringify(inputs.settings);
   await octokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
