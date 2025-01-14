@@ -19,12 +19,20 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
     throw logger.fatal("ACTION_REF is missing from the environment");
   }
 
-  const [owner, repo] = env.ACTION_REF.split("/");
+  const regex = /^([\w-]+)\/([\w.-]+)@([\w./-]+)$/;
+
+  const match = RegExp(regex).exec(env.ACTION_REF);
+
+  if (!match) {
+    throw logger.fatal("The ACTION_REF is not in the proper format (owner/repo@ref)");
+  }
+
+  const [, owner, repo, ref] = match;
 
   logger.info("Will attempt to start an Action using dispatch", {
     owner,
     repo,
-    ref: env.ACTION_REF,
+    ref,
   });
   await octokit.rest.actions.createWorkflowDispatch({
     owner,
@@ -35,7 +43,7 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
       settings: JSON.stringify(inputs.settings),
       command: "null",
     },
-    ref: "development",
+    ref,
     workflow_id: "compute.yml",
   });
 }
