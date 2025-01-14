@@ -1,5 +1,4 @@
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
-import { signPayload } from "@ubiquity-os/plugin-sdk/dist/signature";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import type { ExecutionContext } from "hono";
@@ -9,7 +8,7 @@ import { Context, SupportedEvents } from "./types/context";
 import { Env, envSchema } from "./types/env";
 import { AssistivePricingSettings, pluginSettingsSchema } from "./types/plugin-input";
 
-async function startAction(context: Context, inputs: unknown) {
+async function startAction(context: Context, inputs: Record<string, unknown>) {
   const { octokit, payload, logger, env } = context;
 
   if (!payload.repository.owner) {
@@ -30,23 +29,10 @@ async function startAction(context: Context, inputs: unknown) {
 
   const [, owner, repo, ref] = match;
 
-  inputs.eventPayload = JSON.stringify(inputs.eventPayload);
-  inputs.settings = JSON.stringify(inputs.settings);
-  delete inputs.settings;
-  logger.info("Will attempt to start an Action using dispatch", {
-    owner,
-    repo,
-    ref,
-    inputs: {
-      ...inputs,
-      signature: await signPayload(JSON.stringify(inputs), env.APP_PRIVATE_KEY),
-    },
-  });
-  // sign payload again...
   await octokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
-    inputs: inputs,
+    inputs,
     ref,
     workflow_id: "compute.yml",
   });
@@ -60,8 +46,7 @@ export default {
     return createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
       async (context) => {
         if (context.eventName === "push") {
-          const text = await responseClone.json();
-          console.log("txt()", text);
+          const text = (await responseClone.json()) as Record<string, unknown>;
           return startAction(context, text);
         }
         return run(context);
