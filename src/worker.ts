@@ -21,7 +21,7 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
 
   const [owner, repo] = env.ACTION_REF.split("/");
 
-  logger.debug("Will attempt to start an Action using dispatch", {
+  logger.info("Will attempt to start an Action using dispatch", {
     owner,
     repo,
     ref: env.ACTION_REF,
