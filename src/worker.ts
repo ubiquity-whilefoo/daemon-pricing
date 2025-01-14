@@ -29,16 +29,26 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
 
   const [, owner, repo, ref] = match;
 
+  const i = {
+    stateId: inputs.stateId,
+    eventName: inputs.eventName,
+    eventPayload: JSON.stringify(inputs.eventPayload),
+    settings: JSON.stringify(inputs.settings),
+    authToken: inputs.authToken,
+    ref: inputs.ref,
+    command: JSON.stringify(inputs.command),
+    signature: inputs.signature,
+  };
   logger.info("Will attempt to start an Action using dispatch", {
     owner,
     repo,
     ref,
-    inputs,
+    inputs: JSON.stringify(i),
   });
   await octokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
-    inputs,
+    inputs: i,
     ref,
     workflow_id: "compute.yml",
   });
