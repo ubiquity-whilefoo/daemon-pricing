@@ -7,9 +7,12 @@
     "type": "object",
     "properties": {
       "globalConfigUpdate": {
+        "description": "Updates all price labels across all tasks based on `baseRateMultiplier` changes within the config file.",
         "type": "object",
         "properties": {
           "excludeRepos": {
+            "examples": ["repo-name", "no-owner-required"],
+            "description": "List of repositories to exclude from being updated",
             "type": "array",
             "items": {
               "type": "string"
@@ -29,12 +32,13 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "description": "The display name of the label",
+                  "examples": ["Time: <2 Hours", "Time: <1 Week"],
+                  "description": "The display name of the label representing estimated task length",
                   "type": "string"
                 },
                 "collaboratorOnly": {
                   "default": false,
-                  "description": "Whether the label is only available to collaborators",
+                  "description": "Whether the task is only available for collaborators to be assigned",
                   "type": "boolean"
                 }
               },
@@ -48,10 +52,13 @@
               "type": "object",
               "properties": {
                 "name": {
+                  "examples": ["Priority: 1 (Normal)", "Priority: 5 (Emergency)"],
+                  "description": "The display name of the label representing task priority",
                   "type": "string"
                 },
                 "collaboratorOnly": {
                   "default": false,
+                  "description": "Whether the task is only available for collaborators to be assigned",
                   "type": "boolean"
                 }
               },
@@ -61,7 +68,9 @@
         }
       },
       "basePriceMultiplier": {
+        "examples": [1.5],
         "default": 1,
+        "description": "The base price multiplier for all tasks",
         "type": "number"
       },
       "publicAccessControl": {
@@ -70,10 +79,12 @@
         "properties": {
           "setLabel": {
             "default": false,
+            "description": "Whether to allow anyone to set labels, false to perform permission validation",
             "type": "boolean"
           },
           "fundExternalClosedIssue": {
             "default": false,
+            "description": "Whether to allow funding external closed issues",
             "type": "boolean"
           },
           "protectLabels": {
