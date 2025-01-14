@@ -33,16 +33,14 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
     owner,
     repo,
     ref,
+    inputs,
   });
+  inputs.eventPayload = JSON.stringify(inputs.eventPayload);
+  inputs.settings = JSON.stringify(inputs.settings);
   await octokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
-    inputs: {
-      ...inputs,
-      eventPayload: JSON.stringify(inputs.eventPayload),
-      settings: JSON.stringify(inputs.settings),
-      command: "null",
-    },
+    inputs,
     ref,
     workflow_id: "compute.yml",
   });
@@ -57,6 +55,7 @@ export default {
       async (context) => {
         if (context.eventName === "push") {
           const text = await responseClone.text();
+          console.log(text);
           return startAction(context, JSON.parse(text));
         }
         return run(context);
