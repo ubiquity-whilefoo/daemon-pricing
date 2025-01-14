@@ -39,7 +39,7 @@ async function startAction(context: Context, inputs: unknown) {
     ref,
     inputs: {
       ...inputs,
-      signature: await signPayload(JSON.stringify(inputs, env.APP_PRIVATE_KEY)),
+      signature: await signPayload(JSON.stringify(inputs), env.APP_PRIVATE_KEY),
     },
   });
   // sign payload again...
