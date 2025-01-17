@@ -2,37 +2,17 @@
   "name": "Assistive pricing",
   "description": "Handles assistive pricing, and allows for users to modify labels.",
   "ubiquity:listeners": ["repository.created", "issues.opened", "issues.labeled", "issues.unlabeled", "label.edited", "issue_comment.created", "push"],
-  "commands": {
-    "allow": {
-      "ubiquity:example": "/allow @user1 label",
-      "description": "Allows the user to modify the given label type.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "description": "The user that will be allowed to change the label"
-          },
-          "labelTypes": {
-            "type": "array",
-            "description": "Array of label types that user will be allowed to change, it can be empty to remove access from all labels",
-            "items": {
-              "type": "string",
-              "enum": ["time", "priority"]
-            }
-          }
-        }
-      }
-    }
-  },
   "configuration": {
     "default": {},
     "type": "object",
     "properties": {
       "globalConfigUpdate": {
+        "description": "Updates all price labels across all tasks based on `baseRateMultiplier` changes within the config file.",
         "type": "object",
         "properties": {
           "excludeRepos": {
+            "examples": ["repo-name", "no-owner-required"],
+            "description": "List of repositories to exclude from being updated",
             "type": "array",
             "items": {
               "type": "string"
@@ -52,12 +32,13 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "description": "The display name of the label",
+                  "examples": ["Time: <2 Hours", "Time: <1 Week"],
+                  "description": "The display name of the label representing estimated task length",
                   "type": "string"
                 },
                 "collaboratorOnly": {
                   "default": false,
-                  "description": "Whether the label is only available to collaborators",
+                  "description": "Whether the task is only available for collaborators to be assigned",
                   "type": "boolean"
                 }
               },
@@ -71,10 +52,13 @@
               "type": "object",
               "properties": {
                 "name": {
+                  "examples": ["Priority: 1 (Normal)", "Priority: 5 (Emergency)"],
+                  "description": "The display name of the label representing task priority",
                   "type": "string"
                 },
                 "collaboratorOnly": {
                   "default": false,
+                  "description": "Whether the task is only available for collaborators to be assigned",
                   "type": "boolean"
                 }
               },
@@ -84,7 +68,9 @@
         }
       },
       "basePriceMultiplier": {
+        "examples": [1.5],
         "default": 1,
+        "description": "The base price multiplier for all tasks",
         "type": "number"
       },
       "publicAccessControl": {
@@ -93,11 +79,21 @@
         "properties": {
           "setLabel": {
             "default": false,
+            "description": "Whether to allow anyone to set labels, false to perform permission validation",
             "type": "boolean"
           },
           "fundExternalClosedIssue": {
             "default": false,
+            "description": "Whether to allow funding external closed issues",
             "type": "boolean"
+          },
+          "protectLabels": {
+            "default": ["priority", "price", "time"],
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
