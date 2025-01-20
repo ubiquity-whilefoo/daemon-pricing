@@ -58,12 +58,14 @@ jobs:
             ACTION_REF
             APP_ID
             APP_PRIVATE_KEY
+            APP_INSTALLATION_ID
         env:
           KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           ACTION_REF: ${{ env.ACTION_REF }}
           APP_ID: ${{ env.APP_ID }}
           APP_PRIVATE_KEY: ${{ env.APP_PRIVATE_KEY }}
+          APP_INSTALLATION_ID: ${{ env.APP_INSTALLATION_ID }}
 
       - name: Update manifest.json worker url
         uses: actions/github-script@v7
