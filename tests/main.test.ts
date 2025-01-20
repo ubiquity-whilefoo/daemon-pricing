@@ -106,7 +106,8 @@ describe("User tests", () => {
     expect(result.status).toEqual(404);
   });
 
-  it("Should reject an invalid environment", async () => {
+  // Disabled because we currently have no required value inside the environment
+  it.skip("Should reject an invalid environment", async () => {
     const data = issueCommented;
     const sign = crypto.createSign("SHA256");
     sign.update(JSON.stringify(data));
