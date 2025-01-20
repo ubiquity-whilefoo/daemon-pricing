@@ -40,6 +40,11 @@ jobs:
           sed -i "s/^name = .*/name = \"$new_name\"/" wrangler.toml
           echo "Updated wrangler.toml name to: $new_name"
 
+      - name: Set ACTION_REF environment variable
+        run: |
+          branch_name=$(echo '${{ github.event.workflow_run.head_branch || github.ref }}' | sed 's#refs/heads/##')
+          echo "ACTION_REF=${GITHUB_REPOSITORY}@${branch_name}" >> $GITHUB_ENV
+
       - name: Deploy with Wrangler
         id: wrangler_deploy
         uses: cloudflare/wrangler-action@v3
