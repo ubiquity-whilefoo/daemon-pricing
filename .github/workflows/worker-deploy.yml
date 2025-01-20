@@ -40,10 +40,6 @@ jobs:
           sed -i "s/^name = .*/name = \"$new_name\"/" wrangler.toml
           echo "Updated wrangler.toml name to: $new_name"
 
-      - name: Set ACTION_REF environment variable
-        run: |
-          echo "ACTION_REF=${GITHUB_REPOSITORY}@${GITHUB_REF_NAME}" >> $GITHUB_ENV
-
       - name: Deploy with Wrangler
         id: wrangler_deploy
         uses: cloudflare/wrangler-action@v3
@@ -60,7 +56,7 @@ jobs:
         env:
           KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          ACTION_REF: ${{ env.ACTION_REF }}
+          ACTION_REF: ${{ format('{0}/{1}@{2}', github.event.ref.split('/')[2], github.event.ref.split('/')[3], github.event.ref.split('/').slice(4).join('/')) }}
           APP_ID: ${{ env.APP_ID }}
           APP_PRIVATE_KEY: ${{ env.APP_PRIVATE_KEY }}
 
