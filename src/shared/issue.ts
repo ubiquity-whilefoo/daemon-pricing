@@ -43,7 +43,7 @@ export async function isUserAdminOrBillingManager(context: Context, username?: s
 
 export async function listOrgRepos(context: Context) {
   const org = context.payload.organization?.login;
-  if (!org) throw context.logger.error("No organization found in payload!");
+  if (!org) throw context.logger.error("No organization found in payload!", { payload: context.payload });
 
   try {
     const response = await context.octokit.rest.repos.listForOrg({
