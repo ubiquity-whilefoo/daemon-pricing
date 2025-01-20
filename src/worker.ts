@@ -1,4 +1,5 @@
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
+import { customOctokit } from "@ubiquity-os/plugin-sdk/dist/octokit";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import type { ExecutionContext } from "hono";
@@ -9,7 +10,7 @@ import { Env, envSchema } from "./types/env";
 import { AssistivePricingSettings, pluginSettingsSchema } from "./types/plugin-input";
 
 async function startAction(context: Context, inputs: Record<string, unknown>) {
-  const { octokit, payload, logger, env } = context;
+  const { payload, logger, env } = context;
 
   if (!payload.repository.owner) {
     throw logger.fatal("Owner is missing from payload", { payload });
@@ -30,7 +31,21 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   const [, owner, repo, ref] = match;
 
   logger.info(`Will try to dispatch a workflow at ${owner}/${repo}@${ref}`);
-  await octokit.rest.actions.createWorkflowDispatch({
+  const installations = await context.octokit.rest.apps.listInstallations();
+  const installation = installations.data.find((inst) => inst.account?.login === owner);
+
+  if (!installation) {
+    throw new Error(`No installation found for owner: ${owner}`);
+  }
+
+  const authOctokit = new customOctokit({
+    auth: {
+      appId: context.env.APP_ID,
+      privateKey: context.env.APP_PRIVATE_KEY,
+      installationId: installation.id,
+    },
+  });
+  await authOctokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
     inputs,

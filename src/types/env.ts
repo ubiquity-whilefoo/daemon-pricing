@@ -5,6 +5,8 @@ export const envSchema = T.Object({
   LOG_LEVEL: T.Optional(T.Enum(LOG_LEVEL)),
   KERNEL_PUBLIC_KEY: T.Optional(T.String()),
   ACTION_REF: T.Optional(T.String()),
+  APP_ID: T.Optional(T.String()),
+  APP_PRIVATE_KEY: T.Optional(T.String()),
 });
 
 export type Env = StaticDecode<typeof envSchema>;
