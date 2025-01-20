@@ -1,5 +1,6 @@
+import { createAppAuth } from "@octokit/auth-app";
+import { Octokit } from "@octokit/rest";
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
-import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import type { ExecutionContext } from "hono";
@@ -33,7 +34,8 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   logger.info(`Will try to dispatch a workflow at ${owner}/${repo}@${ref}`);
 
   console.log(JSON.stringify(context.env, null, 2));
-  const authOctokit = new customOctokit({
+  const authOctokit = new Octokit({
+    authStrategy: createAppAuth,
     auth: {
       appId: context.env.APP_ID,
       privateKey: context.env.APP_PRIVATE_KEY,
