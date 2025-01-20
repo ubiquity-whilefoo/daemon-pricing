@@ -1,6 +1,6 @@
 plugins:
   - uses:
-    - plugin: https://ubiquity-os-daemon-pricing-development.fernand-veyrier.workers.dev
+    - plugin: https://ubiquity-os-daemon-pricing-fix-action-base-rate.fernand-veyrier.workers.dev
       with:
         labels:
           time:
