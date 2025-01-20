@@ -30,13 +30,13 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   const [, owner, repo, ref] = match;
 
   logger.info(`Will try to dispatch a workflow at ${owner}/${repo}@${ref}`);
-  await octokit.rest.actions.createWorkflowDispatch({
-    owner,
-    repo,
-    inputs,
-    ref,
-    workflow_id: "compute.yml",
-  });
+  // await octokit.rest.actions.createWorkflowDispatch({
+  //   owner,
+  //   repo,
+  //   inputs,
+  //   ref,
+  //   workflow_id: "compute.yml",
+  // });
 }
 
 export default {
