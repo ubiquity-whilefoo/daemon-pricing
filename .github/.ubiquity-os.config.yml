@@ -1,0 +1,3 @@
+plugins:
+  - uses:
+    - plugin: https://ubiquity-os-daemon-pricing-development.fernand-veyrier.workers.dev
