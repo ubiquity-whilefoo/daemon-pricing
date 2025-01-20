@@ -38,6 +38,7 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
     throw new Error(`No installation found for owner: ${owner}`);
   }
 
+  console.log(JSON.stringify(context.env, null, 2));
   const authOctokit = new customOctokit({
     auth: {
       appId: context.env.APP_ID,
