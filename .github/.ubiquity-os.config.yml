@@ -29,4 +29,4 @@ plugins:
               collaboratorOnly: false
             - name: "Priority: 5 (Emergency)"
               collaboratorOnly: false
-        basePriceMultiplier: 2
+        basePriceMultiplier: 5
