@@ -31,20 +31,13 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   const [, owner, repo, ref] = match;
 
   logger.info(`Will try to dispatch a workflow at ${owner}/${repo}@${ref}`);
-  console.log(`trying to fetch for ${owner}`);
-  const installations = await context.octokit.rest.apps.listInstallations();
-  const installation = installations.data.find((inst) => inst.account?.login === owner);
-
-  if (!installation) {
-    throw new Error(`No installation found for owner: ${owner}`);
-  }
 
   console.log(JSON.stringify(context.env, null, 2));
   const authOctokit = new customOctokit({
     auth: {
       appId: context.env.APP_ID,
       privateKey: context.env.APP_PRIVATE_KEY,
-      installationId: installation.id,
+      installationId: context.env.APP_INSTALLATION_ID,
     },
   });
   await authOctokit.rest.actions.createWorkflowDispatch({
