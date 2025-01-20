@@ -33,15 +33,20 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
 
   logger.info(`Will try to dispatch a workflow at ${owner}/${repo}@${ref}`);
 
-  console.log(JSON.stringify(context.env, null, 2));
-  const authOctokit = new Octokit({
-    authStrategy: createAppAuth,
-    auth: {
-      appId: context.env.APP_ID,
-      privateKey: context.env.APP_PRIVATE_KEY,
-      installationId: context.env.APP_INSTALLATION_ID,
-    },
-  });
+  let authOctokit;
+  if (!env.APP_ID || !env.APP_INSTALLATION_ID || !env.APP_PRIVATE_KEY) {
+    logger.debug("APP_ID, APP_INSTALLATION_ID or APP_PRIVATE_KEY are missing from the env, will use the default Octokit instance.");
+    authOctokit = context.octokit;
+  } else {
+    authOctokit = new Octokit({
+      authStrategy: createAppAuth,
+      auth: {
+        appId: context.env.APP_ID,
+        privateKey: context.env.APP_PRIVATE_KEY,
+        installationId: context.env.APP_INSTALLATION_ID,
+      },
+    });
+  }
   await authOctokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
