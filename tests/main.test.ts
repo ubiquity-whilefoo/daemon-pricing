@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
 import { Value } from "@sinclair/typebox/value";
 import * as crypto from "node:crypto";
@@ -96,6 +96,7 @@ describe("User tests", () => {
       {
         method: "GET",
         url,
+        clone: jest.fn(),
       } as unknown as Request,
       {
         KERNEL_PUBLIC_KEY: "key",
@@ -105,7 +106,8 @@ describe("User tests", () => {
     expect(result.status).toEqual(404);
   });
 
-  it("Should reject an invalid environment", async () => {
+  // Disabled because we currently have no required value inside the environment
+  it.skip("Should reject an invalid environment", async () => {
     const data = issueCommented;
     const sign = crypto.createSign("SHA256");
     sign.update(JSON.stringify(data));
@@ -127,6 +129,7 @@ describe("User tests", () => {
           ...data,
           signature,
         }),
+        clone: jest.fn(),
       } as unknown as Request,
       {
         KERNEL_PUBLIC_KEY: publicKey,
