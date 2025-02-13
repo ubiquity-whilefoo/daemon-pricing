@@ -10,7 +10,9 @@ export async function run(context: Context) {
   switch (eventName) {
     case "issues.opened":
     case "repository.created":
-      await syncPriceLabelsToConfig(context);
+      if (process.env.NODE_ENV === "local" || process.env.GITHUB_ACTIONS) {
+        await syncPriceLabelsToConfig(context);
+      }
       break;
     case "issues.labeled":
     case "issues.unlabeled":
@@ -24,7 +26,9 @@ export async function run(context: Context) {
       }
       break;
     case "push":
-      await globalLabelUpdate(context);
+      if (process.env.NODE_ENV === "local" || process.env.GITHUB_ACTIONS) {
+        await globalLabelUpdate(context);
+      }
       break;
     default:
       logger.error(`Event ${eventName} is not supported`);
