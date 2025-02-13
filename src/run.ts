@@ -4,29 +4,37 @@ import { syncPriceLabelsToConfig } from "./handlers/sync-labels-to-config";
 import { Context } from "./types/context";
 import { isIssueLabelEvent } from "./types/typeguards";
 
+function isGithubOrLocalEnvironment() {
+  return process.env.NODE_ENV === "local" || !!process.env.GITHUB_ACTIONS;
+}
+
+function isWorkerOrLocalEnvironment() {
+  return process.env.NODE_ENV === "local" || !process.env.GITHUB_ACTIONS;
+}
+
 export async function run(context: Context) {
   const { eventName, logger } = context;
 
   switch (eventName) {
     case "issues.opened":
     case "repository.created":
-      if (process.env.NODE_ENV === "local" || process.env.GITHUB_ACTIONS) {
+      if (isGithubOrLocalEnvironment()) {
         await syncPriceLabelsToConfig(context);
       }
       break;
     case "issues.labeled":
     case "issues.unlabeled":
       if (isIssueLabelEvent(context)) {
-        if (process.env.NODE_ENV === "local" || process.env.GITHUB_ACTIONS) {
+        if (isGithubOrLocalEnvironment()) {
           await syncPriceLabelsToConfig(context);
         }
-        if (process.env.NODE_ENV === "local" || !process.env.GITHUB_ACTIONS) {
+        if (isWorkerOrLocalEnvironment()) {
           await onLabelChangeSetPricing(context);
         }
       }
       break;
     case "push":
-      if (process.env.NODE_ENV === "local" || process.env.GITHUB_ACTIONS) {
+      if (isGithubOrLocalEnvironment()) {
         await globalLabelUpdate(context);
       }
       break;
