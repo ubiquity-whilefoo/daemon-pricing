@@ -63,11 +63,23 @@ export default {
 
     return createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
       async (context) => {
-        if (context.eventName === "push") {
-          const text = (await responseClone.json()) as Record<string, unknown>;
-          return startAction(context, text);
+        switch (context.eventName) {
+          case "issues.opened":
+          case "repository.created":
+          case "push": {
+            const text = (await responseClone.json()) as Record<string, unknown>;
+            return startAction(context, text);
+          }
+          case "issues.labeled":
+          case "issues.unlabeled": {
+            const text = (await responseClone.json()) as Record<string, unknown>;
+            await startAction(context, text);
+            return run(context);
+          }
+          default: {
+            return run(context);
+          }
         }
-        return run(context);
       },
       manifest as Manifest,
       {

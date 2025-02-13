@@ -15,8 +15,12 @@ export async function run(context: Context) {
     case "issues.labeled":
     case "issues.unlabeled":
       if (isIssueLabelEvent(context)) {
-        await syncPriceLabelsToConfig(context);
-        await onLabelChangeSetPricing(context);
+        if (process.env.NODE_ENV === "local" || process.env.GITHUB_ACTIONS) {
+          await syncPriceLabelsToConfig(context);
+        }
+        if (process.env.NODE_ENV === "local" || !process.env.GITHUB_ACTIONS) {
+          await onLabelChangeSetPricing(context);
+        }
       }
       break;
     case "push":
