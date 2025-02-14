@@ -41,13 +41,15 @@ export async function createLabel(context: Context, name: string, labelType = "d
   }
 
   try {
-    await context.octokit.rest.issues.createLabel({
+    const createLabelsOptions = {
       owner,
       repo: payload.repository.name,
       name,
       color,
       description,
-    });
+    };
+    context.logger.debug("Trying to create label", { createLabelsOptions });
+    await context.octokit.rest.issues.createLabel(createLabelsOptions);
   } catch (err) {
     throw context.logger.error("Creating a label failed!", { err });
   }
