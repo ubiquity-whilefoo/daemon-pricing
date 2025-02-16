@@ -1,7 +1,7 @@
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/rest";
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
-import { customOctokit } from "@ubiquity-os/plugin-sdk/dist/octokit";
+import { customOctokit } from "@ubiquity-os/plugin-sdk/octokit";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LOG_LEVEL, LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import type { ExecutionContext } from "hono";
