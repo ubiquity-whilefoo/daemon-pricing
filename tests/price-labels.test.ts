@@ -101,7 +101,7 @@ describe("syncPriceLabelsToConfig function", () => {
     mockContext.config.labels.time = [];
     mockContext.config.labels.priority = [];
     for (const label of pricingLabels) {
-      mockContext.config.labels.time.push({ name: label.name, collaboratorOnly: label.collaboratorOnly });
+      mockContext.config.labels.time.push({ name: label.name });
     }
 
     await syncPriceLabelsToConfig(mockContext);
