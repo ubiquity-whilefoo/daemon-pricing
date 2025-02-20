@@ -62,12 +62,15 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   }
 
   // Get the missing labels
-  const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label.name)))];
+  const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label.name)).map((o) => o.name))];
 
   // Create missing labels
   if (missingLabels.length > 0) {
     logger.info("Missing labels found, creating them", { missingLabels });
-    await Promise.allSettled(missingLabels.map((label) => createLabel(context, label.name, "default")));
+    for (const label of missingLabels) {
+      await createLabel(context, label, "default");
+    }
+    // await Promise.allSettled(missingLabels.map((label) => createLabel(context, label, "default")));
     logger.info(`Creating missing labels done`);
   }
 }
