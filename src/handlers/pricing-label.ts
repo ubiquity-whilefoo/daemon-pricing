@@ -71,7 +71,12 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
   const recognizedLabels = getRecognizedLabels(issueLabels, config);
 
   if (!recognizedLabels.time.length || !recognizedLabels.priority.length) {
-    logger.error("No recognized labels to calculate price");
+    await context.commentHandler.postComment(
+      context,
+      logger.error("No recognized labels was found to set the price of this task.", {
+        repo: context.payload.repository.html_url,
+      })
+    );
     await clearAllPriceLabelsOnIssue(context);
     return;
   }
@@ -79,7 +84,9 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
   const minLabels = getMinLabels(recognizedLabels);
 
   if (!minLabels.time || !minLabels.priority) {
-    logger.error("No label to calculate price");
+    logger.error("No label to calculate price", {
+      repo: context.payload.repository.html_url,
+    });
     return;
   }
 
@@ -94,7 +101,9 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
   if (targetPriceLabel) {
     await handleTargetPriceLabel(context, { name: targetPriceLabel, description: null }, labelNames);
     await clearAllPriceLabelsOnIssue(context);
-    logger.info(`Skipping action...`);
+    logger.info(`Skipping action...`, {
+      repo: context.payload.repository.html_url,
+    });
   }
 }
 

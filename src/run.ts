@@ -28,13 +28,8 @@ export async function run(context: Context) {
       break;
     case "issues.labeled":
     case "issues.unlabeled":
-      if (isIssueLabelEvent(context)) {
-        if (isGithubOrLocalEnvironment()) {
-          await syncPriceLabelsToConfig(context);
-        }
-        if (isWorkerOrLocalEnvironment()) {
-          await onLabelChangeSetPricing(context);
-        }
+      if (isIssueLabelEvent(context) && isWorkerOrLocalEnvironment()) {
+        await onLabelChangeSetPricing(context);
       }
       break;
     case "push":
