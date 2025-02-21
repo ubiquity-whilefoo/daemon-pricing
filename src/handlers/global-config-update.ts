@@ -77,6 +77,11 @@ export async function globalLabelUpdate(context: Context) {
     const owner = repository.owner.login;
     const repo = repository.name;
     const issues = await listRepoIssues(context, owner, repo);
+    // For each issue inside the repository, we want to save the currently set labels except the price,
+    // then remove all these labels, trigger a synchronization so up-to-date Price labels are generated,
+    // and finally we want to add back all the previously set labels (except the price).
+    // This way, the plugin gets triggered by the "issues.labeled" event, and recreates the price, using the proper
+    // configuration.
     for (const issue of issues) {
       const currentLabels = (
         await context.octokit.paginate(context.octokit.rest.issues.listLabelsOnIssue, {

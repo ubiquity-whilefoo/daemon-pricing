@@ -22,6 +22,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
       }
       const targetPrice = calculateTaskPrice(context, timeValue, priorityValue, config.basePriceMultiplier);
       const targetPriceLabel = `Price: ${targetPrice} USD`;
+      // Make sure we do not push the same price twice
       if (!priceLabels.some((o) => o.name === targetPrice)) {
         priceLabels.push({ name: targetPriceLabel });
       }
