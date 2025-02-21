@@ -107,17 +107,20 @@ async function handleGlobalUpdate(context: Context, logger: Context["logger"], i
     throw logger.error("No owner found in the repository!");
   }
 
-  for (const label of incorrectPriceLabels) {
-    logger.info(`Removing incorrect price label ${label.name}`);
-    try {
-      await context.octokit.rest.issues.deleteLabel({
-        owner,
-        repo: context.payload.repository.name,
-        name: label.name,
-      });
-    } catch (er) {
-      logger.error("Error deleting label", { label, er });
-    }
+  if (incorrectPriceLabels.length > 0) {
+    logger.info(`Will attempt to remove incorrect price labels`, {
+      incorrectPriceLabels: incorrectPriceLabels.map((o) => o.name),
+    });
+    await Promise.allSettled(
+      incorrectPriceLabels.map((label) =>
+        context.octokit.rest.issues.deleteLabel({
+          owner,
+          repo: context.payload.repository.name,
+          name: label.name,
+        })
+      )
+    );
   }
-  logger.info(`Removing incorrect price labels done`);
+
+  logger.info(`Incorrect price labels removal done`);
 }
