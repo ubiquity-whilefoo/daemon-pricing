@@ -19,7 +19,6 @@ function isWorkerOrLocalEnvironment() {
 export async function run(context: Context) {
   const { eventName, logger } = context;
 
-  console.log(">>>>> issues labeled??", eventName);
   switch (eventName) {
     case "issues.opened":
     case "repository.created":
