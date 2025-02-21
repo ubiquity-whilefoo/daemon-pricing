@@ -1,11 +1,9 @@
 import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
 import { Context } from "../types/context";
-import { Label } from "../types/github";
 import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
 import { getLabelsChanges } from "./get-label-changes";
-import { setPriceLabel } from "./pricing-label";
 import { syncPriceLabelsToConfig } from "./sync-labels-to-config";
 
 async function isAuthed(context: Context): Promise<boolean> {
@@ -74,7 +72,7 @@ export async function globalLabelUpdate(context: Context) {
       },
     } as Context;
 
-    logger.info(`Updating price labels in ${repository.html_url}`);
+    logger.info(`Updating pricing labels in ${repository.html_url}`);
 
     const owner = repository.owner.login;
     const repo = repository.name;
@@ -89,7 +87,7 @@ export async function globalLabelUpdate(context: Context) {
       )
         .filter((o) => !o.name.startsWith("Price:"))
         .map((o) => o.name);
-      logger.info(`Removing price labels in issue ${issue.html_url}`, { currentLabels });
+      logger.info(`Removing all labels in issue ${issue.html_url}`, { currentLabels });
       if (currentLabels.length) {
         await context.octokit.rest.issues.removeAllLabels({
           owner,
@@ -105,38 +103,6 @@ export async function globalLabelUpdate(context: Context) {
           labels: currentLabels,
         });
       }
-    }
-  }
-
-  // update all issues with the new pricing
-  if (config.globalConfigUpdate) {
-    // await updateAllIssuePriceLabels(context);
-  }
-}
-
-async function updateAllIssuePriceLabels(context: Context) {
-  const { logger, config } = context;
-  const repos = await listOrgRepos(context);
-
-  for (const repo of repos) {
-    logger.info(`Fetching issues for ${repo.name}`);
-    const issues = await listRepoIssues(context, repo.owner.login, repo.name);
-
-    for (const issue of issues) {
-      logger.info(`Updating issue ${issue.number} in ${repo.name}`);
-      await setPriceLabel(
-        {
-          ...context,
-          payload: {
-            repository: repo,
-            issue,
-          },
-        } as Context,
-        issue.labels as Label[],
-        config
-      );
-
-      await new Promise((resolve) => setTimeout(resolve, 50));
     }
   }
 }

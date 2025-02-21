@@ -37,6 +37,14 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     await handleGlobalUpdate(context, logger, incorrectPriceLabels);
+  } else {
+    logger.info(
+      `The global configuration update option is disabled in ${context.payload.repository.html_url} or not incorrect price labels have been found, will not globally delete labels.`,
+      {
+        incorrectPriceLabels,
+        globalConfigUpdate: config.globalConfigUpdate,
+      }
+    );
   }
 
   const incorrectColorPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && label.color !== COLORS.price);
@@ -64,19 +72,33 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   // Get the missing labels
   const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label.name)).map((o) => o.name))];
 
+  for (const label of allLabels.filter((o) => o.name.startsWith("Price: "))) {
+    const owner = context.payload.repository.owner?.login;
+    if (!owner) {
+      throw logger.error(NO_OWNER_FOUND);
+    }
+    try {
+      await context.octokit.rest.issues.deleteLabel({
+        owner,
+        repo: context.payload.repository.name,
+        name: label.name,
+      });
+    } catch (err) {
+      logger.error(`Label ${label.name} could not be deleted.`, { err });
+    }
+  }
   // Create missing labels
   if (missingLabels.length > 0) {
-    logger.info("Missing labels found, creating them", { missingLabels });
-    for (const label of missingLabels) {
-      await createLabel(context, label, "default");
-    }
-    // await Promise.allSettled(missingLabels.map((label) => createLabel(context, label, "default")));
+    logger.info(`Missing labels found in ${context.payload.repository.html_url}, creating them`, { missingLabels });
+    await Promise.allSettled(missingLabels.map((label) => createLabel(context, label, "default")));
     logger.info(`Creating missing labels done`);
   }
 }
 
 async function handleGlobalUpdate(context: Context, logger: Context["logger"], incorrectPriceLabels: Label[]) {
-  logger.info("Incorrect price labels found, removing them", { incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name) });
+  logger.info(`Incorrect price labels found in ${context.payload.repository.html_url}, removing them`, {
+    incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name),
+  });
   const owner = context.payload.repository.owner?.login;
   if (!owner) {
     throw logger.error("No owner found in the repository!");
@@ -91,7 +113,7 @@ async function handleGlobalUpdate(context: Context, logger: Context["logger"], i
         name: label.name,
       });
     } catch (er) {
-      logger.error("Error deleting label", { er });
+      logger.error("Error deleting label", { label, er });
     }
   }
   logger.info(`Removing incorrect price labels done`);

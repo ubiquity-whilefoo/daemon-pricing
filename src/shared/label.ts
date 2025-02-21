@@ -20,7 +20,11 @@ export async function listLabelsForRepo(context: Context): Promise<Label[]> {
     repo: payload.repository.name,
     per_page: 100,
   });
-
+  context.logger.debug(`Fetching labels for repository ${payload.repository.html_url}`, {
+    owner,
+    repo: payload.repository.name,
+    labels: res.map((o) => o.name),
+  });
   if (res.length > 0) {
     // we'll hit a secondary rate limit if using the runner token
     await new Promise((resolve) => setTimeout(resolve, 5000));
