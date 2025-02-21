@@ -71,12 +71,13 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
   const recognizedLabels = getRecognizedLabels(issueLabels, config);
 
   if (!recognizedLabels.time.length || !recognizedLabels.priority.length) {
-    await context.commentHandler.postComment(
-      context,
-      logger.error("No recognized labels was found to set the price of this task.", {
-        repo: context.payload.repository.html_url,
-      })
-    );
+    const message = logger.error("No recognized labels was found to set the price of this task.", {
+      repo: context.payload.repository.html_url,
+    });
+    // We only want to send that message on labeling, because un-label will trigger this during compute
+    if (context.eventName === "issues.labeled") {
+      await context.commentHandler.postComment(context, message);
+    }
     await clearAllPriceLabelsOnIssue(context);
     return;
   }
