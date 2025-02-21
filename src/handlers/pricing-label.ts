@@ -71,8 +71,9 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
   const recognizedLabels = getRecognizedLabels(issueLabels, config);
 
   if (!recognizedLabels.time.length || !recognizedLabels.priority.length) {
-    const message = logger.error("No recognized labels was found to set the price of this task.", {
+    const message = logger.error("No recognized labels were found to set the price of this task.", {
       repo: context.payload.repository.html_url,
+      recognizedLabels,
     });
     // We only want to send that message on labeling, because un-label will trigger this during compute
     if (context.eventName === "issues.labeled") {

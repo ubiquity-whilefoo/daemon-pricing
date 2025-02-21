@@ -10,6 +10,10 @@ const NO_OWNER_FOUND = "No owner found in the repository!";
 
 export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const { config, logger } = context;
+  const owner = context.payload.repository.owner?.login;
+  if (!owner) {
+    throw logger.error(NO_OWNER_FOUND);
+  }
 
   const priceLabels: { name: string }[] = [];
   for (const timeLabel of config.labels.time) {
@@ -53,10 +57,6 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   // Update incorrect color labels
   if (incorrectColorPriceLabels.length > 0) {
     logger.info("Incorrect color labels found, updating them", { incorrectColorPriceLabels: incorrectColorPriceLabels.map((label) => label.name) });
-    const owner = context.payload.repository.owner?.login;
-    if (!owner) {
-      throw logger.error(NO_OWNER_FOUND);
-    }
     await Promise.allSettled(
       incorrectColorPriceLabels.map((label) =>
         context.octokit.rest.issues.updateLabel({
@@ -73,21 +73,23 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   // Get the missing labels
   const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label.name)).map((o) => o.name))];
 
-  for (const label of allLabels.filter((o) => o.name.startsWith("Price: "))) {
-    const owner = context.payload.repository.owner?.login;
-    if (!owner) {
-      throw logger.error(NO_OWNER_FOUND);
-    }
-    try {
-      await context.octokit.rest.issues.deleteLabel({
-        owner,
-        repo: context.payload.repository.name,
-        name: label.name,
-      });
-    } catch (err) {
-      logger.error(`Label ${label.name} could not be deleted.`, { err });
-    }
+  // Delete current price labels
+  const labelsToDelete = allLabels.filter((o) => o.name.startsWith("Price: "));
+  if (labelsToDelete.length > 0) {
+    logger.info("Deleting current list of price labels", {
+      labels: labelsToDelete.map((o) => o.name),
+    });
+    await Promise.allSettled(
+      labelsToDelete.map((label) =>
+        context.octokit.rest.issues.deleteLabel({
+          owner,
+          repo: context.payload.repository.name,
+          name: label.name,
+        })
+      )
+    );
   }
+
   // Create missing labels
   if (missingLabels.length > 0) {
     logger.info(`Missing labels found in ${context.payload.repository.html_url}, creating them`, { missingLabels });
