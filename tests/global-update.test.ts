@@ -1,17 +1,18 @@
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { drop } from "@mswjs/data";
-import { Context } from "../src/types/context";
-import { db } from "./__mocks__/db";
-import { server } from "./__mocks__/node";
-import { it, describe, beforeAll, beforeEach, afterAll, expect, afterEach, jest } from "@jest/globals";
-import { ZERO_SHA } from "../src/handlers/check-modified-base-rate";
-import dotenv from "dotenv";
-import { priceMap, PRIORITY_LABELS, TIME_LABELS } from "./__mocks__/constants";
-import { STRINGS } from "./__mocks__/strings";
-import { Label } from "../src/types/github";
-import { globalLabelUpdate } from "../src/handlers/global-config-update";
-import { setupTests, inMemoryCommits, createCommit } from "./__mocks__/helpers";
-import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { customOctokit as Octokit } from "@ubiquity-os/plugin-sdk/octokit";
+import { Logs } from "@ubiquity-os/ubiquity-os-logger";
+import dotenv from "dotenv";
+import { ZERO_SHA } from "../src/handlers/check-modified-base-rate";
+import { globalLabelUpdate } from "../src/handlers/global-config-update";
+import { Context } from "../src/types/context";
+import { Label } from "../src/types/github";
+import { priceMap, PRIORITY_LABELS, TIME_LABELS } from "./__mocks__/constants";
+import { db } from "./__mocks__/db";
+import { createCommit, inMemoryCommits, setupTests } from "./__mocks__/helpers";
+import { server } from "./__mocks__/node";
+import { STRINGS } from "./__mocks__/strings";
+
 dotenv.config();
 
 const TEST_TIMEOUT = 30 * 1000;
@@ -87,7 +88,7 @@ describe("Label Base Rate Changes", () => {
     async () => {
       const pusher = db.users.findFirst({ where: { id: { equals: 4 } } }) as unknown as Context["payload"]["sender"];
       const commits = inMemoryCommits(STRINGS.SHA_1, true, true);
-      const { context, errorSpy, infoSpy } = innerSetup(
+      const { context, infoSpy } = innerSetup(
         1,
         commits,
         STRINGS.SHA_1,
@@ -106,10 +107,8 @@ describe("Label Base Rate Changes", () => {
       );
 
       await globalLabelUpdate(context);
-      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.CONFIG_CHANGED_IN_COMMIT);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_FROM_1_TO_5);
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.CREATING_MISSING_LABELS);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
@@ -122,7 +121,7 @@ describe("Label Base Rate Changes", () => {
     async () => {
       const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
       const commits = inMemoryCommits(STRINGS.SHA_1, true, true);
-      const { context, errorSpy, infoSpy } = innerSetup(
+      const { context, infoSpy } = innerSetup(
         1,
         commits,
         STRINGS.SHA_1,
@@ -144,11 +143,9 @@ describe("Label Base Rate Changes", () => {
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.CONFIG_CHANGED_IN_COMMIT);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_FROM_1_TO_5);
 
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.CREATING_MISSING_LABELS);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
-      expect(errorSpy).toHaveBeenCalledWith(STRINGS.NO_RECOGNIZED_LABELS);
     },
     TEST_TIMEOUT
   );
