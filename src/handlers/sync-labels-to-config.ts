@@ -8,13 +8,8 @@ import { Label } from "../types/github";
 
 const NO_OWNER_FOUND = "No owner found in the repository!";
 
-export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
+async function generatePriceLabels(context: Context) {
   const { config, logger } = context;
-  const owner = context.payload.repository.owner?.login;
-  if (!owner) {
-    throw logger.error(NO_OWNER_FOUND);
-  }
-
   const priceLabels: { name: string }[] = [];
   for (const timeLabel of config.labels.time) {
     for (const priorityLabel of config.labels.priority) {
@@ -33,7 +28,18 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
     }
   }
 
-  const pricingLabels = [...priceLabels, ...config.labels.time, ...config.labels.priority];
+  return { priceLabels, pricingLabels: [...priceLabels, ...config.labels.time, ...config.labels.priority] };
+}
+
+export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
+  const { config, logger } = context;
+  const owner = context.payload.repository.owner?.login;
+
+  if (!owner) {
+    throw logger.error(NO_OWNER_FOUND);
+  }
+
+  const { pricingLabels, priceLabels } = await generatePriceLabels(context);
 
   // List all the labels for a repository
   const allLabels = await listLabelsForRepo(context);
