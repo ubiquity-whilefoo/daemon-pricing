@@ -89,13 +89,7 @@ export default {
           }
           case "issues.labeled":
           case "issues.unlabeled": {
-            if (isLocalEnvironment()) {
-              return run(context);
-            } else {
-              const text = (await responseClone.json()) as Record<string, unknown>;
-              await startAction(context, text);
-              return run(context);
-            }
+            return run(context);
           }
           default: {
             return run(context);

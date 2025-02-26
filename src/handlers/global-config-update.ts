@@ -4,7 +4,6 @@ import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
 import { getLabelsChanges } from "./get-label-changes";
-import { syncPriceLabelsToConfig } from "./sync-labels-to-config";
 
 async function isAuthed(context: Context): Promise<boolean> {
   if (!isPushEvent(context)) {
@@ -65,13 +64,6 @@ export async function globalLabelUpdate(context: Context) {
   const repos = await listOrgRepos(context);
 
   for (const repository of repos) {
-    const ctx = {
-      ...context,
-      payload: {
-        repository: repository,
-      },
-    } as Context;
-
     logger.info(`Updating pricing labels in ${repository.html_url}`);
 
     const owner = repository.owner.login;
@@ -99,8 +91,6 @@ export async function globalLabelUpdate(context: Context) {
           repo,
           issue_number: issue.number,
         });
-        // this should create labels on the repos that are missing
-        await syncPriceLabelsToConfig(ctx);
         await context.octokit.rest.issues.addLabels({
           repo,
           owner,

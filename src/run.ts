@@ -8,11 +8,11 @@ export function isLocalEnvironment() {
   return process.env.NODE_ENV === "local";
 }
 
-function isGithubOrLocalEnvironment() {
+export function isGithubOrLocalEnvironment() {
   return isLocalEnvironment() || !!process.env.GITHUB_ACTIONS;
 }
 
-function isWorkerOrLocalEnvironment() {
+export function isWorkerOrLocalEnvironment() {
   return isLocalEnvironment() || !process.env.GITHUB_ACTIONS;
 }
 
