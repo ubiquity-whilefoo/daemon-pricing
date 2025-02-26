@@ -22,7 +22,7 @@ async function generatePriceLabels(context: Context) {
       const targetPrice = calculateTaskPrice(context, timeValue, priorityValue, config.basePriceMultiplier);
       const targetPriceLabel = `Price: ${targetPrice} USD`;
       // Make sure we do not push the same price twice
-      if (!priceLabels.some((o) => o.name === targetPrice)) {
+      if (!priceLabels.some((o) => o.name === targetPriceLabel)) {
         priceLabels.push({ name: targetPriceLabel });
       }
     }
