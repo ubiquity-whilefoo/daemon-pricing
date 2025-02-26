@@ -47,7 +47,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const incorrectPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && !priceLabels.some((o) => o.name === label.name));
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
-    await handleGlobalUpdate(context, logger, incorrectPriceLabels);
+    await deleteLabelsFromRepository(context, incorrectPriceLabels);
   } else {
     logger.info(
       `The global configuration update option is disabled in ${context.payload.repository.html_url} or not incorrect price labels have been found, will not globally delete labels.`,
@@ -81,20 +81,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
   // Delete current price labels
   const labelsToDelete = allLabels.filter((o) => o.name.startsWith("Price: "));
-  if (labelsToDelete.length > 0) {
-    logger.info("Deleting current list of price labels", {
-      labels: labelsToDelete.map((o) => o.name),
-    });
-    await Promise.allSettled(
-      labelsToDelete.map((label) =>
-        context.octokit.rest.issues.deleteLabel({
-          owner,
-          repo: context.payload.repository.name,
-          name: label.name,
-        })
-      )
-    );
-  }
+  await deleteLabelsFromRepository(context, labelsToDelete);
 
   // Create missing labels
   if (missingLabels.length > 0) {
@@ -104,7 +91,8 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   }
 }
 
-async function handleGlobalUpdate(context: Context, logger: Context["logger"], incorrectPriceLabels: Label[]) {
+async function deleteLabelsFromRepository(context: Context, incorrectPriceLabels: Label[]) {
+  const { logger } = context;
   logger.info(`Incorrect price labels found in ${context.payload.repository.html_url}, removing them`, {
     incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name),
   });
