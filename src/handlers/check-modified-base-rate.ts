@@ -14,6 +14,11 @@ export async function isConfigModified(context: Context): Promise<boolean> {
   }
   const { logger, payload } = context;
 
+  if (payload.head_commit?.message === COMMIT_MESSAGE) {
+    logger.info("Detected the commit message for label update, will consider configuration as modified");
+    return true;
+  }
+
   if (payload.before === ZERO_SHA) {
     logger.info("Skipping push events. A new branch was created");
     return false;
@@ -36,5 +41,5 @@ export async function isConfigModified(context: Context): Promise<boolean> {
     }
   }
 
-  return shouldUpdateBaseRate || payload.head_commit?.message === COMMIT_MESSAGE;
+  return shouldUpdateBaseRate;
 }
