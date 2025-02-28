@@ -30,9 +30,16 @@ async function checkIfIsBillingManager(context: Context, username: string) {
   return membership.role === "billing_manager";
 }
 
+function isUserOrganizationBot(context: Context) {
+  const { payload, env } = context;
+
+  console.log(">>>>>", payload.sender?.type, env.APP_ID, payload.sender?.id);
+  return payload.sender?.type === "Bot" && payload.sender.id === Number(env.APP_ID);
+}
+
 export async function isUserAdminOrBillingManager(context: Context, username?: string): Promise<"admin" | "billing_manager" | false> {
   if (!username) return false;
-  const isAdmin = await checkIfIsAdmin(context, username);
+  const isAdmin = (await checkIfIsAdmin(context, username)) || isUserOrganizationBot(context);
   if (isAdmin) return "admin";
 
   const isBillingManager = await checkIfIsBillingManager(context, username);

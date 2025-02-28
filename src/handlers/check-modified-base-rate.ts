@@ -1,4 +1,5 @@
 import { CONFIG_FULL_PATH, DEV_CONFIG_FULL_PATH } from "@ubiquity-os/plugin-sdk/constants";
+import { COMMIT_MESSAGE } from "../types/constants";
 import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { getCommitChanges } from "./get-commit-changes";
@@ -35,5 +36,5 @@ export async function isConfigModified(context: Context): Promise<boolean> {
     }
   }
 
-  return shouldUpdateBaseRate;
+  return shouldUpdateBaseRate || payload.head_commit?.message === COMMIT_MESSAGE;
 }

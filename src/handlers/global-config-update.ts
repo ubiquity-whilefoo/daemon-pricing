@@ -22,11 +22,15 @@ async function isAuthed(context: Context): Promise<boolean> {
   const isSenderAuthed = await isUserAdminOrBillingManager(context, sender);
 
   if (!isPusherAuthed) {
-    logger.error("Pusher is not an admin or billing manager");
+    logger.error("Pusher is not an admin or billing manager", {
+      login: pusher,
+    });
   }
 
   if (!isSenderAuthed) {
-    logger.error("Sender is not an admin or billing manager");
+    logger.error("Sender is not an admin or billing manager", {
+      login: sender,
+    });
   }
 
   return !!(isPusherAuthed && isSenderAuthed);
