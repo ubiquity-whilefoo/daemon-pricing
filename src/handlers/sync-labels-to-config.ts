@@ -31,6 +31,50 @@ async function generatePriceLabels(context: Context) {
   return { priceLabels, pricingLabels: [...priceLabels, ...config.labels.time, ...config.labels.priority] };
 }
 
+async function pushEmptyCommit(context: Context) {
+  const { octokit, payload, logger } = context;
+
+  const owner = payload.repository.owner?.login;
+  const repo = payload.repository.name;
+  const ref = `heads/${payload.repository.default_branch}`;
+
+  if (!owner) {
+    throw logger.error("No owner was found in the repository, a commit / push action cannot be performed.", {
+      payload,
+    });
+  }
+
+  const refResponse = await octokit.rest.git.getRef({
+    owner,
+    repo,
+    ref,
+  });
+  const latestCommitSha = refResponse.data.object.sha;
+  const commitResponse = await octokit.rest.git.getCommit({
+    owner,
+    repo,
+    commit_sha: latestCommitSha,
+  });
+  const treeSha = commitResponse.data.tree.sha;
+  const newCommitResponse = await octokit.rest.git.createCommit({
+    owner,
+    repo,
+    message: "chore: [skip-ci] update labels configuration",
+    tree: treeSha,
+    parents: [latestCommitSha],
+  });
+  const newCommitSha = newCommitResponse.data.sha;
+  const { data } = await octokit.rest.git.updateRef({
+    owner,
+    repo,
+    ref,
+    sha: newCommitSha,
+  });
+  logger.info(`Pushed an empty commit to ${payload.repository.html_url}`, {
+    commitUrl: data.url,
+  });
+}
+
 export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const { config, logger } = context;
   const owner = context.payload.repository.owner?.login;
@@ -48,6 +92,8 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     await deleteLabelsFromRepository(context, incorrectPriceLabels);
+    // Pushing an empty commit will trigger a label update on the repository using its local configuration.
+    await pushEmptyCommit(context);
   } else {
     logger.info(
       `The global configuration update option is disabled in ${context.payload.repository.html_url} or not incorrect price labels have been found, will not globally delete labels.`,
