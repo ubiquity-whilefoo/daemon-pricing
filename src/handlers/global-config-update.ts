@@ -1,4 +1,4 @@
-import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
+import { isUserAdminOrBillingManager, listRepoIssues } from "../shared/issue";
 import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
@@ -66,51 +66,48 @@ export async function globalLabelUpdate(context: Context) {
     config.basePriceMultiplier = rates.newBaseRate;
   }
 
-  const repos = await listOrgRepos(context);
+  const repository = context.payload.repository;
 
-  for (const repository of repos) {
-    const ctx = {
-      ...context,
-      payload: {
-        repository: repository,
-      },
-    } as Context;
-    logger.info(`Updating pricing labels in ${repository.html_url}`);
+  logger.info(`Updating pricing labels in ${repository.html_url}`);
 
-    const owner = repository.owner.login;
-    const repo = repository.name;
-    const issues = await listRepoIssues(context, owner, repo);
-    // For each issue inside the repository, we want to save the currently set labels except the price,
-    // then remove all these labels, trigger a synchronization so up-to-date Price labels are generated,
-    // and finally we want to add back all the previously set labels (except the price).
-    // This way, the plugin gets triggered by the "issues.labeled" event, and recreates the price, using the proper
-    // configuration.
-    for (const issue of issues) {
-      const currentLabels = (
-        await context.octokit.paginate(context.octokit.rest.issues.listLabelsOnIssue, {
-          owner,
-          repo,
-          issue_number: issue.number,
-        })
-      )
-        .filter((o) => !o.name.startsWith("Price:"))
-        .map((o) => o.name);
-      logger.info(`Removing all labels in issue ${issue.html_url}`, { currentLabels });
-      if (currentLabels.length) {
-        await context.octokit.rest.issues.removeAllLabels({
-          owner,
-          repo,
-          issue_number: issue.number,
-        });
-        // this should create labels on the repos that are missing
-        await syncPriceLabelsToConfig(ctx);
-        await context.octokit.rest.issues.addLabels({
-          repo,
-          owner,
-          issue_number: issue.number,
-          labels: currentLabels,
-        });
-      }
+  const owner = repository.owner?.login;
+  const repo = repository.name;
+
+  if (!owner) {
+    throw logger.error("No owner was found in the payload.");
+  }
+
+  const issues = await listRepoIssues(context, owner, repo);
+  // For each issue inside the repository, we want to save the currently set labels except the price,
+  // then remove all these labels, trigger a synchronization so up-to-date Price labels are generated,
+  // and finally we want to add back all the previously set labels (except the price).
+  // This way, the plugin gets triggered by the "issues.labeled" event, and recreates the price, using the proper
+  // configuration.
+  for (const issue of issues) {
+    const currentLabels = (
+      await context.octokit.paginate(context.octokit.rest.issues.listLabelsOnIssue, {
+        owner,
+        repo,
+        issue_number: issue.number,
+      })
+    )
+      .filter((o) => !o.name.startsWith("Price:"))
+      .map((o) => o.name);
+    logger.info(`Removing all labels in issue ${issue.html_url}`, { currentLabels });
+    if (currentLabels.length) {
+      await context.octokit.rest.issues.removeAllLabels({
+        owner,
+        repo,
+        issue_number: issue.number,
+      });
+      // this should create labels on the repos that are missing
+      await syncPriceLabelsToConfig(context);
+      await context.octokit.rest.issues.addLabels({
+        repo,
+        owner,
+        issue_number: issue.number,
+        labels: currentLabels,
+      });
     }
   }
 }
