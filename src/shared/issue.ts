@@ -30,17 +30,15 @@ async function checkIfIsBillingManager(context: Context, username: string) {
   return membership.role === "billing_manager";
 }
 
-async function isUserOrganizationBot(context: Context) {
-  const { payload, env, octokit } = context;
+function isUserOrganizationBot(context: Context) {
+  const { payload } = context;
 
-  const { data } = await octokit.rest.users.getAuthenticated();
-  console.log(">>>>>", payload.sender?.type, env.APP_ID, payload.sender?.id, data.id);
-  return payload.sender?.type === "Bot" && payload.sender.id === data.id;
+  return payload.sender?.type === "Bot";
 }
 
 export async function isUserAdminOrBillingManager(context: Context, username?: string): Promise<"admin" | "billing_manager" | false> {
   if (!username) return false;
-  const isAdmin = (await checkIfIsAdmin(context, username)) || (await isUserOrganizationBot(context));
+  const isAdmin = (await checkIfIsAdmin(context, username)) || isUserOrganizationBot(context);
   if (isAdmin) return "admin";
 
   const isBillingManager = await checkIfIsBillingManager(context, username);
