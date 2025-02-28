@@ -1,5 +1,4 @@
 import { CONFIG_FULL_PATH, DEV_CONFIG_FULL_PATH } from "@ubiquity-os/plugin-sdk/constants";
-import { COMMIT_MESSAGE } from "../types/constants";
 import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { getCommitChanges } from "./get-commit-changes";
@@ -13,11 +12,6 @@ export async function isConfigModified(context: Context): Promise<boolean> {
     return false;
   }
   const { logger, payload } = context;
-
-  if (payload.head_commit?.message === COMMIT_MESSAGE) {
-    logger.info("Detected the commit message for label update, will consider configuration as modified");
-    return true;
-  }
 
   if (payload.before === ZERO_SHA) {
     logger.info("Skipping push events. A new branch was created");

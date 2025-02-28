@@ -1,4 +1,6 @@
-import { isUserAdminOrBillingManager, listRepoIssues } from "../shared/issue";
+import { pushEmptyCommit } from "../shared/commits";
+import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
+import { COMMIT_MESSAGE } from "../types/constants";
 import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
@@ -49,7 +51,24 @@ export async function globalLabelUpdate(context: Context) {
     return;
   }
 
-  if (!(await isConfigModified(context))) {
+  const didConfigurationChange = await isConfigModified(context);
+
+  if (didConfigurationChange) {
+    // send push
+    const repos = await listOrgRepos(context);
+    for (const repository of repos) {
+      const ctx = {
+        ...context,
+        payload: {
+          repository: repository,
+        },
+      } as Context;
+      // Pushing an empty commit will trigger a label update on the repository using its local configuration.
+      await pushEmptyCommit(ctx);
+    }
+    return;
+  } else if (!didConfigurationChange && context.payload.head_commit?.message !== COMMIT_MESSAGE) {
+    logger.info("The configuration was not modified and the commit name does not match the label update commit message, won't update labels.");
     return;
   }
 

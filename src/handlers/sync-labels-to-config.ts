@@ -1,4 +1,3 @@
-import { pushEmptyCommit } from "../shared/commits";
 import { COLORS, createLabel, listLabelsForRepo } from "../shared/label";
 import { calculateLabelValue, calculateTaskPrice } from "../shared/pricing";
 import { Context } from "../types/context";
@@ -49,8 +48,6 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     await deleteLabelsFromRepository(context, incorrectPriceLabels);
-    // Pushing an empty commit will trigger a label update on the repository using its local configuration.
-    await pushEmptyCommit(context);
   } else {
     logger.info(
       `The global configuration update option is disabled in ${context.payload.repository.html_url} or not incorrect price labels have been found, will not globally delete labels.`,
