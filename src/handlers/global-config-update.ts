@@ -72,10 +72,11 @@ export async function globalLabelUpdate(context: Context) {
   }
 
   const rates = await getBaseRateChanges(context);
-  const { incorrectPriceLabels } = await getPriceLabels(context);
+  const { incorrectPriceLabels, allLabels, pricingLabels } = await getPriceLabels(context);
+  const missingLabels = [...new Set(pricingLabels.filter((label) => !allLabels.map((i) => i.name).includes(label.name)).map((o) => o.name))];
 
-  if (rates.newBaseRate === null && incorrectPriceLabels.length <= 0) {
-    logger.info("No base rate change detected and no incorrect price label to delete, skipping.", {
+  if (rates.newBaseRate === null && incorrectPriceLabels.length <= 0 && missingLabels.length <= 0) {
+    logger.info("No base rate change detected, no incorrect price label to delete and no labels are missing, skipping.", {
       url: context.payload.repository.html_url,
     });
     return;
