@@ -5,8 +5,7 @@ import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
-import { getLabelsChanges } from "./get-label-changes";
-import { syncPriceLabelsToConfig } from "./sync-labels-to-config";
+import { getPriceLabels, syncPriceLabelsToConfig } from "./sync-labels-to-config";
 
 async function isAuthed(context: Context): Promise<boolean> {
   if (!isPushEvent(context)) {
@@ -73,11 +72,12 @@ export async function globalLabelUpdate(context: Context) {
   }
 
   const rates = await getBaseRateChanges(context);
-  const didLabelsChange = await getLabelsChanges(context);
+  const { incorrectPriceLabels } = await getPriceLabels(context);
 
-  if (rates.newBaseRate === null && !didLabelsChange) {
-    logger.error("No changes found in the diff, skipping.");
-    return;
+  if (rates.newBaseRate === null && incorrectPriceLabels.length <= 0) {
+    logger.info("No base rate change detected and no incorrect price label to delete, skipping.", {
+      url: context.payload.repository.html_url,
+    });
   }
 
   if (rates.newBaseRate !== null) {

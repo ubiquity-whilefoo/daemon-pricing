@@ -31,6 +31,16 @@ async function generatePriceLabels(context: Context) {
   return { priceLabels, pricingLabels: [...priceLabels, ...config.labels.time, ...config.labels.priority] };
 }
 
+export async function getPriceLabels(context: Context) {
+  const { pricingLabels, priceLabels } = await generatePriceLabels(context);
+
+  // List all the labels for a repository
+  const allLabels = await listLabelsForRepo(context);
+
+  const incorrectPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && !priceLabels.some((o) => o.name === label.name));
+  return { incorrectPriceLabels, allLabels, pricingLabels };
+}
+
 export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
   const { config, logger } = context;
   const owner = context.payload.repository.owner?.login;
@@ -39,12 +49,7 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
     throw logger.error(NO_OWNER_FOUND);
   }
 
-  const { pricingLabels, priceLabels } = await generatePriceLabels(context);
-
-  // List all the labels for a repository
-  const allLabels = await listLabelsForRepo(context);
-
-  const incorrectPriceLabels = allLabels.filter((label) => label.name.startsWith("Price: ") && !priceLabels.some((o) => o.name === label.name));
+  const { incorrectPriceLabels, allLabels, pricingLabels } = await getPriceLabels(context);
 
   if (incorrectPriceLabels.length > 0 && config.globalConfigUpdate) {
     await deleteLabelsFromRepository(context, incorrectPriceLabels);
