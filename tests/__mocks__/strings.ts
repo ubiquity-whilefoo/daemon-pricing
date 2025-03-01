@@ -16,6 +16,7 @@ export const STRINGS = {
   UPDATING_FROM_1_TO_5: "Updating base rate from 1 to 5",
   CREATING_MISSING_LABELS: "Creating missing labels done",
   DELETING_LABELS: "Removing all labels in issue",
+  GLOBAL_CONFIG_DISABLED: "Global config update is disabled, will not send empty commits.",
   PUSHER_NOT_AUTHED: "Pusher is not an admin or billing manager",
   SENDER_NOT_AUTHED: "Sender is not an admin or billing manager",
   NO_RECOGNIZED_LABELS: "No recognized labels to calculate price",

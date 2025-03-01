@@ -295,12 +295,11 @@ describe("Label Base Rate Changes", () => {
         },
         pusher
       );
-      const url = `https://github.com/${STRINGS.UBIQUITY}/${STRINGS.TEST_REPO}/issues/1`;
       context.config.globalConfigUpdate = undefined;
       await globalLabelUpdate(context);
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-      expect(infoSpy).toHaveBeenNthCalledWith(4, `${STRINGS.DELETING_LABELS} ${url}`, expect.anything());
+      expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.GLOBAL_CONFIG_DISABLED);
     },
     TEST_TIMEOUT
   );
@@ -388,7 +387,7 @@ describe("Label Base Rate Changes", () => {
       );
 
       await globalLabelUpdate(context);
-      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
+      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED, expect.anything());
       expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
       expect(infoSpy).not.toHaveBeenCalled();
     },
@@ -419,7 +418,7 @@ describe("Label Base Rate Changes", () => {
       );
 
       await globalLabelUpdate(context);
-      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
+      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED, expect.anything());
       expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
     },
     TEST_TIMEOUT
@@ -449,7 +448,7 @@ describe("Label Base Rate Changes", () => {
       );
 
       await globalLabelUpdate(context);
-      expect(errorSpy).toHaveBeenCalledWith(STRINGS.SENDER_NOT_AUTHED);
+      expect(errorSpy).toHaveBeenCalledWith(STRINGS.SENDER_NOT_AUTHED, expect.anything());
       expect(errorSpy).toHaveBeenCalledWith(STRINGS.NEEDS_TRIGGERED_BY_ADMIN_OR_BILLING_MANAGER);
     },
     TEST_TIMEOUT
@@ -479,10 +478,10 @@ describe("Label Base Rate Changes", () => {
       );
 
       await globalLabelUpdate(context);
-      expect(infoSpy).toHaveBeenCalledTimes(1);
+      expect(infoSpy).toHaveBeenCalledTimes(2);
       expect(infoSpy).toHaveBeenCalledWith("Skipping push events. A new branch was created");
 
-      expect(errorSpy).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith("No label changes found in the diff");
     },
     TEST_TIMEOUT
   );
