@@ -78,6 +78,7 @@ export async function globalLabelUpdate(context: Context) {
     logger.info("No base rate change detected and no incorrect price label to delete, skipping.", {
       url: context.payload.repository.html_url,
     });
+    return;
   }
 
   if (rates.newBaseRate !== null) {
