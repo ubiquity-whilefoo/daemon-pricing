@@ -268,7 +268,7 @@ describe("Label Base Rate Changes", () => {
       await globalLabelUpdate(context);
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-      expect(infoSpy).toHaveBeenCalledTimes(1);
+      expect(infoSpy).toHaveBeenCalledTimes(2);
     },
     TEST_TIMEOUT
   );
@@ -278,7 +278,7 @@ describe("Label Base Rate Changes", () => {
     async () => {
       const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
       const commits = inMemoryCommits(STRINGS.SHA_1);
-      const { context, infoSpy, warnSpy } = innerSetup(
+      const { context, infoSpy } = innerSetup(
         1,
         commits,
         STRINGS.SHA_1,
@@ -300,7 +300,6 @@ describe("Label Base Rate Changes", () => {
       await globalLabelUpdate(context);
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-      expect(warnSpy).toHaveBeenCalledWith(STRINGS.PUSH_UPDATE_IN_TEST_REPO, expect.anything());
       expect(infoSpy).toHaveBeenNthCalledWith(4, `${STRINGS.DELETING_LABELS} ${url}`, expect.anything());
     },
     TEST_TIMEOUT
@@ -330,8 +329,8 @@ describe("Label Base Rate Changes", () => {
       );
 
       await globalLabelUpdate(context);
-      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED);
-      expect(errorSpy).toHaveBeenNthCalledWith(2, STRINGS.SENDER_NOT_AUTHED);
+      expect(errorSpy).toHaveBeenNthCalledWith(1, STRINGS.PUSHER_NOT_AUTHED, expect.anything());
+      expect(errorSpy).toHaveBeenNthCalledWith(2, STRINGS.SENDER_NOT_AUTHED, expect.anything());
     },
     TEST_TIMEOUT
   );

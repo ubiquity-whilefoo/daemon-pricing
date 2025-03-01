@@ -50,7 +50,7 @@ async function sendEmptyCommits(context: Context) {
   }
 
   const repos = (await listOrgRepos(context)).filter((repo) => !globalConfigUpdate.excludeRepos.includes(repo.name));
-  logger.info("Will send an empty commit to the following list of repositories", { repos });
+  logger.info("Will send an empty commit to the following list of repositories", { repos: repos.map((repo) => repo.html_url) });
   for (const repository of repos) {
     const ctx = {
       ...context,
