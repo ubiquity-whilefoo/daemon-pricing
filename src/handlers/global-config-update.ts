@@ -76,7 +76,9 @@ export async function globalLabelUpdate(context: Context) {
     await sendEmptyCommits(context);
     return;
   } else if (!didConfigurationChange && context.payload.head_commit?.message !== COMMIT_MESSAGE) {
-    logger.info("The configuration was not modified and the commit name does not match the label update commit message, won't update labels.");
+    logger.info("The configuration was not modified and the commit name does not match the label update commit message, won't update labels.", {
+      url: context.payload.repository.html_url,
+    });
     return;
   }
 
