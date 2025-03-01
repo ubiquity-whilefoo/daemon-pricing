@@ -12,6 +12,7 @@ export const STRINGS = {
   UPDATING_ISSUE_1_IN_TEST_REPO: "Updating pricing labels in https://github.com/repos/ubiquity/test-repo",
   UPDATING_ISSUE_2_IN_TEST_REPO: "Updating pricing labels in https://github.com/repos/ubiquity/test-repo",
   UPDATING_ISSUE_3_IN_TEST_REPO: "Updating pricing labels in https://github.com/repos/ubiquity/test-repo",
+  PUSH_UPDATE_IN_TEST_REPO: "Could not push an empty commit to https://github.com/repos/ubiquity/test-repo",
   UPDATING_FROM_1_TO_5: "Updating base rate from 1 to 5",
   CREATING_MISSING_LABELS: "Creating missing labels done",
   DELETING_LABELS: "Removing all labels in issue",

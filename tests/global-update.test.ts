@@ -88,7 +88,7 @@ describe("Label Base Rate Changes", () => {
     async () => {
       const pusher = db.users.findFirst({ where: { id: { equals: 4 } } }) as unknown as Context["payload"]["sender"];
       const commits = inMemoryCommits(STRINGS.SHA_1, true, true);
-      const { context, infoSpy } = innerSetup(
+      const { context, infoSpy, warnSpy } = innerSetup(
         1,
         commits,
         STRINGS.SHA_1,
@@ -105,13 +105,9 @@ describe("Label Base Rate Changes", () => {
         },
         pusher
       );
-
       await globalLabelUpdate(context);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.CONFIG_CHANGED_IN_COMMIT);
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_FROM_1_TO_5);
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+      expect(warnSpy).toHaveBeenCalledWith(STRINGS.PUSH_UPDATE_IN_TEST_REPO, expect.anything());
     },
     TEST_TIMEOUT
   );
@@ -121,7 +117,7 @@ describe("Label Base Rate Changes", () => {
     async () => {
       const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
       const commits = inMemoryCommits(STRINGS.SHA_1, true, true);
-      const { context, infoSpy } = innerSetup(
+      const { context, infoSpy, warnSpy } = innerSetup(
         1,
         commits,
         STRINGS.SHA_1,
@@ -141,11 +137,7 @@ describe("Label Base Rate Changes", () => {
 
       await globalLabelUpdate(context);
       expect(infoSpy).toHaveBeenCalledWith(STRINGS.CONFIG_CHANGED_IN_COMMIT);
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_FROM_1_TO_5);
-
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_1_IN_TEST_REPO);
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_3_IN_TEST_REPO);
-      expect(infoSpy).toHaveBeenCalledWith(STRINGS.UPDATING_ISSUE_2_IN_TEST_REPO);
+      expect(warnSpy).toHaveBeenCalledWith(STRINGS.PUSH_UPDATE_IN_TEST_REPO, expect.anything());
     },
     TEST_TIMEOUT
   );
@@ -252,7 +244,7 @@ describe("Label Base Rate Changes", () => {
     async () => {
       const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
       const commits = inMemoryCommits(STRINGS.SHA_1);
-      const { context, infoSpy, errorSpy } = innerSetup(
+      const { context, infoSpy } = innerSetup(
         1,
         commits,
         STRINGS.SHA_1,
@@ -276,9 +268,7 @@ describe("Label Base Rate Changes", () => {
       await globalLabelUpdate(context);
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-      expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
-      expect(infoSpy).toHaveBeenCalledTimes(2);
-      expect(errorSpy).toHaveBeenCalledTimes(1);
+      expect(infoSpy).toHaveBeenCalledTimes(1);
     },
     TEST_TIMEOUT
   );
@@ -288,7 +278,7 @@ describe("Label Base Rate Changes", () => {
     async () => {
       const pusher = db.users.findFirst({ where: { id: { equals: 1 } } }) as unknown as Context["payload"]["sender"];
       const commits = inMemoryCommits(STRINGS.SHA_1);
-      const { context, infoSpy } = innerSetup(
+      const { context, infoSpy, warnSpy } = innerSetup(
         1,
         commits,
         STRINGS.SHA_1,
@@ -310,7 +300,7 @@ describe("Label Base Rate Changes", () => {
       await globalLabelUpdate(context);
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-      expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.UPDATING_FROM_1_TO_5);
+      expect(warnSpy).toHaveBeenCalledWith(STRINGS.PUSH_UPDATE_IN_TEST_REPO, expect.anything());
       expect(infoSpy).toHaveBeenNthCalledWith(4, `${STRINGS.DELETING_LABELS} ${url}`, expect.anything());
     },
     TEST_TIMEOUT
@@ -517,6 +507,7 @@ function innerSetup(
   const context = createContext(sender, commits, before, after, pusher, globalConfigUpdate);
 
   const infoSpy = jest.spyOn(context.logger, "info");
+  const warnSpy = jest.spyOn(context.logger, "warn");
   const errorSpy = jest.spyOn(context.logger, "error");
 
   const repo = db.repo.findFirst({ where: { id: { equals: 1 } } });
@@ -531,6 +522,7 @@ function innerSetup(
     context,
     infoSpy,
     errorSpy,
+    warnSpy,
     repo,
     issue1,
     issue2,

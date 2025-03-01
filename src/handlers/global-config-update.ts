@@ -39,9 +39,18 @@ async function isAuthed(context: Context): Promise<boolean> {
 }
 
 async function sendEmptyCommits(context: Context) {
-  const { logger } = context;
+  const {
+    logger,
+    config: { globalConfigUpdate },
+  } = context;
 
-  const repos = await listOrgRepos(context);
+  if (!globalConfigUpdate) {
+    logger.info("Global config update is disabled, will not send empty commits.");
+    return;
+  }
+
+  const repos = (await listOrgRepos(context)).filter((repo) => !globalConfigUpdate.excludeRepos.includes(repo.name));
+  logger.info("Will send an empty commit to the following list of repositories", { repos });
   for (const repository of repos) {
     const ctx = {
       ...context,
@@ -49,8 +58,8 @@ async function sendEmptyCommits(context: Context) {
         repository: repository,
       },
     } as Context;
-    // Pushing an empty commit will trigger a label update on the repository using its local configuration.
     try {
+      // Pushing an empty commit will trigger a label update on the repository using its local configuration.
       await pushEmptyCommit(ctx);
     } catch (err) {
       logger.warn(`Could not push an empty commit to ${repository.html_url}`, { err });
