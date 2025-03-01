@@ -37,6 +37,26 @@ async function isAuthed(context: Context): Promise<boolean> {
   return !!(isPusherAuthed && isSenderAuthed);
 }
 
+async function sendEmptyCommits(context: Context) {
+  const { logger } = context;
+
+  const repos = await listOrgRepos(context);
+  for (const repository of repos) {
+    const ctx = {
+      ...context,
+      payload: {
+        repository: repository,
+      },
+    } as Context;
+    // Pushing an empty commit will trigger a label update on the repository using its local configuration.
+    try {
+      await pushEmptyCommit(ctx);
+    } catch (err) {
+      logger.warn(`Could not push an empty commit to ${repository.html_url}`, { err });
+    }
+  }
+}
+
 export async function globalLabelUpdate(context: Context) {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
@@ -53,18 +73,7 @@ export async function globalLabelUpdate(context: Context) {
   const didConfigurationChange = await isConfigModified(context);
 
   if (didConfigurationChange) {
-    // send push
-    const repos = await listOrgRepos(context);
-    for (const repository of repos) {
-      const ctx = {
-        ...context,
-        payload: {
-          repository: repository,
-        },
-      } as Context;
-      // Pushing an empty commit will trigger a label update on the repository using its local configuration.
-      await pushEmptyCommit(ctx);
-    }
+    await sendEmptyCommits(context);
     return;
   } else if (!didConfigurationChange && context.payload.head_commit?.message !== COMMIT_MESSAGE) {
     logger.info("The configuration was not modified and the commit name does not match the label update commit message, won't update labels.");
