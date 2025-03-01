@@ -5,6 +5,7 @@ import { Context } from "../types/context";
 import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
+import { getLabelsChanges } from "./get-label-changes";
 import { getPriceLabels, syncPriceLabelsToConfig } from "./sync-labels-to-config";
 
 async function isAuthed(context: Context): Promise<boolean> {
@@ -70,7 +71,7 @@ export async function globalLabelUpdate(context: Context) {
     return;
   }
 
-  const didConfigurationChange = await isConfigModified(context);
+  const didConfigurationChange = (await isConfigModified(context)) || (await getLabelsChanges(context));
 
   if (didConfigurationChange) {
     await sendEmptyCommits(context);
