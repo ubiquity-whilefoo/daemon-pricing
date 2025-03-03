@@ -125,8 +125,8 @@ export async function globalLabelUpdate(context: Context) {
     throw logger.error("No owner was found in the payload.");
   }
 
-  const issues = await listRepoIssues(context, owner, repo);
   await syncPriceLabelsToConfig(context);
+  const issues = await listRepoIssues(context, owner, repo);
   for (const issue of issues) {
     const ctx = {
       ...context,
