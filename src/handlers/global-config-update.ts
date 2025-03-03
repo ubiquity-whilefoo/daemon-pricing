@@ -2,10 +2,12 @@ import { pushEmptyCommit } from "../shared/commits";
 import { isUserAdminOrBillingManager, listOrgRepos, listRepoIssues } from "../shared/issue";
 import { COMMIT_MESSAGE } from "../types/constants";
 import { Context } from "../types/context";
+import { Label } from "../types/github";
 import { isPushEvent } from "../types/typeguards";
 import { isConfigModified } from "./check-modified-base-rate";
 import { getBaseRateChanges } from "./get-base-rate-changes";
 import { getLabelsChanges } from "./get-label-changes";
+import { setPriceLabel } from "./pricing-label";
 import { getPriceLabels, syncPriceLabelsToConfig } from "./sync-labels-to-config";
 
 async function isAuthed(context: Context): Promise<boolean> {
@@ -85,8 +87,8 @@ export async function globalLabelUpdate(context: Context) {
   if (didConfigurationChange) {
     await sendEmptyCommits(context);
     return;
-  } else if (!didConfigurationChange && context.payload.head_commit?.message !== COMMIT_MESSAGE) {
-    logger.info("The configuration was not modified and the commit name does not match the label update commit message, won't update labels.", {
+  } else if (context.payload.head_commit?.message !== COMMIT_MESSAGE) {
+    logger.info("The commit name does not match the label update commit message, won't update labels.", {
       url: context.payload.repository.html_url,
     });
     return;
@@ -120,36 +122,15 @@ export async function globalLabelUpdate(context: Context) {
   }
 
   const issues = await listRepoIssues(context, owner, repo);
-  // For each issue inside the repository, we want to save the currently set labels except the price,
-  // then remove all these labels, trigger a synchronization so up-to-date Price labels are generated,
-  // and finally we want to add back all the previously set labels (except the price).
-  // This way, the plugin gets triggered by the "issues.labeled" event, and recreates the price, using the proper
-  // configuration.
+  await syncPriceLabelsToConfig(context);
   for (const issue of issues) {
-    const currentLabels = (
-      await context.octokit.paginate(context.octokit.rest.issues.listLabelsOnIssue, {
-        owner,
-        repo,
-        issue_number: issue.number,
-      })
-    )
-      .filter((o) => !o.name.startsWith("Price:"))
-      .map((o) => o.name);
-    logger.info(`Removing all labels in issue ${issue.html_url}`, { currentLabels });
-    if (currentLabels.length) {
-      await context.octokit.rest.issues.removeAllLabels({
-        owner,
-        repo,
-        issue_number: issue.number,
-      });
-      // this should create labels on the repos that are missing
-      await syncPriceLabelsToConfig(context);
-      await context.octokit.rest.issues.addLabels({
-        repo,
-        owner,
-        issue_number: issue.number,
-        labels: currentLabels,
-      });
-    }
+    const ctx = {
+      ...context,
+      payload: {
+        ...context.payload,
+        issue,
+      },
+    };
+    await setPriceLabel(ctx, issue.labels as Label[], ctx.config);
   }
 }

@@ -98,16 +98,13 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
 async function deleteLabelsFromRepository(context: Context, incorrectPriceLabels: Label[]) {
   const { logger } = context;
-  logger.info(`Incorrect price labels found in ${context.payload.repository.html_url}, removing them`, {
-    incorrectPriceLabels: incorrectPriceLabels.map((label) => label.name),
-  });
   const owner = context.payload.repository.owner?.login;
   if (!owner) {
     throw logger.error("No owner found in the repository!");
   }
 
   if (incorrectPriceLabels.length > 0) {
-    logger.info(`Will attempt to remove incorrect price labels`, {
+    logger.info(`Will attempt to remove incorrect price labels within ${context.payload.repository.html_url}`, {
       incorrectPriceLabels: incorrectPriceLabels.map((o) => o.name),
     });
     await Promise.allSettled(
