@@ -10,6 +10,8 @@ import { getLabelsChanges } from "./get-label-changes";
 import { setPriceLabel } from "./pricing-label";
 import { getPriceLabels, syncPriceLabelsToConfig } from "./sync-labels-to-config";
 
+type Repositories = Awaited<ReturnType<typeof listOrgRepos>>;
+
 async function isAuthed(context: Context): Promise<boolean> {
   if (!isPushEvent(context)) {
     context.logger.debug("Not a push event");
@@ -46,12 +48,14 @@ async function sendEmptyCommits(context: Context) {
     config: { globalConfigUpdate },
   } = context;
 
+  const repos: Repositories = [];
   if (!globalConfigUpdate) {
-    logger.info("Global config update is disabled, will not send empty commits.");
-    return;
+    logger.info("Global config update is disabled, will only update this repository.");
+    repos.push(context.payload.repository as Repositories[0]);
+  } else {
+    repos.push(...(await listOrgRepos(context)).filter((repo) => !globalConfigUpdate.excludeRepos.includes(repo.name)));
   }
 
-  const repos = (await listOrgRepos(context)).filter((repo) => !globalConfigUpdate.excludeRepos.includes(repo.name));
   logger.info("Will send an empty commit to the following list of repositories", { repos: repos.map((repo) => repo.html_url) });
   for (const repository of repos) {
     const ctx = {
