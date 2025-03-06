@@ -299,7 +299,7 @@ describe("Label Base Rate Changes", () => {
       await globalLabelUpdate(context);
 
       expect(infoSpy).toHaveBeenNthCalledWith(1, STRINGS.CONFIG_CHANGED_IN_COMMIT);
-      expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.GLOBAL_CONFIG_DISABLED);
+      expect(infoSpy).toHaveBeenNthCalledWith(2, STRINGS.EMPTY_COMMITS, expect.anything());
     },
     TEST_TIMEOUT
   );
