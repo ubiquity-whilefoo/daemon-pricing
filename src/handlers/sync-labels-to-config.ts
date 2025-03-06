@@ -29,9 +29,10 @@ async function generatePriceLabels(context: Context) {
   }
 
   logger.debug("Generated price labels", {
-    priceLabels,
-    timeLabels: config.labels.time,
-    priorityLabels: config.labels.priority,
+    basePriceMultiplier: config.basePriceMultiplier,
+    priceLabels: priceLabels.map((o) => o.name),
+    timeLabels: config.labels.time.map((o) => o.name),
+    priorityLabels: config.labels.priority.map((o) => o.name),
   });
   return { priceLabels, pricingLabels: [...priceLabels, ...config.labels.time, ...config.labels.priority] };
 }
@@ -79,9 +80,8 @@ export async function syncPriceLabelsToConfig(context: Context): Promise<void> {
 
   // Create missing labels
   if (missingLabels.length > 0) {
-    // Delete current price labels
-    const labelsToDelete = allLabels.filter((o) => o.name.startsWith("Price: "));
-    await deleteLabelsFromRepository(context, labelsToDelete);
+    // Delete incorrect price labels
+    await deleteLabelsFromRepository(context, incorrectPriceLabels);
     logger.info(`Missing labels found in ${context.payload.repository.html_url}, creating them`, { missingLabels });
     await Promise.allSettled(missingLabels.map((label) => createLabel(context, label, "default")));
     logger.info(`Creating missing labels done`);
