@@ -113,7 +113,10 @@ export async function globalLabelUpdate(context: Context) {
 
   const repository = context.payload.repository;
 
-  logger.info(`Updating pricing labels in ${repository.html_url}`);
+  logger.info(`Updating pricing labels in ${repository.html_url}`, {
+    incorrectPriceLabels,
+    missingLabels,
+  });
 
   const owner = repository.owner?.login;
   const repo = repository.name;

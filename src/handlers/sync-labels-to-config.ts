@@ -28,6 +28,11 @@ async function generatePriceLabels(context: Context) {
     }
   }
 
+  logger.debug("Generated price labels", {
+    priceLabels,
+    timeLabels: config.labels.time,
+    priorityLabels: config.labels.priority,
+  });
   return { priceLabels, pricingLabels: [...priceLabels, ...config.labels.time, ...config.labels.priority] };
 }
 
