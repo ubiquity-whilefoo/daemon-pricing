@@ -1,4 +1,5 @@
 import { jest } from "@jest/globals";
+import { LogReturn, Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { syncPriceLabelsToConfig } from "../src/handlers/sync-labels-to-config";
 import { calculateLabelValue } from "../src/shared/pricing";
 import { Context } from "../src/types/context";
@@ -80,5 +81,32 @@ describe("syncPriceLabelsToConfig function", () => {
     expect(labelValue).toEqual(0);
     labelValue = calculateLabelValue("Time: some Hours");
     expect(labelValue).toEqual(null);
+  });
+
+  it("Should ignore tags on parent issue, and clear pricing", async () => {
+    const clearAllPriceLabelsOnIssue = jest.fn();
+    const context = { logger: new Logs("debug") } as unknown as Context;
+    jest.unstable_mockModule("../src/shared/label", () => ({
+      clearAllPriceLabelsOnIssue: clearAllPriceLabelsOnIssue,
+    }));
+    const { handleParentIssue } = await import("../src/handlers/handle-parent-issue");
+
+    await expect(handleParentIssue(context, [])).resolves.not.toThrow();
+
+    await expect(
+      handleParentIssue(context, [
+        {
+          name: "Price: 1 USD",
+          id: 0,
+          node_id: "",
+          url: "",
+          description: null,
+          color: "",
+          default: false,
+        },
+      ])
+    ).rejects.toBeInstanceOf(LogReturn);
+
+    expect(clearAllPriceLabelsOnIssue).toHaveBeenCalledTimes(1);
   });
 });
