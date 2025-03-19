@@ -9,10 +9,6 @@ interface Label {
   description: string | undefined;
 }
 
-jest.unstable_mockModule("../src/shared/label", () => ({
-  listLabelsForRepo: jest.fn(),
-}));
-
 const mockLogger = {
   info: jest.fn(),
   error: jest.fn(),
@@ -50,6 +46,7 @@ const mockContext: Context = {
 describe("syncPriceLabelsToConfig function", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetModules();
   });
 
   it("should not update labels if descriptions match the collaboratorOnly criteria", async () => {
@@ -58,6 +55,9 @@ describe("syncPriceLabelsToConfig function", () => {
       { name: "Label2", description: "" },
       { name: "Label3", description: "" },
     ];
+    jest.unstable_mockModule("../src/shared/label", () => ({
+      listLabelsForRepo: jest.fn(),
+    }));
 
     const pricingLabels = [{ name: "Label1" }, { name: "Label2" }, { name: "Label3" }];
     const { listLabelsForRepo } = await import("../src/shared/label");
