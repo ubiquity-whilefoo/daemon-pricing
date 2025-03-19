@@ -92,7 +92,6 @@ describe("syncPriceLabelsToConfig function", () => {
     const { handleParentIssue } = await import("../src/handlers/handle-parent-issue");
 
     await expect(handleParentIssue(context, [])).resolves.not.toThrow();
-
     await expect(
       handleParentIssue(context, [
         {
@@ -106,7 +105,6 @@ describe("syncPriceLabelsToConfig function", () => {
         },
       ])
     ).rejects.toBeInstanceOf(LogReturn);
-
     expect(clearAllPriceLabelsOnIssue).toHaveBeenCalledTimes(1);
   });
 });
