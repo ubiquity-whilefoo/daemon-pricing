@@ -9,7 +9,7 @@ export async function handleParentIssue(context: Context, labels: Label[]) {
     await clearAllPriceLabelsOnIssue(context);
     throw context.logger.warn("Pricing is disabled on parent issues, so the price labels have been cleared.");
   } else {
-    context.logger.info("Pricing is not supported on parent issues, no price will be set.");
+    throw context.logger.warn("Pricing is not supported on parent issues, no price will be set.");
   }
 }
 
