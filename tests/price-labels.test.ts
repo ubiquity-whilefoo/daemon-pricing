@@ -85,7 +85,7 @@ describe("syncPriceLabelsToConfig function", () => {
 
   it("Should ignore tags on parent issue, and clear pricing", async () => {
     const clearAllPriceLabelsOnIssue = jest.fn();
-    const context = { logger: new Logs("debug") } as unknown as Context;
+    const context = { logger: new Logs("debug"), eventName: "issues.labeled" } as unknown as Context;
     jest.unstable_mockModule("../src/shared/label", () => ({
       clearAllPriceLabelsOnIssue: clearAllPriceLabelsOnIssue,
     }));
