@@ -60,6 +60,7 @@
                 "name": {
                   "examples": ["Time: <2 Hours", "Time: <1 Week"],
                   "description": "The display name of the label representing estimated task length",
+                  "pattern": "^Time:\\s<?\\d+\\s\\S+$",
                   "type": "string"
                 }
               },
