@@ -6,6 +6,7 @@ import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-pa
 import { AssistivePricingSettings } from "../types/plugin-input";
 import { isIssueLabelEvent } from "../types/typeguards";
 import { Context } from "../types/context";
+import { extractLabelPattern } from "./label-checks";
 
 export async function onLabelChangeSetPricing(context: Context): Promise<void> {
   if (!isIssueLabelEvent(context)) {
@@ -67,8 +68,10 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
 export async function setPriceLabel(context: Context, issueLabels: Label[], config: AssistivePricingSettings) {
   const logger = context.logger;
   const labelNames = issueLabels.map((i) => i.name);
-
   const recognizedLabels = getRecognizedLabels(issueLabels, config);
+  const timePattern = extractLabelPattern(context.config.labels.time);
+  const priorityPattern = extractLabelPattern(context.config.labels.priority);
+  const isPricingAttempt = issueLabels.filter((o) => timePattern.test(o.name) || priorityPattern.test(o.name)).length >= 2;
 
   if (!recognizedLabels.time.length || !recognizedLabels.priority.length) {
     const message = logger.error("No recognized labels were found to set the price of this task.", {
@@ -76,7 +79,7 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
       recognizedLabels,
     });
     // We only want to send that message on labeling, because un-label will trigger this during compute
-    if (context.eventName === "issues.labeled") {
+    if (context.eventName === "issues.labeled" && isPricingAttempt) {
       await context.commentHandler.postComment(context, message);
     }
     await clearAllPriceLabelsOnIssue(context);

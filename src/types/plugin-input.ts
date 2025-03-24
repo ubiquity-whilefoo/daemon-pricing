@@ -17,7 +17,11 @@ export const pluginSettingsSchema = T.Object(
       {
         time: T.Array(
           T.Object({
-            name: T.String({ examples: ["Time: <2 Hours", "Time: <1 Week"], description: "The display name of the label representing estimated task length" }),
+            name: T.String({
+              examples: ["Time: <2 Hours", "Time: <1 Week"],
+              description: "The display name of the label representing estimated task length",
+              pattern: /^Time:\s<?\d+\s\S+$/i.source,
+            }),
           }),
           {
             default: [
