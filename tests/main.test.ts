@@ -45,14 +45,18 @@ describe("User tests", () => {
   });
 
   it("Should accurately calculates prices", () => {
-    const context = {
-      config: {
-        basePriceMultiplier: 3.0,
-      },
-    } as unknown as Context;
     const priority1 = "1 priority";
     const priority2 = "2 priority";
     const priority3 = "3 priority";
+    const context = {
+      config: {
+        basePriceMultiplier: 3.0,
+        labels: {
+          priority: [{ name: priority1 }, { name: priority2 }, { name: priority3 }],
+          time: [{ name: "<1 minutes" }, { name: "<4 hours" }, { name: "<1 week" }],
+        },
+      },
+    } as unknown as Context;
     const testCases = [
       {
         timeValue: calculateLabelValue(context, "<1 minutes"),

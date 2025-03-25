@@ -24,6 +24,7 @@ export const pluginSettingsSchema = T.Object(
             }),
           }),
           {
+            minItems: 1,
             default: [
               {
                 name: "Time: <15 Minutes",
@@ -61,6 +62,7 @@ export const pluginSettingsSchema = T.Object(
             collaboratorOnly: T.Boolean({ default: false, description: "Whether the task is only available for collaborators to be assigned" }),
           }),
           {
+            minItems: 1,
             default: [
               {
                 name: "Priority: 0 (Regression)",

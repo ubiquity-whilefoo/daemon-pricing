@@ -1,5 +1,6 @@
 import { jest } from "@jest/globals";
 import { LogReturn, Logs } from "@ubiquity-os/ubiquity-os-logger";
+import { determinePriorityOrder, extractLabelPattern } from "../src/handlers/label-checks";
 import { syncPriceLabelsToConfig } from "../src/handlers/sync-labels-to-config";
 import { calculateLabelValue } from "../src/shared/pricing";
 import { Context } from "../src/types/context";
@@ -72,7 +73,7 @@ describe("syncPriceLabelsToConfig function", () => {
     expect(mockOctokit.rest.issues.updateLabel).not.toHaveBeenCalled();
   }, 15000);
 
-  it("Should properly handled 0 priority label", () => {
+  it("Should properly handle 0 priority label", () => {
     const ctx = {
       config: {
         labels: {
@@ -114,5 +115,22 @@ describe("syncPriceLabelsToConfig function", () => {
       ])
     ).rejects.toBeInstanceOf(LogReturn);
     expect(clearAllPriceLabelsOnIssue).toHaveBeenCalledTimes(1);
+  });
+
+  it("Should handle unconventional label names", () => {
+    const labelList1 = [{ name: "P0" }, { name: "P1" }];
+    const labelList2 = [{ name: "Priority: 1 (Normal)" }, { name: "Priority: 2 (Medium)" }];
+    const labelList3 = [{ name: "p2" }, { name: "p1" }, { name: "p0" }];
+    const invalidLabelList = [{ name: "Prio: 1" }, { name: "p2" }, { name: "p high" }];
+
+    expect(extractLabelPattern(labelList1)).toEqual(/P(\d*\.?\d+)/i);
+    expect(extractLabelPattern(labelList2)).toEqual(/Priority: (\d*\.?\d+)/i);
+    expect(extractLabelPattern(labelList3)).toEqual(/p(\d*\.?\d+)/i);
+    expect(() => extractLabelPattern(invalidLabelList)).toThrow();
+
+    expect(determinePriorityOrder(labelList1)).toEqual(1);
+    expect(determinePriorityOrder(labelList2)).toEqual(1);
+    expect(determinePriorityOrder(labelList3)).toEqual(-1);
+    expect(() => determinePriorityOrder(invalidLabelList)).toThrow();
   });
 });

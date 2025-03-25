@@ -25,7 +25,7 @@ function extractCommonPattern(labels: Labels): string {
     throw new Error("No common prefixes or suffixes have been found for the label list, please check your configuration.");
   }
 
-  return `${commonPrefixes}{number}${commonSuffixes}`;
+  return `${commonPrefixes.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\d*\\.?\\d+)${commonSuffixes.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`;
 }
 
 function extractNumbers(labels: Labels) {
@@ -44,7 +44,7 @@ function extractLabelPattern(labels: Labels) {
 
   const commonPattern = extractCommonPattern(labels);
 
-  return new RegExp(commonPattern.replace("{number}", "(\\d*\\.?\\d+)"), "i");
+  return new RegExp(commonPattern, "i");
 }
 
 function determinePriorityOrder(tags: Labels): number {
