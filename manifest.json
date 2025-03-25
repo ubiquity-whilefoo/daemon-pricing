@@ -27,6 +27,7 @@
         "type": "object",
         "properties": {
           "time": {
+            "minItems": 1,
             "default": [
               {
                 "name": "Time: <15 Minutes",
@@ -68,6 +69,7 @@
             }
           },
           "priority": {
+            "minItems": 1,
             "default": [
               {
                 "name": "Priority: 0 (Regression)",
