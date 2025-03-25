@@ -49,39 +49,39 @@ describe("User tests", () => {
       config: {
         basePriceMultiplier: 3.0,
       },
-    };
+    } as unknown as Context;
     const priority1 = "1 priority";
     const priority2 = "2 priority";
     const priority3 = "3 priority";
     const testCases = [
       {
-        timeValue: calculateLabelValue("<1 minutes"),
-        priorityValue: calculateLabelValue(priority3),
+        timeValue: calculateLabelValue(context, "<1 minutes"),
+        priorityValue: calculateLabelValue(context, priority3),
         expectedPrice: "1.8",
       },
       {
-        timeValue: calculateLabelValue("<4 hours"),
-        priorityValue: calculateLabelValue(priority2),
+        timeValue: calculateLabelValue(context, "<4 hours"),
+        priorityValue: calculateLabelValue(context, priority2),
         expectedPrice: "300",
       },
       {
-        timeValue: calculateLabelValue("<1 hours"),
-        priorityValue: calculateLabelValue(priority2),
+        timeValue: calculateLabelValue(context, "<1 hours"),
+        priorityValue: calculateLabelValue(context, priority2),
         expectedPrice: "75",
       },
       {
-        timeValue: calculateLabelValue("<1.52 hours"),
-        priorityValue: calculateLabelValue(priority3),
+        timeValue: calculateLabelValue(context, "<1.52 hours"),
+        priorityValue: calculateLabelValue(context, priority3),
         expectedPrice: "112.5",
       },
       {
-        timeValue: calculateLabelValue("<139.876 minutes"),
-        priorityValue: calculateLabelValue(priority1),
+        timeValue: calculateLabelValue(context, "<139.876 minutes"),
+        priorityValue: calculateLabelValue(context, priority1),
         expectedPrice: "83.4",
       },
       {
-        timeValue: calculateLabelValue("<12.333333 weeks"),
-        priorityValue: calculateLabelValue(priority2),
+        timeValue: calculateLabelValue(context, "<12.333333 weeks"),
+        priorityValue: calculateLabelValue(context, priority2),
         expectedPrice: "7800",
       },
     ];

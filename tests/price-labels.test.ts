@@ -73,13 +73,21 @@ describe("syncPriceLabelsToConfig function", () => {
   }, 15000);
 
   it("Should properly handled 0 priority label", () => {
-    let labelValue = calculateLabelValue("Priority: 0 (Regression)");
+    const ctx = {
+      config: {
+        labels: {
+          priority: [{ name: "Priority: 0 (Regression)" }],
+          time: [{ name: "Time: 2 Hours" }],
+        },
+      },
+    } as unknown as Context;
+    let labelValue = calculateLabelValue(ctx, "Priority: 0 (Regression)");
     expect(labelValue).toEqual(0);
-    labelValue = calculateLabelValue("Priority: - (Regression)");
+    labelValue = calculateLabelValue(ctx, "Priority: - (Regression)");
     expect(labelValue).toEqual(null);
-    labelValue = calculateLabelValue("Time: 0 Hours");
+    labelValue = calculateLabelValue(ctx, "Time: 0 Hours");
     expect(labelValue).toEqual(0);
-    labelValue = calculateLabelValue("Time: some Hours");
+    labelValue = calculateLabelValue(ctx, "Time: some Hours");
     expect(labelValue).toEqual(null);
   });
 
