@@ -13,9 +13,9 @@ export async function handleParentIssue(context: Context, labels: Label[]) {
   }
 }
 
-export function sortLabelsByValue(labels: Label[]) {
+export function sortLabelsByValue(context: Context, labels: Label[]) {
   return labels.sort((a, b) => {
-    return (calculateLabelValue(a.name) || 0) - (calculateLabelValue(b.name) || 0);
+    return (calculateLabelValue(context, a.name) || 0) - (calculateLabelValue(context, b.name) || 0);
   });
 }
 

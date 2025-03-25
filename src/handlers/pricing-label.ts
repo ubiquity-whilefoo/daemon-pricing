@@ -45,7 +45,7 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
     // make sure to clear all other price labels except for the smallest price label.
 
     const priceLabels = labels.filter((label) => label.name.includes("Price: "));
-    const sortedPriceLabels = sortLabelsByValue(priceLabels);
+    const sortedPriceLabels = sortLabelsByValue(context, priceLabels);
     const smallestPriceLabel = sortedPriceLabels.shift();
     const smallestPriceLabelName = smallestPriceLabel?.name;
     if (smallestPriceLabelName) {
@@ -86,7 +86,7 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
     return;
   }
 
-  const minLabels = getMinLabels(recognizedLabels);
+  const minLabels = getMinLabels(context, recognizedLabels);
 
   if (!minLabels.time || !minLabels.priority) {
     logger.error("No label to calculate price", {
@@ -134,9 +134,9 @@ function getRecognizedLabels(labels: Label[], settings: AssistivePricingSettings
   return { time: recognizedTimeLabels, priority: recognizedPriorityLabels };
 }
 
-function getMinLabels(recognizedLabels: { time: Label[]; priority: Label[] }) {
-  const minTimeLabel = sortLabelsByValue(recognizedLabels.time).shift();
-  const minPriorityLabel = sortLabelsByValue(recognizedLabels.priority).shift();
+function getMinLabels(context: Context, recognizedLabels: { time: Label[]; priority: Label[] }) {
+  const minTimeLabel = sortLabelsByValue(context, recognizedLabels.time).shift();
+  const minPriorityLabel = sortLabelsByValue(context, recognizedLabels.priority).shift();
 
   return { time: minTimeLabel, priority: minPriorityLabel };
 }
