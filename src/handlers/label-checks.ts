@@ -39,7 +39,7 @@ function extractLabelPattern(labels: Labels) {
   const priorities = extractNumbers(labels);
 
   if (priorities.some((p) => p === null)) {
-    throw new Error("Some tags seem to not have any decimal value, please check your configuration.");
+    throw new Error("Some tags seem to not have any number value, please check your configuration.");
   }
 
   const commonPattern = extractCommonPattern(labels);
