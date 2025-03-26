@@ -12,7 +12,7 @@ export async function labelAccessPermissionsCheck(context: Context) {
   const { logger, payload } = context;
   const { shouldFundContributorClosedIssue } = context.config;
   if (!payload.label?.name) {
-    context.logger.debug("The label has no name.");
+    logger.debug("The label has no name.");
     return false;
   }
 

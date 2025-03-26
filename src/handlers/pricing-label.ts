@@ -34,6 +34,9 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
 
   const hasPermission = await labelAccessPermissionsCheck(context);
   if (!hasPermission) {
+    if (context.eventName === "issues.labeled" && context.payload.sender?.type !== "Bot") {
+      await context.commentHandler.postComment(context, logger.warn("You are not allowed to set labels."));
+    }
     return;
   }
 
