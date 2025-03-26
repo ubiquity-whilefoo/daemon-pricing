@@ -3,6 +3,11 @@ import { Logs } from "@ubiquity-os/ubiquity-os-logger";
 import { Context } from "../src/types/context";
 
 describe("Permission tests for labels", () => {
+  beforeAll(async () => {
+    jest.resetAllMocks();
+    jest.resetModules();
+  });
+
   it("Should properly deny or accept a user according to its privileges", async () => {
     const isUserAdminOrBillingManagerMock = jest.fn();
     const postCommentMock = jest.fn();
@@ -71,7 +76,7 @@ describe("Permission tests for labels", () => {
     isAllowed = await labelAccessPermissionsCheck(ctx as unknown as Context);
     expect(isAllowed).toEqual(true);
 
-    isUserAdminOrBillingManagerMock.mockImplementation(() => Promise.resolve({ data: { permission: "read" } }));
+    isUserAdminOrBillingManagerMock.mockImplementation(() => Promise.resolve(false));
     checkMembershipForUser.mockImplementation(() => {
       throw new Error();
     });
