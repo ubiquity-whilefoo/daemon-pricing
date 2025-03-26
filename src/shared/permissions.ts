@@ -1,3 +1,4 @@
+import { extractLabelPattern } from "../handlers/label-checks";
 import { Context } from "../types/context";
 import { UserType } from "../types/github";
 import { isIssueLabelEvent } from "../types/typeguards";
@@ -11,7 +12,10 @@ export async function labelAccessPermissionsCheck(context: Context) {
   }
   const { logger, payload } = context;
   const { publicAccessControl } = context.config;
-  if (!payload.label?.name) return false;
+  if (!payload.label?.name) {
+    context.logger.debug("The label has no name.");
+    return false;
+  }
 
   if (publicAccessControl.setLabel) {
     logger.info("Public access control is enabled for setting labels");
@@ -32,10 +36,17 @@ export async function labelAccessPermissionsCheck(context: Context) {
 
   const labelName = payload.label.name;
 
+  const timeRegex = extractLabelPattern(context.config.labels.time);
+  const priorityRegex = extractLabelPattern(context.config.labels.priority);
   // get text before :
   const match = payload.label?.name?.split(":");
   // We can ignore custom labels which are not like Label: <value>
-  if (match.length <= 1) return false;
+  if (match.length <= 1 && !timeRegex.test(payload.label.name) && !priorityRegex.test(payload.label.name)) {
+    context.logger.debug("The label does not appear to be a recognized label.", {
+      label: payload.label,
+    });
+    return false;
+  }
   const labelType = match[0].toLowerCase();
 
   // event in plain english
