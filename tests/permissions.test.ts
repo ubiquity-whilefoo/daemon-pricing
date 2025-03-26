@@ -31,6 +31,10 @@ describe("Permission tests for labels", () => {
         publicAccessControl: {
           protectLabels: ["Price"],
         },
+        labels: {
+          priority: [{ name: "Priority: 1 (Normal)" }, { name: "Priority: 2 (Medium)" }],
+          time: [{ name: "Time: <1 day" }, { name: "Time: <1 Week" }],
+        },
       },
       commentHandler: {
         postComment: postCommentMock,
