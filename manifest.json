@@ -122,29 +122,10 @@
         "description": "The base price multiplier for all tasks",
         "type": "number"
       },
-      "publicAccessControl": {
-        "default": {},
-        "type": "object",
-        "properties": {
-          "setLabel": {
-            "default": false,
-            "description": "Whether to allow anyone to set labels, false to perform permission validation",
-            "type": "boolean"
-          },
-          "fundExternalClosedIssue": {
-            "default": false,
-            "description": "Whether to allow funding external closed issues",
-            "type": "boolean"
-          },
-          "protectLabels": {
-            "default": ["priority", "price", "time"],
-            "uniqueItems": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
+      "shouldFundContributorClosedIssue": {
+        "default": false,
+        "description": "Whether to allow funding contributor closed issues",
+        "type": "boolean"
       }
     }
   },

@@ -95,14 +95,7 @@ export const pluginSettingsSchema = T.Object(
       { default: {} }
     ),
     basePriceMultiplier: T.Number({ examples: [1.5], default: 1, description: "The base price multiplier for all tasks" }),
-    publicAccessControl: T.Object(
-      {
-        setLabel: T.Boolean({ default: false, description: "Whether to allow anyone to set labels, false to perform permission validation" }),
-        fundExternalClosedIssue: T.Boolean({ default: false, description: "Whether to allow funding external closed issues" }),
-        protectLabels: T.Array(T.String(), { default: ["priority", "price", "time"], uniqueItems: true }),
-      },
-      { default: {} }
-    ),
+    shouldFundContributorClosedIssue: T.Boolean({ default: false, description: "Whether to allow funding contributor closed issues" }),
   },
   { default: {} }
 );
