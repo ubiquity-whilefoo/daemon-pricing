@@ -1,5 +1,28 @@
-// api/index.ts
-import worker from "../src/worker";
+import { createPlugin } from "@ubiquity-os/plugin-sdk";
+import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
+import { LOG_LEVEL, LogLevel } from "@ubiquity-os/ubiquity-os-logger";
+import { handle } from "hono/vercel";
+import manifest from "../manifest.json";
+import { run } from "../src/run";
+import { SupportedEvents } from "../src/types/context";
+import { Env, envSchema } from "../src/types/env";
+import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input";
 
-// Export the fetch function directly for Vercel Edge Runtime
-export default worker.fetch;
+const app = createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
+  async (context) => {
+    return run(context);
+  },
+  manifest as Manifest,
+  {
+    envSchema: envSchema,
+    postCommentOnError: true,
+    settingsSchema: pluginSettingsSchema,
+    logLevel: (process.env.LOG_LEVEL as LogLevel) || LOG_LEVEL.INFO,
+    kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
+    bypassSignatureVerification: true,
+    // bypassSignatureVerification: process.env.NODE_ENV === "local",
+  }
+);
+
+export const GET = handle(app);
+export const POST = handle(app);
