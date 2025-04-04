@@ -20,7 +20,7 @@
     "prepare": "husky install",
     "test": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --setupFiles dotenv/config --coverage",
     "run": "bun run --watch --no-clear-screen src/worker.ts",
-    "build": "bun build src/index.ts --sourcemap=\"none\" --outdir public --target node --entry-naming index.js"
+    "build": "bun build src/index.ts --sourcemap=\"none\" --outdir api --target node --entry-naming index.js"
   },
   "keywords": [
     "typescript",
