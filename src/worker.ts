@@ -69,6 +69,8 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   });
 }
 
+console.log(process.env);
+
 export default {
   async fetch(request: Request, env: Record<string, string>, executionCtx?: ExecutionContext) {
     // It is important to clone the request because the body is read within createPlugin as well
