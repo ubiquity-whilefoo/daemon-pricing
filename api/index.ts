@@ -34,7 +34,7 @@ export const runtime = "edge";
 
 const app = new Hono().basePath("/");
 
-app.get("/hello", (c) => {
+app.get("/", (c) => {
   return c.json({
     message: "Hello Next.js!",
   });
