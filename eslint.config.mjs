@@ -1,5 +1,6 @@
 import tsEslint from "typescript-eslint";
 import eslint from "@eslint/js";
+// @ts-check
 import sonarjs from "eslint-plugin-sonarjs";
 import checkFile from "eslint-plugin-check-file";
 
@@ -8,15 +9,13 @@ export default tsEslint.config({
     "@typescript-eslint": tsEslint.plugin,
     "check-file": checkFile,
   },
-  ignores: [".github/knip.ts", ".wrangler/**", "dist/**", "coverage/**"],
+  ignores: ["**/*.js", ".github/**.ts"],
   extends: [eslint.configs.recommended, ...tsEslint.configs.recommended, sonarjs.configs.recommended],
   languageOptions: {
     parser: tsEslint.parser,
     parserOptions: {
-      projectService: {
-        defaultProject: "tsconfig.json",
-        allowDefaultProject: ["*.mjs"],
-      },
+      project: ["./tsconfig.json"],
+      allowDefaultProject: ["*.mjs"],
       tsconfigRootDir: import.meta.dirname,
     },
   },
@@ -27,24 +26,13 @@ export default tsEslint.config({
         "**/*.{js,ts}": "+([-._a-z0-9])",
       },
     ],
-    "prefer-arrow-callback": [
-      "warn",
-      {
-        allowNamedFunctions: true,
-      },
-    ],
-    "func-style": [
-      "warn",
-      "declaration",
-      {
-        allowArrowFunctions: false,
-      },
-    ],
+    "prefer-arrow-callback": ["warn", { allowNamedFunctions: true }],
+    "func-style": ["warn", "declaration", { allowArrowFunctions: false }],
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-non-null-assertion": "error",
     "constructor-super": "error",
     "no-invalid-this": "off",
-    "@typescript-eslint/no-invalid-this": ["error"],
+    "@typescript-eslint/no-invalid-this": "error",
     "no-restricted-syntax": ["error", "ForInStatement"],
     "use-isnan": "error",
     "no-unneeded-ternary": "error",
@@ -68,22 +56,12 @@ export default tsEslint.config({
     "sonarjs/no-element-overwrite": "error",
     "sonarjs/no-identical-conditions": "error",
     "sonarjs/no-identical-expressions": "error",
-    "sonarjs/new-cap": "off",
-    "sonarjs/different-types-comparison": "off",
-    "sonarjs/sonar-prefer-regexp-exec": "off",
-    "sonarjs/function-return-type": "off",
-    "sonarjs/no-misleading-array-reverse": "off",
-    "sonarjs/slow-regex": "off",
-    "sonarjs/no-nested-template-literals": "off",
     "@typescript-eslint/naming-convention": [
       "error",
       {
         selector: "interface",
         format: ["StrictPascalCase"],
-        custom: {
-          regex: "^I[A-Z]",
-          match: false,
-        },
+        custom: { regex: "^I[A-Z]", match: false },
       },
       {
         selector: "memberLike",
@@ -103,12 +81,6 @@ export default tsEslint.config({
       {
         selector: "variable",
         format: ["strictCamelCase", "UPPER_CASE"],
-        leadingUnderscore: "allow",
-        trailingUnderscore: "allow",
-      },
-      {
-        selector: "variable",
-        format: ["strictCamelCase"],
         leadingUnderscore: "allow",
         trailingUnderscore: "allow",
       },

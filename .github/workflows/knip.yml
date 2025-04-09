@@ -11,8 +11,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
@@ -23,7 +21,7 @@ jobs:
         run: echo ${{ github.event.number }} > pr-number.txt
 
       - name: Run Knip
-        run: bun run knip || bun run knip --reporter json > knip-results.json
+        run: bun run knip || bun run knip-ci > knip-results.json
 
       - name: Upload knip result
         if: failure()
@@ -33,3 +31,4 @@ jobs:
           path: |
             knip-results.json
             pr-number.txt
+
