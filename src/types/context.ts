@@ -1,5 +1,5 @@
 import { Context as PluginContext } from "@ubiquity-os/plugin-sdk";
-import { Env } from "../../api/env";
+import { Env } from "../../api/_env.ts";
 import { AssistivePricingSettings } from "./plugin-input";
 
 export type SupportedEvents =

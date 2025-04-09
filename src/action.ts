@@ -2,7 +2,7 @@ import { createActionsPlugin } from "@ubiquity-os/plugin-sdk";
 import { LOG_LEVEL, LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { run } from "./run";
 import { SupportedEvents } from "./types/context";
-import { Env, envSchema } from "../api/env";
+import { Env, envSchema } from "../api/_env.ts";
 import { AssistivePricingSettings, pluginSettingsSchema } from "./types/plugin-input";
 
 createActionsPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
