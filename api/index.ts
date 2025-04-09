@@ -1,7 +1,7 @@
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
 import { Manifest } from "@ubiquity-os/plugin-sdk/dist/manifest";
 import { handle } from "hono/vercel";
-import manifest from "../manifest.json";
+import manifest from "../manifest.json" with { type: "json" };
 
 const app = createPlugin(() => {}, manifest as Manifest).basePath("/api");
 
