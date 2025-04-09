@@ -8,7 +8,7 @@ import type { ExecutionContext } from "hono";
 import manifest from "../manifest.json";
 import { isLocalEnvironment, run } from "./run";
 import { Context, SupportedEvents } from "./types/context";
-import { Env, envSchema } from "../api/types/env";
+import { Env, envSchema } from "../api/env";
 import { AssistivePricingSettings, pluginSettingsSchema } from "./types/plugin-input";
 
 async function startAction(context: Context, inputs: Record<string, unknown>) {
