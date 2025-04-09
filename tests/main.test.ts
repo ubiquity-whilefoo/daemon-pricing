@@ -4,7 +4,7 @@ import { Value } from "@sinclair/typebox/value";
 import * as crypto from "node:crypto";
 import { calculateLabelValue, calculateTaskPrice } from "../src/shared/pricing";
 import { Context } from "../src/types/context";
-import { Env } from "../api/_env.ts";
+import { Env } from "../src/types/env.ts";
 import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input";
 import workerFetch from "../src/worker";
 import { db } from "./__mocks__/db";

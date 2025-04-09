@@ -3,7 +3,7 @@ import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LOG_LEVEL, LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { handle } from "hono/vercel";
 import manifest from "../manifest.json" with { type: "json" };
-import { envSchema } from "./_env.js";
+import { envSchema } from "../src/types/env.js";
 import { pluginSettingsSchema } from "../src/types/plugin-input.js";
 
 const app = createPlugin(() => {}, manifest as Manifest, {
@@ -15,6 +15,10 @@ const app = createPlugin(() => {}, manifest as Manifest, {
   bypassSignatureVerification: true,
   // bypassSignatureVerification: process.env.NODE_ENV === "local",
 }).basePath("/api");
+
+app.get("/test", (c) => {
+  return c.text("Test");
+});
 
 const handler = handle(app);
 

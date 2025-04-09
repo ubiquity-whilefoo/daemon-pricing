@@ -5,7 +5,7 @@ import { handle } from "hono/vercel";
 import manifest from "../manifest.json";
 import { run } from "../src/run";
 import { SupportedEvents } from "../src/types/context";
-import { Env, envSchema } from "../api/_env.ts";
+import { Env, envSchema } from "../src/types/env.ts";
 import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input";
 
 export const runtime = "edge";
