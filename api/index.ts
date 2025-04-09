@@ -1,12 +1,13 @@
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
 import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LOG_LEVEL, LogLevel } from "@ubiquity-os/ubiquity-os-logger";
+import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import manifest from "../manifest.json" with { type: "json" };
 import { envSchema } from "../src/types/env.js";
 import { pluginSettingsSchema } from "../src/types/plugin-input.js";
 
-const app = createPlugin(() => {}, manifest as Manifest, {
+const pluginApp = createPlugin(() => {}, manifest as Manifest, {
   envSchema: envSchema,
   postCommentOnError: true,
   settingsSchema: pluginSettingsSchema,
@@ -14,13 +15,13 @@ const app = createPlugin(() => {}, manifest as Manifest, {
   kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
   bypassSignatureVerification: true,
   // bypassSignatureVerification: process.env.NODE_ENV === "local",
-}).basePath("/api");
-
-app.get("/test", (c) => {
-  return c.text("Test");
 });
 
-const handler = handle(app);
+const rootApp = new Hono();
+
+rootApp.route("/api", pluginApp);
+
+const handler = handle(rootApp);
 
 export const GET = handler;
 export const POST = handler;
