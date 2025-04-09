@@ -1,9 +1,9 @@
 import { createPlugin } from "@ubiquity-os/plugin-sdk";
-import { Manifest } from "@ubiquity-os/plugin-sdk/dist/manifest";
+import { Manifest } from "@ubiquity-os/plugin-sdk/manifest";
 import { LOG_LEVEL, LogLevel } from "@ubiquity-os/ubiquity-os-logger";
 import { handle } from "hono/vercel";
 import manifest from "../manifest.json" with { type: "json" };
-import { envSchema } from "./_env.js";
+import { envSchema } from "./_env";
 import { pluginSettingsSchema } from "../src/types/plugin-input";
 
 const app = createPlugin(() => {}, manifest as Manifest, {
