@@ -59,16 +59,35 @@ jobs:
           echo "Ensuring project '$PROJECT_NAME' exists in org '$VERCEL_ORG_ID'..."
           vercel project add $PROJECT_NAME --token $VERCEL_TOKEN
 
-      - name: Pull Vercel Project Settings & Link
+      - name: Link Vercel Project
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PROJECT_NAME: ${{ steps.project_name.outputs.name }}
         run: |
-          echo "Linking local directory to Vercel project..."
-          vercel pull --yes --environment=${{ steps.vercel_env.outputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
+          echo "Linking local directory to Vercel project '$PROJECT_NAME'..."
+          vercel link --yes --project $PROJECT_NAME --token $VERCEL_TOKEN
+
+      - name: Extract Vercel Project ID
+        id: get_project_id
+        run: |
+          # Ensure jq is available
+          if ! command -v jq &> /dev/null; then
+            echo "jq not found, attempting to install..."
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+          PROJECT_ID=$(jq -r '.projectId' .vercel/project.json)
+          if [[ -z "$PROJECT_ID" || "$PROJECT_ID" == "null" ]]; then
+            echo "Error: Could not extract projectId from .vercel/project.json"
+            cat .vercel/project.json # Print file content for debugging
+            exit 1
+          fi
+          echo "Extracted Vercel Project ID: $PROJECT_ID"
+          echo "project_id=$PROJECT_ID" >> $GITHUB_OUTPUT
 
       - name: Add Environment Variables to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ steps.get_project_id.outputs.project_id }}
           TARGET_ENV: ${{ steps.vercel_env.outputs.environment }}
           SECRET_APP_ID: ${{ secrets.APP_ID }}
           SECRET_APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
@@ -90,12 +109,14 @@ jobs:
       - name: Build Project
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ steps.get_project_id.outputs.project_id }}
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project to Vercel
         id: vercel_deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ steps.get_project_id.outputs.project_id }}
         run: |
           deploy_output=$(mktemp)
           echo "Deploying to Vercel (${{ steps.vercel_env.outputs.environment }})..."
