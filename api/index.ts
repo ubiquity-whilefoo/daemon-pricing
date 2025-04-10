@@ -74,7 +74,6 @@ export const POST = (request: Request) => {
   const responseClone = request.clone();
   const pluginApp = createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
     async (context) => {
-      context.logger.info("+++ Environment", { env: process.env });
       switch (context.eventName) {
         case "issues.opened":
         case "repository.created":
