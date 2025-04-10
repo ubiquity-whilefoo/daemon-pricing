@@ -43,8 +43,11 @@ jobs:
       - name: Determine Vercel Project Name
         id: project_name
         run: |
-          repo_name=$(echo "${{ github.repository }}" | cut -d'/' -f2)
-          project_name=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | cut -c 1-63)
+          owner_name=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          repo_name=$(echo "${{ github.repository }}" | cut -d'/' -f2 | tr '[:upper:]' '[:lower:]')
+          combined_name="${owner_name}-${repo_name}"
+          project_name=$(echo "$combined_name" | sed 's/[^a-z0-9-]/-/g' | cut -c 1-63)
+          project_name=$(echo "$project_name" | sed 's/-$//')
           echo "name=$project_name" >> $GITHUB_OUTPUT
           echo "Using Vercel project name: $project_name"
 
