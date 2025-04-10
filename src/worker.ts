@@ -69,8 +69,6 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   });
 }
 
-console.log(process.env);
-
 export default {
   async fetch(request: Request, env: Record<string, string>, executionCtx?: ExecutionContext) {
     // It is important to clone the request because the body is read within createPlugin as well
@@ -105,8 +103,7 @@ export default {
         settingsSchema: pluginSettingsSchema,
         logLevel: (process.env.LOG_LEVEL as LogLevel) || LOG_LEVEL.INFO,
         kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
-        bypassSignatureVerification: true,
-        // bypassSignatureVerification: process.env.NODE_ENV === "local",
+        bypassSignatureVerification: process.env.NODE_ENV === "local",
       }
     ).fetch(request, env, executionCtx);
   },
