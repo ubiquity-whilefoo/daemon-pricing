@@ -102,7 +102,7 @@ jobs:
 
             if [[ -n "$secret_value" ]]; then
               echo "Adding $vercel_var_name to $TARGET_ENV environment..."
-              vercel env add "$vercel_var_name" "$secret_value" "$TARGET_ENV" --token="$VERCEL_TOKEN"
+              echo "$secret_value" | vercel env add "$vercel_var_name" "$TARGET_ENV" --token="$VERCEL_TOKEN"
             else
               echo "Skipping $vercel_var_name (secret is empty)."
             fi
