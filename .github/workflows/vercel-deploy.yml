@@ -89,6 +89,7 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ steps.get_project_id.outputs.project_id }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           TARGET_ENV: ${{ steps.vercel_env.outputs.environment }}
           SECRET_APP_ID: ${{ secrets.APP_ID }}
           SECRET_APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
