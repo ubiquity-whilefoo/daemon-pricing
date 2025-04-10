@@ -70,48 +70,47 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   });
 }
 
-const pluginApp = createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
-  async (context) => {
-    // const responseClone = request.clone();
+export const POST = (request: Request) => {
+  const pluginApp = createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
+    async (context) => {
+      const responseClone = request.clone();
 
-    switch (context.eventName) {
-      case "issues.opened":
-      case "repository.created":
-      case "push": {
-        if (isLocalEnvironment()) {
-          return run(context);
-        } else {
-          // const text = (await responseClone.json()) as Record<string, unknown>;
-          // return startAction(context, text);
+      switch (context.eventName) {
+        case "issues.opened":
+        case "repository.created":
+        case "push": {
+          if (isLocalEnvironment()) {
+            return run(context);
+          } else {
+            const text = (await responseClone.json()) as Record<string, unknown>;
+            return startAction(context, text);
+          }
+          break;
         }
-        break;
+        case "issues.labeled":
+        case "issues.unlabeled": {
+          return run(context);
+        }
+        default: {
+          return run(context);
+        }
       }
-      case "issues.labeled":
-      case "issues.unlabeled": {
-        return run(context);
-      }
-      default: {
-        return run(context);
-      }
+    },
+    manifest as Manifest,
+    {
+      envSchema: envSchema,
+      postCommentOnError: true,
+      settingsSchema: pluginSettingsSchema,
+      logLevel: (process.env.LOG_LEVEL as LogLevel) || LOG_LEVEL.INFO,
+      kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
+      bypassSignatureVerification: true,
+      // bypassSignatureVerification: process.env.NODE_ENV === "local",
     }
-  },
-  manifest as Manifest,
-  {
-    envSchema: envSchema,
-    postCommentOnError: true,
-    settingsSchema: pluginSettingsSchema,
-    logLevel: (process.env.LOG_LEVEL as LogLevel) || LOG_LEVEL.INFO,
-    kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
-    bypassSignatureVerification: true,
-    // bypassSignatureVerification: process.env.NODE_ENV === "local",
-  }
-);
+  );
+  const rootApp = new Hono();
 
-const rootApp = new Hono();
+  rootApp.route("/api", pluginApp);
 
-rootApp.route("/api", pluginApp);
-
-const handler = handle(rootApp);
-
-export const GET = handler;
-export const POST = handler;
+  const handler = handle(rootApp);
+  return handler(request);
+};
