@@ -102,7 +102,8 @@ const pluginApp = createPlugin<AssistivePricingSettings, Env, null, SupportedEve
     settingsSchema: pluginSettingsSchema,
     logLevel: (process.env.LOG_LEVEL as LogLevel) || LOG_LEVEL.INFO,
     kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
-    bypassSignatureVerification: process.env.NODE_ENV === "local",
+    bypassSignatureVerification: true,
+    // bypassSignatureVerification: process.env.NODE_ENV === "local",
   }
 );
 
