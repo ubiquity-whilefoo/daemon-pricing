@@ -71,10 +71,9 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
 }
 
 export const POST = (request: Request) => {
+  const responseClone = request.clone();
   const pluginApp = createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
     async (context) => {
-      const responseClone = request.clone();
-
       switch (context.eventName) {
         case "issues.opened":
         case "repository.created":
@@ -85,7 +84,6 @@ export const POST = (request: Request) => {
             const text = (await responseClone.json()) as Record<string, unknown>;
             return startAction(context, text);
           }
-          break;
         }
         case "issues.labeled":
         case "issues.unlabeled": {
