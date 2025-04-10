@@ -102,8 +102,7 @@ export const POST = (request: Request) => {
       settingsSchema: pluginSettingsSchema,
       logLevel: (process.env.LOG_LEVEL as LogLevel) || LOG_LEVEL.INFO,
       kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
-      bypassSignatureVerification: true,
-      // bypassSignatureVerification: process.env.NODE_ENV === "local",
+      bypassSignatureVerification: process.env.NODE_ENV === "local",
     }
   );
   const rootApp = new Hono();
