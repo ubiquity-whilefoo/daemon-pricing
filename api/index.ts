@@ -70,6 +70,8 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   });
 }
 
+console.log(process.env.KERNEL_PUBLIC_KEY);
+
 export const POST = (request: Request) => {
   const responseClone = request.clone();
   const pluginApp = createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
