@@ -7,9 +7,6 @@ on:
     types:
       - completed
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-
 jobs:
   deploy-to-vercel:
     runs-on: ubuntu-latest
@@ -55,6 +52,7 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PROJECT_NAME: ${{ steps.project_name.outputs.name }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           echo "Ensuring project '$PROJECT_NAME' exists in org '$VERCEL_ORG_ID'..."
           vercel project add $PROJECT_NAME --token $VERCEL_TOKEN
