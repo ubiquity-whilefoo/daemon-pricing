@@ -71,7 +71,6 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
 }
 
 export const POST = (request: Request) => {
-  console.log("+++++++ here _____+");
   const responseClone = request.clone();
   const pluginApp = createPlugin<AssistivePricingSettings, Env, null, SupportedEvents>(
     async (context) => {
