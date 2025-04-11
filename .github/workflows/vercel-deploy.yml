@@ -96,11 +96,18 @@ jobs:
           SECRET_APP_INSTALLATION_ID: ${{ secrets.APP_INSTALLATION_ID }}
           SECRET_KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
         run: |
+          existing_vars=$(vercel env ls --token="$VERCEL_TOKEN" --environment="$TARGET_ENV" --project=${{ steps.project_name.outputs.name }} || true)
+          echo "Existing vars fetched for $TARGET_ENV."
+
           for secret_env_var in $(env | grep '^SECRET_' | cut -d= -f1); do
             vercel_var_name=$(echo "$secret_env_var" | sed 's/^SECRET_//')
             secret_value=$(printenv "$secret_env_var")
 
             if [[ -n "$secret_value" ]]; then
+              if echo "$existing_vars" | grep -q -w "^$vercel_var_name"; then
+                echo "$vercel_var_name already exists in $TARGET_ENV. Removing first..."
+                vercel env rm "$vercel_var_name" "$TARGET_ENV" --token="$VERCEL_TOKEN" --yes --project=${{ steps.project_name.outputs.name }}
+              fi
               echo "Adding $vercel_var_name to $TARGET_ENV environment..."
               echo "$secret_value" | vercel env add "$vercel_var_name" "$TARGET_ENV" --token="$VERCEL_TOKEN"
             else
