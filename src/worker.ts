@@ -101,9 +101,9 @@ export default {
         envSchema: envSchema,
         postCommentOnError: true,
         settingsSchema: pluginSettingsSchema,
-        logLevel: (process.env.LOG_LEVEL as LogLevel) || LOG_LEVEL.INFO,
-        kernelPublicKey: process.env.KERNEL_PUBLIC_KEY,
-        bypassSignatureVerification: process.env.NODE_ENV === "local",
+        logLevel: (env.LOG_LEVEL as LogLevel) || LOG_LEVEL.INFO,
+        kernelPublicKey: env.KERNEL_PUBLIC_KEY,
+        bypassSignatureVerification: env.NODE_ENV === "local",
       }
     ).fetch(request, env, executionCtx);
   },
