@@ -194,10 +194,8 @@ jobs:
         if: steps.update_manifest.outcome == 'success'
         shell: bash
         run: |
-          if ! bun pm ls | grep -q prettier; then
-            bun add -DE prettier
-          fi
-          bun prettier --write ./manifest.json
+          bun add -DE prettier
+          bun prettier --write .
 
       - name: Commit file
         if: steps.update_manifest.outcome == 'success'
