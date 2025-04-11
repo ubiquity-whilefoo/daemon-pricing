@@ -106,7 +106,7 @@ jobs:
             if [[ -n "$secret_value" ]]; then
               if echo "$existing_vars" | grep -q -w "$vercel_var_name"; then
                 echo "$vercel_var_name already exists in $TARGET_ENV. Removing first..."
-                vercel env rm "$vercel_var_name" "$TARGET_ENV" --token="$VERCEL_TOKEN" --yes --project=${{ steps.project_name.outputs.name }}
+                vercel env rm "$vercel_var_name" "$TARGET_ENV" --token="$VERCEL_TOKEN" --yes
               fi
               echo "Adding $vercel_var_name to $TARGET_ENV environment..."
               echo "$secret_value" | vercel env add "$vercel_var_name" "$TARGET_ENV" --token="$VERCEL_TOKEN"
