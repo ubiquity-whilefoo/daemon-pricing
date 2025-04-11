@@ -37,7 +37,7 @@ jobs:
           if [[ "${{ steps.get_branch.outputs.branch_name }}" == "main" ]]; then
             echo "environment=production" >> $GITHUB_OUTPUT
           else
-            echo "environment=preview" >> $GITHUB_OUTPUT
+            echo "environment=development" >> $GITHUB_OUTPUT
           fi
 
       - name: Determine Vercel Project Name
