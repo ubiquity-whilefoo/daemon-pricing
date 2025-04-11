@@ -97,7 +97,7 @@ jobs:
           SECRET_KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
         run: |
           existing_vars=$(vercel env ls "$TARGET_ENV" --token="$VERCEL_TOKEN" || true)
-          echo "Existing vars fetched for $TARGET_ENV."
+          echo "Existing vars fetched for $TARGET_ENV.\n${existing_vars}"
 
           for secret_env_var in $(env | grep '^SECRET_' | cut -d= -f1); do
             vercel_var_name=$(echo "$secret_env_var" | sed 's/^SECRET_//')
