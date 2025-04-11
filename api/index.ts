@@ -19,16 +19,18 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
     throw logger.fatal("Owner is missing from payload", { payload });
   }
 
-  if (!env.ACTION_REF) {
+  if (!process.env.ACTION_REF) {
     throw logger.fatal("ACTION_REF is missing from the environment");
   }
 
   const regex = /^([\w-]+)\/([\w.-]+)@([\w./-]+)$/;
 
-  const match = RegExp(regex).exec(env.ACTION_REF);
+  const match = RegExp(regex).exec(process.env.ACTION_REF);
 
   if (!match) {
-    throw logger.fatal("The ACTION_REF is not in the proper format (owner/repo@ref)");
+    throw logger.fatal("The ACTION_REF is not in the proper format (owner/repo@ref)", {
+      actionRef: process.env.ACTION_REF,
+    });
   }
 
   const [, owner, repo, ref] = match;
