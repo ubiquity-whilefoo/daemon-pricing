@@ -13,7 +13,7 @@ import { Env, envSchema } from "../src/types/env.js";
 import { AssistivePricingSettings, pluginSettingsSchema } from "../src/types/plugin-input.js";
 
 async function startAction(context: Context, inputs: Record<string, unknown>) {
-  const { payload, logger, env } = context;
+  const { payload, logger } = context;
 
   if (!payload.repository.owner) {
     throw logger.fatal("Owner is missing from payload", { payload });
@@ -40,13 +40,13 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
   const appOctokit = new customOctokit({
     authStrategy: createAppAuth,
     auth: {
-      appId: context.env.APP_ID,
-      privateKey: context.env.APP_PRIVATE_KEY,
+      appId: process.env.APP_ID,
+      privateKey: process.env.APP_PRIVATE_KEY,
     },
   });
 
   let authOctokit;
-  if (!env.APP_ID || !env.APP_PRIVATE_KEY) {
+  if (!process.env.APP_ID || !process.env.APP_PRIVATE_KEY) {
     logger.debug("APP_ID or APP_PRIVATE_KEY are missing from the env, will use the default Octokit instance.");
     authOctokit = context.octokit;
   } else {
@@ -57,8 +57,8 @@ async function startAction(context: Context, inputs: Record<string, unknown>) {
     authOctokit = new Octokit({
       authStrategy: createAppAuth,
       auth: {
-        appId: context.env.APP_ID,
-        privateKey: context.env.APP_PRIVATE_KEY,
+        appId: process.env.APP_ID,
+        privateKey: process.env.APP_PRIVATE_KEY,
         installationId: installation.data.id,
       },
     });
