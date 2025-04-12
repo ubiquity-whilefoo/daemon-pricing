@@ -1,11 +1,12 @@
-import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo, removeLabelFromIssue } from "../shared/label";
-import { labelAccessPermissionsCheck } from "../shared/permissions";
-import { Label, UserType } from "../types/github";
-import { getPrice } from "../shared/pricing";
-import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue";
-import { AssistivePricingSettings } from "../types/plugin-input";
-import { isIssueLabelEvent } from "../types/typeguards";
-import { Context } from "../types/context";
+import { addLabelToIssue, clearAllPriceLabelsOnIssue, createLabel, listLabelsForRepo, removeLabelFromIssue } from "../shared/label.js";
+import { labelAccessPermissionsCheck } from "../shared/permissions.js";
+import { Label, UserType } from "../types/github.js";
+import { getPrice } from "../shared/pricing.js";
+import { handleParentIssue, isParentIssue, sortLabelsByValue } from "./handle-parent-issue.js";
+import { AssistivePricingSettings } from "../types/plugin-input.js";
+import { isIssueLabelEvent } from "../types/typeguards.js";
+import { Context } from "../types/context.js";
+import { extractLabelPattern } from "./label-checks.js";
 
 export async function onLabelChangeSetPricing(context: Context): Promise<void> {
   if (!isIssueLabelEvent(context)) {
@@ -33,6 +34,9 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
 
   const hasPermission = await labelAccessPermissionsCheck(context);
   if (!hasPermission) {
+    if (context.eventName === "issues.labeled" && context.payload.sender?.type !== "Bot") {
+      await context.commentHandler.postComment(context, logger.warn("You are not allowed to set labels."));
+    }
     return;
   }
 
@@ -44,7 +48,7 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
     // make sure to clear all other price labels except for the smallest price label.
 
     const priceLabels = labels.filter((label) => label.name.includes("Price: "));
-    const sortedPriceLabels = sortLabelsByValue(priceLabels);
+    const sortedPriceLabels = sortLabelsByValue(context, priceLabels);
     const smallestPriceLabel = sortedPriceLabels.shift();
     const smallestPriceLabelName = smallestPriceLabel?.name;
     if (smallestPriceLabelName) {
@@ -67,19 +71,30 @@ export async function onLabelChangeSetPricing(context: Context): Promise<void> {
 export async function setPriceLabel(context: Context, issueLabels: Label[], config: AssistivePricingSettings) {
   const logger = context.logger;
   const labelNames = issueLabels.map((i) => i.name);
-
   const recognizedLabels = getRecognizedLabels(issueLabels, config);
+  const timePattern = extractLabelPattern(context.config.labels.time);
+  const priorityPattern = extractLabelPattern(context.config.labels.priority);
+  const isPricingAttempt = issueLabels.filter((o) => timePattern.test(o.name) || priorityPattern.test(o.name)).length >= 2;
 
   if (!recognizedLabels.time.length || !recognizedLabels.priority.length) {
-    logger.error("No recognized labels to calculate price");
+    const message = logger.error("No recognized labels were found to set the price of this task.", {
+      repo: context.payload.repository.html_url,
+      recognizedLabels,
+    });
+    // We only want to send that message on labeling, because un-label will trigger this during compute
+    if (context.eventName === "issues.labeled" && isPricingAttempt) {
+      await context.commentHandler.postComment(context, message);
+    }
     await clearAllPriceLabelsOnIssue(context);
     return;
   }
 
-  const minLabels = getMinLabels(recognizedLabels);
+  const minLabels = getMinLabels(context, recognizedLabels);
 
   if (!minLabels.time || !minLabels.priority) {
-    logger.error("No label to calculate price");
+    logger.error("No label to calculate price", {
+      repo: context.payload.repository.html_url,
+    });
     return;
   }
 
@@ -94,7 +109,9 @@ export async function setPriceLabel(context: Context, issueLabels: Label[], conf
   if (targetPriceLabel) {
     await handleTargetPriceLabel(context, { name: targetPriceLabel, description: null }, labelNames);
     await clearAllPriceLabelsOnIssue(context);
-    logger.info(`Skipping action...`);
+    logger.info(`Skipping action...`, {
+      repo: context.payload.repository.html_url,
+    });
   }
 }
 
@@ -120,9 +137,9 @@ function getRecognizedLabels(labels: Label[], settings: AssistivePricingSettings
   return { time: recognizedTimeLabels, priority: recognizedPriorityLabels };
 }
 
-function getMinLabels(recognizedLabels: { time: Label[]; priority: Label[] }) {
-  const minTimeLabel = sortLabelsByValue(recognizedLabels.time).shift();
-  const minPriorityLabel = sortLabelsByValue(recognizedLabels.priority).shift();
+function getMinLabels(context: Context, recognizedLabels: { time: Label[]; priority: Label[] }) {
+  const minTimeLabel = sortLabelsByValue(context, recognizedLabels.time).shift();
+  const minPriorityLabel = sortLabelsByValue(context, recognizedLabels.priority).shift();
 
   return { time: minTimeLabel, priority: minPriorityLabel };
 }

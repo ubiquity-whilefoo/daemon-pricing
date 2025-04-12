@@ -1,7 +1,8 @@
 {
   "name": "Assistive pricing",
   "description": "Handles assistive pricing, and allows for users to modify labels.",
-  "ubiquity:listeners": ["repository.created", "issues.opened", "issues.labeled", "issues.unlabeled", "label.edited", "issue_comment.created", "push"],
+  "ubiquity:listeners": ["repository.created", "issues.opened", "issues.labeled", "issues.unlabeled", "label.edited", "push"],
+  "skipBotEvents": false,
   "configuration": {
     "default": {},
     "type": "object",
@@ -26,6 +27,7 @@
         "type": "object",
         "properties": {
           "time": {
+            "minItems": 1,
             "default": [
               {
                 "name": "Time: <15 Minutes",
@@ -59,6 +61,7 @@
                 "name": {
                   "examples": ["Time: <2 Hours", "Time: <1 Week"],
                   "description": "The display name of the label representing estimated task length",
+                  "pattern": "^Time:\\s<?\\d+\\s\\S+$",
                   "type": "string"
                 }
               },
@@ -66,6 +69,7 @@
             }
           },
           "priority": {
+            "minItems": 1,
             "default": [
               {
                 "name": "Priority: 0 (Regression)",
@@ -118,31 +122,12 @@
         "description": "The base price multiplier for all tasks",
         "type": "number"
       },
-      "publicAccessControl": {
-        "default": {},
-        "type": "object",
-        "properties": {
-          "setLabel": {
-            "default": false,
-            "description": "Whether to allow anyone to set labels, false to perform permission validation",
-            "type": "boolean"
-          },
-          "fundExternalClosedIssue": {
-            "default": false,
-            "description": "Whether to allow funding external closed issues",
-            "type": "boolean"
-          },
-          "protectLabels": {
-            "default": ["priority", "price", "time"],
-            "uniqueItems": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
+      "shouldFundContributorClosedIssue": {
+        "default": false,
+        "description": "Whether to allow funding contributor closed issues",
+        "type": "boolean"
       }
     }
   },
-  "homepage_url": "https://ubiquity-os-daemon-pricing-development.ubiquity.workers.dev"
+  "homepage_url": "https://gentlementlegen-daemon-pricing-5t36t9jnq-mentlegens-projects.vercel.app"
 }

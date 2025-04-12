@@ -1,6 +1,6 @@
 {
   "name": "@ubiquity-os/daemon-pricing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Helps set pricing for GitHub Issues and their rewards.",
   "main": "build/index.ts",
   "author": "Ubiquity DAO",
@@ -18,7 +18,9 @@
     "knip": "knip --config .github/knip.ts",
     "knip-ci": "knip --no-exit-code --reporter json --config .github/knip.ts",
     "prepare": "husky install",
-    "test": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --setupFiles dotenv/config --coverage"
+    "test": "cross-env NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest --setupFiles dotenv/config --coverage",
+    "run": "bun run --watch --no-clear-screen src/worker.ts",
+    "vercel:dev": "vercel dev"
   },
   "keywords": [
     "typescript",
@@ -70,6 +72,7 @@
     "ts-node": "^10.9.2",
     "typescript": "5.6.2",
     "typescript-eslint": "^8.20.0",
+    "vercel": "^41.5.0",
     "wrangler": "^3.87.0"
   },
   "lint-staged": {
