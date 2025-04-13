@@ -93,7 +93,6 @@ jobs:
           TARGET_ENV: ${{ steps.vercel_env.outputs.environment }}
           SECRET_APP_ID: ${{ secrets.APP_ID }}
           SECRET_APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-          SECRET_APP_INSTALLATION_ID: ${{ secrets.APP_INSTALLATION_ID }}
           SECRET_KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
           SECRET_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SECRET_SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
