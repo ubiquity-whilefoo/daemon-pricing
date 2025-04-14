@@ -124,8 +124,13 @@ jobs:
           VERCEL_PROJECT_ID: ${{ steps.get_project_id.outputs.project_id }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
-          vercel pull --yes --token=${{ secrets.VERCEL_TOKEN }}
-          vercel build --token=${{ secrets.VERCEL_TOKEN }}
+          if [[ "${{ steps.vercel_env.outputs.environment }}" == "production" ]]; then
+            vercel pull --environment=production --yes --token=${{ secrets.VERCEL_TOKEN }}
+            vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel pull --environment=development --yes --token=${{ secrets.VERCEL_TOKEN }}
+            vercel build --token=${{ secrets.VERCEL_TOKEN }}
+          fi
 
       - name: Deploy Project to Vercel
         id: vercel_deploy
