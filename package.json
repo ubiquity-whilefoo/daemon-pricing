@@ -1,6 +1,6 @@
 {
   "name": "@ubiquity-os/daemon-pricing",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Helps set pricing for GitHub Issues and their rewards.",
   "main": "build/index.ts",
   "author": "Ubiquity DAO",
